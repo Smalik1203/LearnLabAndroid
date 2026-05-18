@@ -65,3 +65,4 @@ The APK installs as `com.learnlab.android` (debug suffix `.debug`), landscape on
 - The app no longer opens straight into Plant Sorter. It opens on the Welcome screen, same as the web — teacher picks an experiment from the rail.
 - Theme toggle, persisted preference, dark/light tokens are all live.
 - Adding the remaining 11 experiments now means editing one file each + one line in `engines/Registry.kt`. Same workflow as the React `ExperimentRegistry.ts`.
+# LearnLabAndroid
