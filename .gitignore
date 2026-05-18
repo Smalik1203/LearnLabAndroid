@@ -1,0 +1,23 @@
+# Gradle / build artifacts
+.gradle/
+build/
+*/build/
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.DS_Store
+captures/
+
+# Keystores
+*.jks
+*.keystore
+
+# Generated
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+proguard/
