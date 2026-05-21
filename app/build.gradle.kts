@@ -49,6 +49,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("androidx.navigation:navigation-compose:2.8.3")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

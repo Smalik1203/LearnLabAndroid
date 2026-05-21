@@ -72,21 +72,25 @@ val LightTokens = LearnLabTokens(
 )
 
 val DarkTokens = LearnLabTokens(
-    isDark   = true,
-    bg       = Color(0xFF0A0C14),
-    bgDeep   = Color(0xFF050608),
-    surface  = Color(0xFF11141B),
-    surface2 = Color(0xFF161A23),
-    surface3 = Color(0xFF1F2530),
-    line     = Color(0xFF1F2530),
-    lineStrong = Color(0xFF2A323F),
-    ink50    = Color(0xFFF8FAFC),
-    ink200   = Color(0xFFE2E8F0),
-    ink400   = Color(0xFF94A3B8),
-    ink500   = Color(0xFF64748B),
-    ink600   = Color(0xFF475569),
-    accent50 = Color(0xFF064E3B),
-    accent700= Color(0xFF6EE7B7),
+    isDark     = true,
+    bg         = NavyDeep,
+    bgDeep     = Color(0xFF050D1A),
+    surface    = SurfaceDark,
+    surface2   = SurfaceMid,
+    surface3   = SurfaceCard,
+    line       = SurfaceMid,
+    lineStrong = SurfaceElevated,
+    ink50      = OnSurfaceHigh,
+    ink200     = OnSurfaceHigh,
+    ink400     = OnSurfaceMed,
+    ink500     = OnSurfaceLow,
+    ink600     = Color(0xFF4A6A8A),
+    accent300  = CyanSoft,
+    accent400  = CyanMid,
+    accent500  = CyanBright,
+    accent600  = Color(0xFF0099BB),
+    accent50   = Color(0xFF0A2040),
+    accent700  = CyanBright,
 )
 
 val LocalTokens = compositionLocalOf { LightTokens }
@@ -103,25 +107,25 @@ fun ProvideTokens(isDark: Boolean, content: @Composable () -> Unit) {
     }
 }
 
-// Reusable gradients (mirror tailwind.config.js `backgroundImage`)
+// Reusable gradients
 @Composable
 fun gradHeadline(): Brush = Brush.linearGradient(
-    colors = listOf(Color(0xFF059669), Color(0xFF0891B2), Color(0xFF7C3AED)),
+    colors = listOf(CyanBright, NavyLight, Color(0xFF7C3AED)),
 )
 
 @Composable
 fun gradCta(): Brush = Brush.linearGradient(
-    colors = listOf(Color(0xFF059669), Color(0xFF10B981), Color(0xFF14B8A6)),
+    colors = listOf(CyanBright, CyanMid, Color(0xFF4ECDC4)),
 )
 
 @Composable
 fun gradLogo(): Brush = Brush.linearGradient(
-    colors = listOf(Color(0xFF059669), Color(0xFF14B8A6)),
+    colors = listOf(NavyMid, CyanBright),
 )
 
 @Composable
 fun gradProgress(): Brush = Brush.horizontalGradient(
-    colors = listOf(Color(0xFF059669), Color(0xFF14B8A6)),
+    colors = listOf(CyanBright, CyanMid),
 )
 
 // Common spacings

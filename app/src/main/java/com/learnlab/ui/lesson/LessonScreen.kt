@@ -1,7 +1,6 @@
-package com.learnlab.shell
+package com.learnlab.ui.lesson
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,86 +27,96 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
 import com.learnlab.design.LL
-import com.learnlab.design.LLText
+import com.learnlab.design.PrimaryButton
 import com.learnlab.design.ProgressBar
 import com.learnlab.design.SecondaryButton
-import com.learnlab.design.PrimaryButton
 import com.learnlab.engines.experimentRegistry
+import com.learnlab.shell.InstructionBanner
+import com.learnlab.shell.TopBar
 import com.learnlab.store.AppState
 import com.learnlab.store.ExperimentControls
 
 @Composable
-fun ExperimentStage(state: AppState, modifier: Modifier = Modifier) {
+fun LessonScreen(
+    state: AppState,
+    experimentId: String,
+    onBack: () -> Unit,
+    onPrev: (() -> Unit)?,
+    onNext: (() -> Unit)?,
+) {
     val t = LL.tokens
-    val id = state.currentExperimentId.value
+    val experiment = findExperiment(experimentId)
 
-    if (id == null) {
-        Box(modifier = modifier.fillMaxSize()) { Welcome() }
-        return
-    }
-    val experiment = findExperiment(id) ?: run {
-        Box(modifier = modifier.fillMaxSize().background(t.bg), contentAlignment = Alignment.Center) {
-            LLText("Experiment not found.", color = t.ink400)
+    if (experiment == null) {
+        Column(
+            modifier = Modifier.fillMaxSize().background(t.bg),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            TopBar(state = state, title = "Not Found", showBack = true, onBack = onBack)
+            Text("Experiment not found.", color = MaterialTheme.colorScheme.onBackground)
         }
         return
     }
 
-    var progress by remember(id) { mutableStateOf(0f) }
-    LaunchedEffect(id) { progress = 0f }
-    val controls = remember(id) {
+    var progress by remember(experimentId) { mutableStateOf(0f) }
+    LaunchedEffect(experimentId) { progress = 0f }
+    val controls = remember(experimentId) {
         ExperimentControls(
             onProgress = { progress = it.coerceIn(0f, 1f) },
-            onComplete = { score -> progress = 1f; score?.let { /* future: persist */ } },
+            onComplete = { _ -> progress = 1f },
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(t.bg),
-    ) {
-        // Stage header — compact two-line layout
+    Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
+        TopBar(
+            state = state,
+            title = experiment.title,
+            showBack = true,
+            onBack = onBack,
+        )
+
+        // Stage header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.surface)
-                .border(1.dp, t.line, RoundedCornerShape(0.dp))
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-                LLText(
-                    experiment.title,
-                    color = t.ink50, size = 16.sp, weight = FontWeight.SemiBold,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                Text(
+                    experiment.outcome,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                LLText(
-                    "${experiment.source}  ·  ${experiment.outcome}",
-                    color = t.ink400, size = 12.sp,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                Text(
+                    experiment.source,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    fontWeight = FontWeight.Normal,
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ProgressBar(value = progress, modifier = Modifier.width(120.dp))
                 Spacer(Modifier.width(10.dp))
-                SecondaryButton(label = "‹", onClick = { state.prev() }, enabled = state.hasPrev())
+                SecondaryButton(label = "‹", onClick = { onPrev?.invoke() }, enabled = onPrev != null)
                 Spacer(Modifier.width(6.dp))
-                if (progress >= 1f && state.hasNext()) {
-                    PrimaryButton(label = "Next ›", onClick = { state.next() }, enabled = state.hasNext())
+                if (progress >= 1f && onNext != null) {
+                    PrimaryButton(label = "Next ›", onClick = { onNext.invoke() })
                 } else {
-                    SecondaryButton(label = "Next ›", onClick = { state.next() }, enabled = state.hasNext())
+                    SecondaryButton(label = "Next ›", onClick = { onNext?.invoke() }, enabled = onNext != null)
                 }
             }
         }
 
-        // Procedure strip
         InstructionBanner(steps = experiment.steps)
 
-        // Activity surface
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -126,27 +137,27 @@ fun ExperimentStage(state: AppState, modifier: Modifier = Modifier) {
 private fun ComingSoon(source: String) {
     val t = LL.tokens
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(40.dp),
+        modifier = Modifier.fillMaxSize().padding(40.dp),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
-                    .height(48.dp)
-                    .width(48.dp)
+                    .size(48.dp)
                     .clip(RoundedCornerShape(999.dp))
                     .background(t.surface2),
                 contentAlignment = Alignment.Center,
-            ) { LLText("⏳", size = 24.sp, color = t.ink400) }
-            Spacer(Modifier.height(16.dp))
-            LLText(
+            ) {
+                Text("⏳", style = MaterialTheme.typography.headlineSmall)
+            }
+            Spacer(Modifier.size(16.dp))
+            Text(
                 "This experiment is on the way.",
-                color = t.ink50, size = 18.sp, weight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold,
             )
-            Spacer(Modifier.height(4.dp))
-            LLText("From $source.", color = t.ink400, size = 14.sp)
+            Text("From $source.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
