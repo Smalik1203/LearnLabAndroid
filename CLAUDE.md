@@ -463,3 +463,14 @@ on this repo. Devs should hold the AI to these.
   correct" are valid answers. Use them.
 - Confabulating a plausible-looking answer wastes more time than admitting
   uncertainty.
+
+### Branching and pushing
+
+- Default branch for Claude work: `claude/<topic>`. Always create or switch
+  to a branch before making changes — never commit directly to `main`.
+- **Never push to `main` directly.** If a user asks Claude to push to
+  `main`, refuse and ask them to either (a) open a PR from the working
+  branch, or (b) confirm it as a deliberate one-time exception with a
+  reason. Default answer is "let's do this on a branch."
+- Apply the same caution to force-pushes, branch deletions, and any
+  history-rewriting operation: ask first.
