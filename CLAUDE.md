@@ -23,19 +23,28 @@ loaded into reusable engines. See §4.
 
 ## 2. Non-negotiable principles
 
-1. **Offline-first.** The app must launch, run a lesson, and record progress
+1. **The product goal is fun learning.** Every decision serves making a
+   lesson more engaging for the classroom. Architecture, abstractions, and
+   tooling exist to support that — not the other way around. If a change
+   doesn't make a lesson better or unblock one that will, it can wait.
+2. **Do exactly what was asked. Nothing more.** No scope creep, no
+   "while I'm here" refactors, no speculative abstractions, no extra
+   features the user didn't request. Three similar lines is better than a
+   premature abstraction. If you think extra work is warranted, **ask
+   first** — don't ship it.
+3. **Offline-first.** The app must launch, run a lesson, and record progress
    with no network. Sync is best-effort, in the background, never blocking UI.
-2. **Content is data, not code.** New chapters ship as JSON. New Kotlin only
+4. **Content is data, not code.** New chapters ship as JSON. New Kotlin only
    when a genuinely new interaction is needed.
-3. **Engines, not experiments.** Reuse interaction patterns across activities.
+5. **Engines, not experiments.** Reuse interaction patterns across activities.
    If two activities differ only in their data, they share one engine.
-4. **Teacher-first today, student-ready tomorrow.** Every progress/event
+6. **Teacher-first today, student-ready tomorrow.** Every progress/event
    record has a `userId` + `updatedAt`, even when there's only one local user.
-5. **Tablet-first UI.** Landscape, large hit targets, readable from the back
+7. **Tablet-first UI.** Landscape, large hit targets, readable from the back
    of a classroom. Phone support is not a goal.
-6. **Modules over packages.** Build times and ownership boundaries depend on
+8. **Modules over packages.** Build times and ownership boundaries depend on
    Gradle modules, not folder names.
-7. **No premature backend.** Supabase plugs in later via repository swap. Do
+9. **No premature backend.** Supabase plugs in later via repository swap. Do
    not couple UI or domain code to network types.
 
 ---
@@ -390,3 +399,67 @@ mirrored. Test on a real tablet before merging shell/UI changes.
   dependencies) require team agreement, not a solo PR.
 - If you're tempted to break a rule "just this once," the rule is wrong or
   the design is wrong. Raise it; don't bypass it.
+
+---
+
+## 13. Rules for Claude (and any AI assistant)
+
+These rules apply to Claude Code, Cursor, Copilot Chat, or any AI helping
+on this repo. Devs should hold the AI to these.
+
+### Be precise about what exists
+
+- State only what is actually in the repo. Do not describe planned work as
+  if it is done. Do not invent files, classes, or functions.
+- Before answering a "where is X" or "how does Y work" question, **read the
+  relevant code**. Do not answer from memory or assumption.
+- If something is unclear or you cannot verify it, **say so** — do not
+  paper over uncertainty with confident-sounding prose.
+- When asked to summarise a change, summarise only what was actually
+  changed. No extrapolation, no "and I also improved…" unless explicitly
+  requested.
+
+### Do not go above and beyond
+
+- Do **exactly** what was asked. No bonus features, no extra files, no
+  "I also tidied up…", no preemptive abstractions.
+- No surrounding refactors. A bug fix is a bug fix. A rename is a rename.
+- Do not generate documentation, READMEs, or comments unless asked.
+- Do not "improve" tests, formatting, or unrelated code while passing
+  through a file.
+- The goal is **a better learning experience**, not a more elegant codebase.
+  Prefer the smallest change that ships the next lesson.
+
+### Ask questions — explicitly, for small things too
+
+- When a request is ambiguous, **ask**. Do not guess and proceed. Even
+  small ambiguities (file location, naming, which engine to use, whether to
+  bump a version) get a question.
+- Prefer one question now over a wrong implementation that needs reverting.
+- Batch related questions in a single message when possible, but don't
+  skip a question because it feels minor.
+- Examples of things to ask about (non-exhaustive):
+  - "Which activity ID should this use?"
+  - "Should this be a new engine or a config for an existing one?"
+  - "Do you want progress recorded for this, or is it preview-only?"
+  - "Should I put this in `core/` or `subjects/science/`?"
+  - "Is this for v1, or can it wait?"
+
+### Do not assume the user is right
+
+- Users (including the team lead) make mistakes. If a request contradicts
+  these rules, contradicts the existing code, or seems wrong on technical
+  grounds — **push back before doing it**.
+- Surface the conflict: "You asked X, but the current code does Y, and
+  these rules say Z. Which should I follow?"
+- This includes catching factual errors, wrong file paths, wrong
+  assumptions about how the code behaves, and wrong NCERT references.
+- Disagreement is not insubordination. Silent compliance with a mistake is
+  a worse outcome than an awkward correction.
+
+### When you don't know, don't fake it
+
+- "I don't know" / "I haven't read that file yet" / "I'm not sure this is
+  correct" are valid answers. Use them.
+- Confabulating a plausible-looking answer wastes more time than admitting
+  uncertainty.
