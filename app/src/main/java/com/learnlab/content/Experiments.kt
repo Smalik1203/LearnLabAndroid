@@ -235,3 +235,6 @@ val Chapters: List<Chapter> = listOf(
 val AllExperiments: List<Experiment> = Chapters.flatMap { it.experiments }
 
 fun findExperiment(id: String): Experiment? = AllExperiments.firstOrNull { it.id == id }
+
+fun findChapters(grade: Int, subjectId: String): List<Chapter> =
+    Chapters.filter { it.grade == grade && it.subjectId.equals(subjectId, ignoreCase = true) }

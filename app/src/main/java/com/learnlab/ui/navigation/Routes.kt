@@ -1,11 +1,11 @@
 package com.learnlab.ui.navigation
 
 object Routes {
-    const val HOME       = "home"
-    const val CURRICULUM = "curriculum/{grade}"
-    const val LESSON     = "lesson/{experimentId}"
-    const val SETTINGS   = "settings"
+    const val HOME     = "home"
+    const val BROWSER  = "browser/{grade}/{subjectId}"
+    const val LESSON   = "lesson/{experimentId}"
+    const val SETTINGS = "settings"
 
-    fun curriculum(grade: Int) = "curriculum/$grade"
+    fun browser(grade: Int, subjectId: String) = "browser/$grade/$subjectId"
     fun lesson(experimentId: String) = "lesson/$experimentId"
 }

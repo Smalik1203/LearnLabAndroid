@@ -3,10 +3,12 @@ package com.learnlab.store
 import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
@@ -19,12 +21,14 @@ private val KEY_THEME        = stringPreferencesKey("theme")
 private val KEY_FONT_SCALE   = floatPreferencesKey("font_scale")
 private val KEY_KEEP_SCREEN  = booleanPreferencesKey("keep_screen_on")
 private val KEY_FULLSCREEN   = booleanPreferencesKey("fullscreen")
+private val KEY_GRADE        = intPreferencesKey("selected_grade")
 
 class AppState(private val appContext: Context, private val scope: CoroutineScope) {
-    val theme: MutableState<String>        = mutableStateOf("dark")
-    val fontSizeScale: MutableState<Float> = mutableFloatStateOf(1f)
+    val theme: MutableState<String>         = mutableStateOf("dark")
+    val fontSizeScale: MutableState<Float>  = mutableFloatStateOf(1f)
     val keepScreenOn: MutableState<Boolean> = mutableStateOf(false)
     val fullscreen: MutableState<Boolean>   = mutableStateOf(true)
+    val selectedGrade: MutableState<Int>    = mutableIntStateOf(6)
 
     val isDark: Boolean get() = theme.value == "dark"
 
@@ -35,6 +39,7 @@ class AppState(private val appContext: Context, private val scope: CoroutineScop
             prefs[KEY_FONT_SCALE]?.let  { fontSizeScale.value = it }
             prefs[KEY_KEEP_SCREEN]?.let { keepScreenOn.value = it }
             prefs[KEY_FULLSCREEN]?.let  { fullscreen.value = it }
+            prefs[KEY_GRADE]?.let       { if (it in 6..10) selectedGrade.value = it }
         }
     }
 
@@ -56,6 +61,11 @@ class AppState(private val appContext: Context, private val scope: CoroutineScop
     fun setFullscreen(enabled: Boolean) {
         fullscreen.value = enabled
         persist { it[KEY_FULLSCREEN] = enabled }
+    }
+
+    fun setSelectedGrade(grade: Int) {
+        selectedGrade.value = grade
+        persist { it[KEY_GRADE] = grade }
     }
 
     private fun persist(block: suspend (androidx.datastore.preferences.core.MutablePreferences) -> Unit) {

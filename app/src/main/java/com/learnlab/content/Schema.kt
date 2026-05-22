@@ -19,5 +19,7 @@ data class Chapter(
     val number: Int,
     val title: String,
     val description: String,
+    val grade: Int = 6,
+    val subjectId: String = "science",
     val experiments: List<Experiment>,
 )
