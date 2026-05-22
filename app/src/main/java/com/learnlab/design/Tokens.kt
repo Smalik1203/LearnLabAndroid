@@ -94,6 +94,7 @@ val DarkTokens = LearnLabTokens(
 )
 
 val LocalTokens = compositionLocalOf { LightTokens }
+val LocalFontScale = compositionLocalOf { 1f }
 
 object LL {
     val tokens: LearnLabTokens

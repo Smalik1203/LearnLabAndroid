@@ -5,6 +5,31 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+fun scaleTypography(factor: Float): Typography {
+    if (factor == 1f) return LearnLabTypography
+    fun TextStyle.s() = copy(
+        fontSize   = (fontSize.value   * factor).sp,
+        lineHeight = (lineHeight.value * factor).sp,
+    )
+    return LearnLabTypography.copy(
+        displayLarge   = LearnLabTypography.displayLarge.s(),
+        displayMedium  = LearnLabTypography.displayMedium.s(),
+        displaySmall   = LearnLabTypography.displaySmall.s(),
+        headlineLarge  = LearnLabTypography.headlineLarge.s(),
+        headlineMedium = LearnLabTypography.headlineMedium.s(),
+        headlineSmall  = LearnLabTypography.headlineSmall.s(),
+        titleLarge     = LearnLabTypography.titleLarge.s(),
+        titleMedium    = LearnLabTypography.titleMedium.s(),
+        titleSmall     = LearnLabTypography.titleSmall.s(),
+        bodyLarge      = LearnLabTypography.bodyLarge.s(),
+        bodyMedium     = LearnLabTypography.bodyMedium.s(),
+        bodySmall      = LearnLabTypography.bodySmall.s(),
+        labelLarge     = LearnLabTypography.labelLarge.s(),
+        labelMedium    = LearnLabTypography.labelMedium.s(),
+        labelSmall     = LearnLabTypography.labelSmall.s(),
+    )
+}
+
 val LearnLabTypography = Typography(
     // Display — chapter/lesson titles on curriculum browser
     displayLarge  = TextStyle(fontWeight = FontWeight.Bold,     fontSize = 72.sp, lineHeight = 80.sp, letterSpacing = (-0.5).sp),

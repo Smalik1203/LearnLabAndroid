@@ -51,10 +51,10 @@ val LearnLabLightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun LearnLabTheme(isDark: Boolean = true, content: @Composable () -> Unit) {
+fun LearnLabTheme(isDark: Boolean = true, fontScale: Float = 1f, content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isDark) LearnLabDarkColorScheme else LearnLabLightColorScheme,
-        typography  = LearnLabTypography,
+        typography  = scaleTypography(fontScale),
         content     = content,
     )
 }

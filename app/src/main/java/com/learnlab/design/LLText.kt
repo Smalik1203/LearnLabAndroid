@@ -9,6 +9,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.learnlab.design.LocalFontScale
 
 /**
  * Thin wrapper around Material3 `Text` so we don't repeat font config everywhere.
@@ -28,11 +29,12 @@ fun LLText(
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
 ) {
+    val scale = LocalFontScale.current
     Text(
         text = text,
         modifier = modifier,
         color = color,
-        fontSize = size,
+        fontSize = size * scale,
         fontWeight = weight,
         lineHeight = if (lineHeight == TextUnit.Unspecified) size * 1.4f else lineHeight,
         letterSpacing = letterSpacing,

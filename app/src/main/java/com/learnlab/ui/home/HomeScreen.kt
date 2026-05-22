@@ -60,7 +60,7 @@ import com.learnlab.design.SuccessGreen
 import com.learnlab.store.AppState
 
 @Composable
-fun HomeScreen(state: AppState, onScienceClick: () -> Unit) {
+fun HomeScreen(state: AppState, onScienceClick: () -> Unit, onSettingsClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -115,7 +115,7 @@ fun HomeScreen(state: AppState, onScienceClick: () -> Unit) {
                             )
                         }
                     }
-                    IconButton(onClick = { /* settings — future */ }) {
+                    IconButton(onClick = onSettingsClick) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings", tint = OnSurfaceMed)
                     }
                 }

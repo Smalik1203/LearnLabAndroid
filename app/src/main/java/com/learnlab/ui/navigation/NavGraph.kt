@@ -15,6 +15,7 @@ import com.learnlab.store.AppState
 import com.learnlab.ui.curriculum.CurriculumScreen
 import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.lesson.LessonScreen
+import com.learnlab.ui.settings.SettingsScreen
 
 @Composable
 fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
@@ -29,7 +30,15 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
         composable(Routes.HOME) {
             HomeScreen(
                 state = state,
-                onScienceClick = { navController.navigate(Routes.curriculum(6)) },
+                onScienceClick  = { navController.navigate(Routes.curriculum(6)) },
+                onSettingsClick = { navController.navigate(Routes.SETTINGS) },
+            )
+        }
+
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                state  = state,
+                onBack = { navController.popBackStack() },
             )
         }
 
