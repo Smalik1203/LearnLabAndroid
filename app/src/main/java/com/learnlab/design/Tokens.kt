@@ -136,4 +136,24 @@ object Spacing {
     val lg = 16.dp
     val xl = 24.dp
     val xxl = 32.dp
+    val xxxl = 40.dp
+}
+
+// Corner radii — keep the scale small on purpose
+object Radius {
+    val sm = 8.dp     // chips, small inputs
+    val md = 12.dp    // buttons, list rows
+    val lg = 16.dp    // cards
+    val xl = 20.dp    // hero / stats cards
+    val xxl = 24.dp   // marquee cards
+    val pill = 999.dp // full pill / circle
+}
+
+// Icon sizes for visual rhythm — pick one, don't invent new ones
+object IconSize {
+    val xs = 14.dp    // inline glyph
+    val sm = 18.dp    // small button icon
+    val md = 20.dp    // standard
+    val lg = 24.dp    // emphasised / nav
+    val xl = 32.dp    // hero
 }

@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,13 +28,21 @@ fun LLText(
     align: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
+    fontFamily: FontFamily? = null,
 ) {
+    // Default rule: headlines (≥20sp & bold-ish) use Display; everything else Body.
+    val resolvedFamily = fontFamily ?: run {
+        val isHeadline = size.value >= 20f &&
+            (weight == FontWeight.Bold || weight == FontWeight.ExtraBold || weight == FontWeight.Black)
+        if (isHeadline) LearnLabFonts.Display else LearnLabFonts.Body
+    }
     Text(
         text = text,
         modifier = modifier,
         color = color,
         fontSize = size,
         fontWeight = weight,
+        fontFamily = resolvedFamily,
         lineHeight = if (lineHeight == TextUnit.Unspecified) size * 1.4f else lineHeight,
         letterSpacing = letterSpacing,
         textAlign = align,
