@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -313,7 +317,12 @@ private fun MatchTileButton(
             modifier = Modifier.weight(1f), lineHeight = 17.sp)
         if (done) {
             Spacer(Modifier.width(6.dp))
-            LLText("✓", color = t.accent700, size = 12.sp, weight = FontWeight.Bold)
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Matched",
+                tint = t.accent700,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }

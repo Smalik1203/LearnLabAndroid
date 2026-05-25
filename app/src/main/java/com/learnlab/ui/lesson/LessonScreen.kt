@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,11 +29,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
 import com.learnlab.design.LL
+import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
 import com.learnlab.design.ProgressBar
+import com.learnlab.design.Radius
 import com.learnlab.design.SecondaryButton
+import com.learnlab.design.Spacing
 import com.learnlab.engines.experimentRegistry
 import com.learnlab.shell.InstructionBanner
 import com.learnlab.shell.TopBar
@@ -56,7 +62,7 @@ fun LessonScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TopBar(state = state, title = "Not Found", showBack = true, onBack = onBack)
-            Text("Experiment not found.", color = MaterialTheme.colorScheme.onBackground)
+            LLText("Experiment not found.", color = MaterialTheme.colorScheme.onBackground, size = 14.sp)
         }
         return
     }
@@ -83,30 +89,30 @@ fun LessonScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.surface)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = Spacing.lg, vertical = Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-                Text(
+            Column(modifier = Modifier.weight(1f).padding(end = Spacing.md)) {
+                LLText(
                     experiment.outcome,
-                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    size = 13.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
+                LLText(
                     experiment.source,
-                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Normal,
+                    size = 11.sp,
+                    weight = FontWeight.Normal,
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ProgressBar(value = progress, modifier = Modifier.width(120.dp))
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(Spacing.md))
                 SecondaryButton(label = "‹", onClick = { onPrev?.invoke() }, enabled = onPrev != null)
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(Spacing.xs + 2.dp))
                 if (progress >= 1f && onNext != null) {
                     PrimaryButton(label = "Next ›", onClick = { onNext.invoke() })
                 } else {
@@ -137,27 +143,32 @@ fun LessonScreen(
 private fun ComingSoon(source: String) {
     val t = LL.tokens
     Box(
-        modifier = Modifier.fillMaxSize().padding(40.dp),
+        modifier = Modifier.fillMaxSize().padding(Spacing.xxxl),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(999.dp))
+                    .clip(RoundedCornerShape(Radius.pill))
                     .background(t.surface2),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("⏳", style = MaterialTheme.typography.headlineSmall)
+                Icon(
+                    imageVector = Icons.Filled.HourglassEmpty,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp),
+                )
             }
-            Spacer(Modifier.size(16.dp))
-            Text(
+            Spacer(Modifier.size(Spacing.lg))
+            LLText(
                 "This experiment is on the way.",
-                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.SemiBold,
+                size = 14.sp,
+                weight = FontWeight.SemiBold,
             )
-            Text("From $source.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            LLText("From $source.", color = MaterialTheme.colorScheme.onSurfaceVariant, size = 12.sp)
         }
     }
 }

@@ -6,10 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,6 +64,7 @@ fun TopBar(
                     )
                 }
                 if (title != null) {
+                    Spacer(Modifier.width(4.dp))
                     LLText(
                         title,
                         color = t.ink50,
@@ -86,12 +89,12 @@ fun TopBar(
                         modifier = Modifier.size(18.dp),
                     )
                 }
-                Box(Modifier.size(12.dp))
+                Spacer(Modifier.width(12.dp))
                 Row(verticalAlignment = Alignment.Bottom) {
                     LLText("LearnLab", color = t.ink50, size = 17.sp, weight = FontWeight.Bold)
-                    Box(Modifier.size(8.dp))
+                    Spacer(Modifier.width(8.dp))
                     LLText("·", color = t.ink600, size = 17.sp)
-                    Box(Modifier.size(8.dp))
+                    Spacer(Modifier.width(8.dp))
                     LLText("Sciences", color = t.ink400, size = 14.sp)
                 }
             }
@@ -100,7 +103,7 @@ fun TopBar(
         // Right: theme toggle
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(44.dp)
                 .clip(CircleShape)
                 .background(t.surface2)
                 .border(1.dp, t.line, CircleShape)
@@ -111,7 +114,7 @@ fun TopBar(
                 imageVector = if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
                 contentDescription = if (state.isDark) "Switch to light theme" else "Switch to dark theme",
                 tint = t.ink400,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(20.dp),
             )
         }
     }

@@ -20,6 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -405,21 +409,23 @@ private fun LogTable(
                         positive = isRevealed && f.positive,
                     )
                     Spacer(Modifier.width(6.dp))
-                    LLText(
-                        when {
-                            !isRevealed -> "·"
-                            s.prediction == f.positive -> "✓"
-                            s.prediction == null -> "·"
-                            else -> "✗"
-                        },
-                        color = when {
-                            !isRevealed -> t.ink600
-                            s.prediction == f.positive -> t.accent700
-                            s.prediction == null -> t.ink600
-                            else -> t.rose600
-                        },
-                        size = 14.sp, weight = FontWeight.Bold,
-                    )
+                    when {
+                        !isRevealed || s.prediction == null -> LLText(
+                            "·", color = t.ink600, size = 14.sp, weight = FontWeight.Bold,
+                        )
+                        s.prediction == f.positive -> Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Correct",
+                            tint = t.accent700,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        else -> Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Incorrect",
+                            tint = t.rose600,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
                 }
                 Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
             }

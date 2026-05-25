@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.learnlab.content.AllExperiments
 import com.learnlab.store.AppState
+import com.learnlab.ui.chapter.ChapterScreen
 import com.learnlab.ui.curriculum.CurriculumScreen
 import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.lesson.LessonScreen
@@ -40,7 +41,21 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
             CurriculumScreen(
                 state = state,
                 onExperimentSelected = { id -> navController.navigate(Routes.lesson(id)) },
+                onChapterSelected = { chapterId -> navController.navigate(Routes.chapter(chapterId)) },
                 onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            route = Routes.CHAPTER,
+            arguments = listOf(navArgument("chapterId") { type = NavType.StringType }),
+        ) { backStack ->
+            val chapterId = backStack.arguments?.getString("chapterId") ?: return@composable
+            ChapterScreen(
+                state = state,
+                chapterId = chapterId,
+                onBack = { navController.popBackStack() },
+                onOpenActivity = { id -> navController.navigate(Routes.lesson(id)) },
             )
         }
 
