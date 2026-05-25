@@ -1,0 +1,715 @@
+{
+  "$schema": "PILOT v2 — true NCERT structure (Reprint 2026-27). This file is the SPEC for the chapter schema.",
+  "_pilotNotes": [
+    "Author: theory-pilot, 2026-05-24.",
+    "Purpose: exhaustive shape exercise. Every block type the renderer must support appears at least once.",
+    "COPYRIGHT RULE: Do NOT paste NCERT prose verbatim. All paragraph 'body' text in this file is original rewriting that covers the same scientific concepts in our own words, using OUR cast (defined in content-json/cast.json), not NCERT's. Facts and curriculum order are free; exact wording, sentence structure, NCERT illustrations, and NCERT exercise questions are not.",
+    "Structure mirrors NCERT: 3 top-level sections (2.1, 2.2, 2.3) with subsections 2.2.1 and 2.2.2. Activity numbering 2.1-2.10 matches NCERT.",
+    "All assets reference paths under assets/figures/g6-sci-ch02/ — to be created as original artwork (do not trace NCERT figures).",
+    "Activity blocks reference existing Experiment IDs from app/.../content/Experiments.kt where they exist; new exercise engines (venn, flowchart, imageCompare, mcq) for end-of-chapter exercises.",
+    "Character references like {{aarav}} resolve via cast.json at render time."
+  ],
+
+  "id": "g6-sci-ch02",
+  "schemaVersion": 1,
+  "grade": 6,
+  "subject": "science",
+  "chapter": {
+    "number": 2,
+    "title": "Diversity in the Living World",
+    "subtitle": "How we make sense of the variety of plants and animals around us.",
+    "ncertReference": "NCERT Grade 6 Science (Curiosity), Chapter 2, Reprint 2026-27"
+  },
+
+  "estimatedMinutes": 80,
+  "learningOutcomes": [
+    "Notice and describe the variety of plants and animals in a familiar place (biodiversity).",
+    "Group plants by stem, height, and branching: herbs, shrubs, trees — and recognise climbers and creepers.",
+    "Distinguish reticulate from parallel venation.",
+    "Distinguish taproot from fibrous root systems.",
+    "Identify monocot vs dicot seeds and relate the three plant features as one pattern.",
+    "Group animals by movement, body parts, and habitat.",
+    "Explain why plants and animals look different in different regions (adaptation).",
+    "Define habitat; classify as terrestrial, aquatic, amphibian.",
+    "Appreciate Indian biodiversity efforts (Save Silent Valley, Project Tiger, Cheetah Reintroduction, Sacred Groves)."
+  ],
+
+  "blocks": [
+
+    { "type": "sanskritShloka",
+      "devanagari": "छायामन्यस्य कुर्वन्ति तिष्ठन्ति स्वयमातपे।\nफलान्यपि परार्थाय वृक्षाः सत्पुरुषा इव॥",
+      "transliteration": "chhāyām anyasya kurvanti tiṣṭhanti svayam ātape | phalāny api parārthāya vṛkṣāḥ sat-puruṣā iva ||",
+      "translation": "Trees stand in the sun yet give shade to others. Their fruits, too, are for others. Good people are like trees — bearing hardship themselves and offering what they earn to the world.",
+      "attribution": "Subhāṣita (traditional)"
+    },
+
+    { "type": "storyFrame",
+      "scene": "A sunny morning after rain. The Grade 6 class has gone on a nature walk with Ms Priya and Leela dadi to a small park near the school.",
+      "characters": ["ms-priya", "dadi-leela", "aarav", "diya", "kabir", "tashi"],
+      "imageRef": "g6-sci-ch02/scene-nature-walk.jpg"
+    },
+
+    { "type": "paragraph",
+      "body": "Soft mud, the smell of wet earth, birds calling from the trees. Leela dadi can name almost every bird before the children even spot it. She has lived in many parts of India and learned the plants and animals of each place. Ms Priya hands out notebooks and asks the class to look, listen, and write down what they notice. Nothing is to be plucked. Nothing is to be chased."
+    },
+
+    { "type": "speechBubble",
+      "speakerId": "dadi-leela",
+      "body": "Listen carefully. Every bird has its own song. Once you know the song, you'll know the bird even with your eyes closed."
+    },
+
+    { "type": "paragraph",
+      "body": "Within twenty minutes the children have spotted grasses, bushes, a tall neem, butterflies on a flower, ants moving in a line, a squirrel, and three different birds. They write everything down. They argue about whether the small thing on the leaf is a beetle or a bug."
+    },
+
+    { "type": "sectionHeader", "number": "2.1", "title": "Diversity in plants and animals around us", "anchor": "diversity" },
+
+    { "type": "paragraph",
+      "body": "When you look closely, no two plants seem exactly the same. Stems are tall or short, soft or hard. Leaves have different shapes and are arranged in different ways. Flowers come in many colours and scents. The same is true for animals — different sizes, different sounds, different ways of moving and eating. This variety of living things in a place is called {{biodiversity}}."
+    },
+
+    { "type": "keyTerm", "term": "Biodiversity", "definition": "The variety of plants and animals found in a particular place." },
+
+    { "type": "activity",
+      "experimentId": null,
+      "ncertReference": "Activity 2.1",
+      "title": "Activity 2.1 — Let us explore and record",
+      "intro": "Plan a nature walk near your school. Note the weather. Watch every plant, insect, bird, and animal you see. Don't disturb anything. Record what you find in two tables.",
+      "placement": "inline",
+      "estimatedMinutes": 30,
+      "kind": "fieldwork",
+      "tables": [
+        {
+          "caption": "Table 2.1 — Plants around us",
+          "headers": ["S. no.", "Local name", "Stem", "Leaves (shape / arrangement)", "Flowers", "Other observations"],
+          "exampleRows": [
+            ["1", "Common grass", "Soft, thin", "Single leaves, alternating along the stem", "—", "Bright green"],
+            ["2", "Tulsi", "Hard, thin", "Pairs of leaves, opposite each other", "Pinkish purple", ""]
+          ]
+        },
+        {
+          "caption": "Table 2.2 — Animals around us",
+          "headers": ["Name", "Where it lives", "What it eats", "How it moves", "Other"],
+          "exampleRows": [
+            ["Crow", "Tree", "Insects", "Flies and walks", "Carries twigs"],
+            ["Ant", "Soil burrow", "Leaves, seeds", "Walks", "Six legs"]
+          ]
+        }
+      ]
+    },
+
+    { "type": "activity",
+      "experimentId": null,
+      "ncertReference": "Activity 2.2",
+      "title": "Activity 2.2 — Let us appreciate",
+      "intro": "Close your eyes for thirty seconds. Picture one plant and one animal you've really looked at. Now draw them on the board with the rest of the class. How many different ones did the whole class draw?",
+      "placement": "inline",
+      "estimatedMinutes": 10,
+      "kind": "classroom"
+    },
+
+    { "type": "paragraph",
+      "body": "After Activity 2.2 the blackboard is crowded with sketches — a peepal tree, a sparrow, a frog, a mango, a buffalo, a butterfly, a snail. The class is surprised. They thought they'd seen the same things, but their drawings tell a different story. The variety of living things in a place — that is its biodiversity. Each kind plays a role. Trees feed birds, birds spread seeds, fallen leaves feed the soil that grows new trees. Everything depends on everything else."
+    },
+
+    { "type": "sectionHeader", "number": "2.2", "title": "How to group plants and animals?", "anchor": "grouping" },
+
+    { "type": "paragraph",
+      "body": "How do you arrange the books in your bag? Maybe by subject. Maybe by size. Maybe by which ones you'll need first. Grouping helps you find things — and it helps you notice patterns you'd otherwise miss. Scientists group plants and animals for the same reason."
+    },
+
+    { "type": "activity",
+      "experimentId": null,
+      "ncertReference": "Activity 2.3",
+      "title": "Activity 2.3 — Let us group",
+      "intro": "Cut out pictures of different plants and animals from old magazines and newspapers. Paste each on a card. In groups of 5–6, pool your cards. Group them by any common feature. Compare what your group chose with other groups. You'll be surprised how many valid ways there are.",
+      "placement": "inline",
+      "estimatedMinutes": 20,
+      "kind": "classroom"
+    },
+
+    { "type": "figure",
+      "id": "fig-2.2-grouping-criteria",
+      "assetType": "composeDraw",
+      "asset": "GroupingCriteriaPills",
+      "caption": "Figure 2.2 — Some criteria you could use for grouping.",
+      "altText": "Four labelled cards arranged in a row: Presence/absence of flowers, Hard/soft stem, Eating habits, Place they live.",
+      "hotspots": [
+        { "id": "flowers", "x": 0.13, "y": 0.50, "label": "Flowers", "blurb": "Some plants flower, some don't." },
+        { "id": "stem",    "x": 0.38, "y": 0.50, "label": "Stem",    "blurb": "Hard and woody, or soft and green." },
+        { "id": "eating",  "x": 0.63, "y": 0.50, "label": "Eating",  "blurb": "What an animal eats tells a lot about it." },
+        { "id": "place",   "x": 0.87, "y": 0.50, "label": "Place",   "blurb": "Where it lives shapes everything else." }
+      ],
+      "capabilities": { "zoom": false, "hotspots": true, "teacherMode": true, "expandFullscreen": false }
+    },
+
+    { "type": "sectionHeader", "number": "2.2.1", "title": "How to group plants?", "anchor": "group-plants" },
+
+    { "type": "figure",
+      "id": "fig-2.2.1-grouping-plants",
+      "assetType": "composeDraw",
+      "asset": "PlantGroupingConceptMap",
+      "caption": "Four things to look at when grouping a plant. Tap a branch to see what it tells you.",
+      "capabilities": { "hotspots": false, "teacherMode": true }
+    },
+
+    { "type": "paragraph",
+      "body": "Plants differ in stem, leaves, flowers, and more. Stems can be thick or thin, tall or short, hard or soft. Leaves come in many shapes and arrangements. From your earlier classes you may already know that plants are often grouped by height and stem type — into herbs, shrubs, and trees."
+    },
+
+    { "type": "activity",
+      "experimentId": "plant-sorter",
+      "ncertReference": "Activity 2.4",
+      "title": "Activity 2.4 — Let us group plants",
+      "intro": "On a second walk, look at the height of different plants. Are they shorter than you, as tall as you, or taller? Is the stem brown or green? Touch and feel — is it stiff, or can you bend it? Where do the branches start — near the ground or higher up the stem? Record what you see. (In the app version you can try this with on-screen plants.)",
+      "placement": "inline",
+      "estimatedMinutes": 6,
+      "kind": "hybrid"
+    },
+
+    { "type": "figure",
+      "id": "fig-2.3-plant-types",
+      "assetType": "composeDraw",
+      "asset": "PlantHeightsAtScale",
+      "caption": "Figure 2.3 — A tree, a shrub, and a herb at the same scale.",
+      "altText": "Three plants drawn at consistent scale: a mango tree (tall, thick brown trunk, branches high up), a rose plant (medium, many woody stems starting near the ground), a tomato plant (short, soft green stem).",
+      "hotspots": [
+        { "id": "tree",  "x": 0.20, "y": 0.30, "label": "Tree",  "blurb": "Tall. Hard, thick, woody trunk. Branches start high up." },
+        { "id": "shrub", "x": 0.50, "y": 0.60, "label": "Shrub", "blurb": "Medium height. Several woody stems starting near the ground." },
+        { "id": "herb",  "x": 0.80, "y": 0.70, "label": "Herb",  "blurb": "Short. Soft, green stem." }
+      ],
+      "capabilities": { "zoom": true, "hotspots": true, "quiz": true, "teacherMode": true, "expandFullscreen": true }
+    },
+
+    { "type": "paragraph",
+      "body": "Not every plant fits neatly into those three. Some have weak stems and need support to climb upward — these are called {{climbers}}. Others spread along the ground rather than standing up — {{creepers}}. A pumpkin vine is a creeper. A money plant trained up a window is a climber."
+    },
+
+    { "type": "keyTerm", "term": "Climber", "definition": "A plant with a weak stem that needs support to grow upward." },
+    { "type": "keyTerm", "term": "Creeper", "definition": "A plant that spreads along the ground." },
+
+    { "type": "speechBubble",
+      "speakerId": "aarav",
+      "body": "So a watermelon plant is a creeper? It just lies on the ground."
+    },
+
+    { "type": "activity",
+      "experimentId": "leaf-venation",
+      "ncertReference": "Activity 2.5",
+      "title": "Activity 2.5 — Let us compare leaves",
+      "intro": "Look at the leaves of different plants. Do you notice variation in shape and the pattern of fine lines running through each leaf? Those lines are veins. The pattern is called venation.",
+      "placement": "inline",
+      "estimatedMinutes": 5,
+      "kind": "hybrid"
+    },
+
+    { "type": "keyTerm", "term": "Venation", "definition": "The pattern of veins on a leaf." },
+
+    { "type": "figure",
+      "id": "fig-2.4-venation",
+      "assetType": "composeDraw",
+      "asset": "LeafVenationComparator",
+      "caption": "Figure 2.4 — Three leaves: hibiscus (reticulate), banana (parallel), grass (parallel).",
+      "altText": "Three leaves side by side. The hibiscus leaf has a net-like vein pattern on either side of a central vein. The banana and grass leaves both have straight veins running side by side along the length of the leaf.",
+      "hotspots": [
+        { "id": "reticulate", "x": 0.18, "y": 0.55, "label": "Reticulate venation", "blurb": "Veins form a net on both sides of a thick middle vein. Hibiscus is an example." },
+        { "id": "parallel-broad", "x": 0.50, "y": 0.55, "label": "Parallel venation", "blurb": "Veins run side by side. Banana." },
+        { "id": "parallel-narrow", "x": 0.82, "y": 0.55, "label": "Parallel venation", "blurb": "Same pattern in a much narrower leaf. Grass." }
+      ],
+      "capabilities": { "zoom": true, "hotspots": true, "quiz": true, "teacherMode": true, "expandFullscreen": true,
+        "compareMode": { "leftId": "reticulate", "rightId": "parallel-broad" } }
+    },
+
+    { "type": "paragraph",
+      "body": "In some leaves — like hibiscus — the veins form a net-like mesh on both sides of a thicker middle vein. This is called {{reticulate venation}}. In others — like banana and grass — the veins run straight, side by side. This is {{parallel venation}}."
+    },
+
+    { "type": "keyTerm", "term": "Reticulate venation", "definition": "A net-like pattern of veins on a leaf, with veins branching out from a central vein." },
+    { "type": "keyTerm", "term": "Parallel venation",   "definition": "Veins that run side by side along the length of a leaf." },
+
+    { "type": "activity",
+      "experimentId": "root-system",
+      "ncertReference": "Activity 2.6",
+      "title": "Activity 2.6 — Let us find out about roots",
+      "intro": "Do all plants have similar roots? In an open area where wild herbs grow, gently dig out a few plants (replant them after!) and wash off the soil. Compare the root systems you find with the app's 3D roots.",
+      "placement": "inline",
+      "estimatedMinutes": 5,
+      "kind": "hybrid"
+    },
+
+    { "type": "figure",
+      "id": "fig-2.5-roots",
+      "assetType": "composeDraw",
+      "asset": "RootSystemsExplorer",
+      "caption": "Figure 2.5 — Taproot in a mustard plant; fibrous roots in common grass.",
+      "altText": "Two plants drawn with their roots visible. Left: a mustard plant with one thick main root and small side roots branching off it. Right: a grass plant with many thin roots of similar size emerging in a bunch from the base of the stem.",
+      "hotspots": [
+        { "id": "taproot", "x": 0.28, "y": 0.70, "label": "Taproot",       "blurb": "One thick main root with smaller side roots." },
+        { "id": "fibrous", "x": 0.78, "y": 0.70, "label": "Fibrous roots", "blurb": "Many thin roots of similar size, no single main root." }
+      ],
+      "capabilities": { "zoom": true, "hotspots": true, "quiz": true, "teacherMode": true }
+    },
+
+    { "type": "keyTerm", "term": "Taproot",       "definition": "A root system with one thick main root and smaller side roots branching off it." },
+    { "type": "keyTerm", "term": "Fibrous roots", "definition": "A root system made of many thin roots of similar size, with no single main root." },
+
+    { "type": "activity",
+      "experimentId": "plant-pattern",
+      "ncertReference": "Activity 2.7",
+      "title": "Activity 2.7 — Let us relate and analyse",
+      "intro": "Is there a relationship between leaf venation and root type? Look at a few plants — lemongrass, marigold, periwinkle. For each, write down the type of venation and the type of root.",
+      "placement": "inline",
+      "estimatedMinutes": 8,
+      "kind": "hybrid",
+      "tables": [
+        {
+          "caption": "Table 2.4 — Venation and roots",
+          "headers": ["S. no.", "Plant", "Venation (reticulate/parallel)", "Root (taproot/fibrous)"],
+          "exampleRows": [
+            ["1", "Lemongrass", "Parallel", "Fibrous"]
+          ]
+        }
+      ]
+    },
+
+    { "type": "callout", "tone": "info", "title": "A pattern is hiding",
+      "body": "Plants with reticulate venation usually have taproots. Plants with parallel venation usually have fibrous roots. Two clues, one rule."
+    },
+
+    { "type": "activity",
+      "experimentId": "seed-dissection",
+      "ncertReference": "Activity 2.8",
+      "title": "Activity 2.8 — Let us compare seeds",
+      "intro": "Soak some chickpea and maize seeds in water for two or three days. Peel the chickpea — does it split? Try the same on a maize seed. (Try it in 3D in the app first.)",
+      "placement": "inline",
+      "estimatedMinutes": 5,
+      "kind": "hybrid"
+    },
+
+    { "type": "figure",
+      "id": "fig-2.6-seeds",
+      "assetType": "composeDraw",
+      "asset": "CotyledonDissection",
+      "caption": "Figure 2.6 — A chickpea seed (splits into two halves) and a maize seed (stays in one piece).",
+      "altText": "Left: a chickpea seed split into two halves, each labelled 'cotyledon'. Right: a single maize seed shown whole with one cotyledon inside.",
+      "hotspots": [
+        { "id": "dicot",   "x": 0.30, "y": 0.45, "label": "Dicot",   "blurb": "Two cotyledons. The seed splits into two halves. Chickpea, kidney bean, mango." },
+        { "id": "monocot", "x": 0.72, "y": 0.45, "label": "Monocot", "blurb": "One cotyledon. The seed stays in one piece. Maize, wheat, grass." }
+      ],
+      "capabilities": { "zoom": true, "hotspots": true, "quiz": true, "teacherMode": true }
+    },
+
+    { "type": "keyTerm", "term": "Cotyledon", "definition": "The food-storing leaf inside a seed. Dicots have two; monocots have one." },
+
+    { "type": "callout", "tone": "success", "title": "The big idea",
+      "body": "Three clues, one pattern. Monocot plants have parallel venation, fibrous roots, and one cotyledon. Dicot plants have reticulate venation, taproots, and two cotyledons. Once you see one feature, you can often predict the other two."
+    },
+
+    { "type": "sectionHeader", "number": "2.2.2", "title": "How to group animals?", "anchor": "group-animals" },
+
+    { "type": "paragraph",
+      "body": "Animals differ from each other as much as plants do. What features can you use to group them? In Activity 2.3 you already tried some. Let's look at one feature in detail: how they move."
+    },
+
+    { "type": "activity",
+      "experimentId": "animal-movement",
+      "ncertReference": "Activity 2.9",
+      "title": "Activity 2.9 — Let us find out about movement",
+      "intro": "Look at the animals in Figure 2.7. Which body parts does each one use to move? Try to add more animals you've seen. Fill in Table 2.5.",
+      "placement": "inline",
+      "estimatedMinutes": 6,
+      "kind": "hybrid"
+    },
+
+    { "type": "figureCollage",
+      "id": "fig-2.7-animal-diversity",
+      "asset": "g6-sci-ch02/animal-diversity-scene.jpg",
+      "caption": "Figure 2.7 — A scene with many animals: in the pond, on land, in the trees, in the air.",
+      "altText": "A painted scene of a pond surrounded by grass and trees, with many circled animals: cow, ant, butterfly, frog, fish, snake, earthworm, centipede, rabbit, tortoise, ducks, birds.",
+      "circles": [
+        { "id": "cow",        "x": 0.10, "y": 0.45, "label": "Cow",        "moves": "Walks", "parts": "Legs" },
+        { "id": "ant",        "x": 0.22, "y": 0.50, "label": "Ant",        "moves": "Walks", "parts": "Legs" },
+        { "id": "earthworm",  "x": 0.30, "y": 0.40, "label": "Earthworm",  "moves": "Crawls", "parts": "Body segments" },
+        { "id": "centipede",  "x": 0.35, "y": 0.30, "label": "Centipede",  "moves": "Walks", "parts": "Many legs" },
+        { "id": "butterfly",  "x": 0.15, "y": 0.75, "label": "Butterfly",  "moves": "Flies", "parts": "Wings" },
+        { "id": "frog",       "x": 0.55, "y": 0.65, "label": "Frog",       "moves": "Jumps and swims", "parts": "Legs" },
+        { "id": "fish",       "x": 0.50, "y": 0.80, "label": "Fish",       "moves": "Swims", "parts": "Fins" },
+        { "id": "rabbit",     "x": 0.45, "y": 0.45, "label": "Rabbit",     "moves": "Hops", "parts": "Legs" },
+        { "id": "tortoise",   "x": 0.55, "y": 0.40, "label": "Tortoise",   "moves": "Walks slowly", "parts": "Legs" },
+        { "id": "ducks",      "x": 0.65, "y": 0.85, "label": "Ducks",      "moves": "Walks and swims", "parts": "Legs and webbed feet" },
+        { "id": "snake",      "x": 0.75, "y": 0.40, "label": "Snake",      "moves": "Slithers", "parts": "Body, no limbs" },
+        { "id": "bird-flying","x": 0.30, "y": 0.10, "label": "Sparrow",    "moves": "Flies", "parts": "Wings" }
+      ]
+    },
+
+    { "type": "tableBlock",
+      "caption": "Table 2.5 — Movements in animals.",
+      "headers": ["Animal", "Type of movement", "Body parts used"],
+      "rows": [
+        ["Ant",     "Walks",            "Legs"],
+        ["Goat",    "Walks and jumps",  "Legs"],
+        ["Pigeon",  "Walks and flies",  "Legs and wings"],
+        ["Housefly","Walks and flies",  "Legs and wings"],
+        ["Fish",    "Swims",            "Fins"]
+      ]
+    },
+
+    { "type": "paragraph",
+      "body": "Animals move in many ways — they fly, run, crawl, walk, hop, jump, swim. They use different body parts: wings, legs, fins, and more. Movement is one way of grouping animals. There are others — shape, size, colour, what they eat, where they live."
+    },
+
+    { "type": "knowScientist",
+      "id": "scientist-janaki-ammal",
+      "name": "Janaki Ammal",
+      "dates": "1897–1984",
+      "portraitAsset": "g6-sci-ch02/scientist-janaki-ammal.jpg",
+      "biography": "Indian botanist. Worked all her life on India's plant biodiversity. Played a key role in the 'Save Silent Valley' movement. As head of the Botanical Survey of India, she launched programmes to document the country's plant life systematically.",
+      "fields": ["Botany", "Conservation"]
+    },
+
+    { "type": "successStory",
+      "id": "story-silent-valley",
+      "title": "Save Silent Valley Movement",
+      "imageAsset": "g6-sci-ch02/silent-valley.png",
+      "body": "Silent Valley is an untouched evergreen forest in the Palakkad district of Kerala. In the late 1970s a hydroelectric dam was proposed across the Kunthipuzha river that flows through it. The dam would have flooded the forest. A 10-year campaign — letters, articles, meetings, court petitions — was led by ordinary people from across India, many of whom had never even seen the valley. The dam was stopped. Silent Valley was saved.",
+      "highlight": "Common people. Ten years. One forest saved."
+    },
+
+    { "type": "sectionHeader", "number": "2.3", "title": "Plants and animals in different surroundings", "anchor": "habitats" },
+
+    { "type": "paragraph",
+      "body": "On the nature walk, the class noticed which animals lived where. Fish in water. Frogs at the edge of the pond. Ants in the soil. Birds in the trees. Does where an animal lives affect how it looks and moves? Look at a fish and a goat side by side."
+    },
+
+    { "type": "sideBySideCompare",
+      "id": "compare-fish-vs-goat",
+      "caption": "Figure 2.8 — Body parts used for movement: fins in water, legs on land.",
+      "leftImage":  "g6-sci-ch02/fish.png",
+      "leftLabel":  "Fish",
+      "leftBlurb":  "Streamlined body and fins for moving through water.",
+      "rightImage": "g6-sci-ch02/goat.png",
+      "rightLabel": "Goat",
+      "rightBlurb": "Four strong legs for walking on uneven ground."
+    },
+
+    { "type": "activity",
+      "experimentId": null,
+      "ncertReference": "Activity 2.10",
+      "title": "Activity 2.10 — Let us compare and analyse",
+      "intro": "What plants and animals live in different regions of India? Fill in the table below with examples you know or have seen.",
+      "placement": "inline",
+      "estimatedMinutes": 8,
+      "kind": "classroom",
+      "tables": [
+        {
+          "caption": "Table 2.6 — Animals and plants found in different surroundings.",
+          "headers": ["S. no.", "In the desert", "On mountains", "In the ocean", "In the forest", "Any other region"],
+          "exampleRows": [
+            ["1", "Camel", "Deodar tree", "Fish", "Lion", ""]
+          ]
+        }
+      ]
+    },
+
+    { "type": "speechBubble", "speakerId": "kabir",
+      "body": "I've seen camels and cactus a lot in Rajasthan. The cactus has thick, fleshy stems — like it's holding water."
+    },
+    { "type": "speechBubble", "speakerId": "tashi",
+      "body": "In Sikkim we have deodar trees in the mountains. Tall, narrow, with sloping branches — the snow just slides off."
+    },
+
+    { "type": "imageWithCallout",
+      "id": "img-cactus",
+      "asset": "g6-sci-ch02/cactus.png",
+      "caption": "Figure 2.9 — Cactus in a desert. Thick fleshy stems store water; the small spines lose less water than leaves would.",
+      "side": "left"
+    },
+    { "type": "imageWithCallout",
+      "id": "img-deodar",
+      "asset": "g6-sci-ch02/deodar.png",
+      "caption": "Figure 2.10 — A deodar tree in the mountains. Its conical shape and sloping branches help the snow slide off.",
+      "side": "right"
+    },
+
+    { "type": "paragraph",
+      "body": "A desert has very little water. Days can be very hot; nights can be very cold. Plants and animals there must survive both. The fleshy stems of desert plants store water and tolerate heat. The conical shape of a mountain tree helps it shed snow. In every region, living things have special features that suit where they live. These features are called {{adaptations}}."
+    },
+
+    { "type": "keyTerm", "term": "Adaptation", "definition": "A special feature that helps a plant or animal survive in its surroundings." },
+
+    { "type": "sideBySideCompare",
+      "id": "compare-camels",
+      "caption": "Figures 2.11 & 2.12 — Two camels, two deserts.",
+      "leftImage":  "g6-sci-ch02/camel-hot-desert.jpg",
+      "leftLabel":  "Hot desert (Rajasthan)",
+      "leftBlurb":  "Long legs, wide hooves — for walking on sand without sinking. One hump.",
+      "rightImage": "g6-sci-ch02/camel-cold-desert.jpg",
+      "rightLabel": "Cold desert (Ladakh)",
+      "rightBlurb": "Shorter legs for mountain ground. Two humps. Long hair from head to neck for the winter cold."
+    },
+
+    { "type": "paragraph",
+      "body": "Both are camels. Both live in deserts. But the desert in Rajasthan is hot and sandy; the desert in Ladakh is cold and mountainous. Each camel has features suited to its own surroundings. The hot-desert camel also doesn't sweat much, produces dry dung, and excretes very little urine — it loses very little water and can go for days without drinking."
+    },
+
+    { "type": "speechBubble", "speakerId": "diya",
+      "body": "I saw rhododendrons in the Nilgiris when we visited. Short, with small leaves. The wind on the mountain tops is heavy."
+    },
+    { "type": "speechBubble", "speakerId": "tashi",
+      "body": "We have rhododendrons too, in Sikkim. But they're much taller. Maybe the wind isn't as strong there."
+    },
+
+    { "type": "imageWithCallout",
+      "id": "img-rhododendron",
+      "asset": "g6-sci-ch02/rhododendron.png",
+      "caption": "Figure 2.13 — Rhododendrons can look different in different regions. Even within one kind, features change with the surroundings.",
+      "side": "center"
+    },
+
+    { "type": "paragraph",
+      "body": "The place where a plant or animal naturally lives is called its {{habitat}}. A camel's habitat is the desert. A sea turtle's habitat is the ocean. A rhododendron's habitat is the mountain. A habitat gives an organism the food, water, air, and shelter it needs. Many kinds of plants and animals can share the same habitat."
+    },
+
+    { "type": "keyTerm", "term": "Habitat", "definition": "The natural surroundings in which a plant or animal lives." },
+    { "type": "keyTerm", "term": "Terrestrial", "definition": "Living on land. Forests, deserts, grasslands, and mountains are terrestrial habitats." },
+    { "type": "keyTerm", "term": "Aquatic",     "definition": "Living in water. Ponds, lakes, rivers, and oceans are aquatic habitats." },
+    { "type": "keyTerm", "term": "Amphibian",   "definition": "An animal that can live both on land and in water. Frogs are an example." },
+
+    { "type": "knowScientist",
+      "id": "scientist-salim-ali",
+      "name": "Salim Ali",
+      "dates": "1896–1987",
+      "portraitAsset": "g6-sci-ch02/scientist-salim-ali.jpg",
+      "biography": "Travelled across India to study its birds. Documented species, travel routes, and habitats. His work helped protect places like Keoladeo National Park (Bharatpur, Rajasthan) and Ranganathittu Bird Sanctuary (Mandya, Karnataka). Wrote a landmark 10-volume series on the birds of the Indian subcontinent. Called the 'Birdman of India'. Awarded Padma Vibhushan in 1976.",
+      "fields": ["Ornithology", "Conservation"]
+    },
+
+    { "type": "doYouKnow",
+      "id": "dyk-conservation-projects",
+      "title": "India's conservation projects",
+      "body": "The populations of the Bengal Tiger, the Cheetah, and the Great Indian Bustard have all declined in India because of habitat loss. The Government of India has launched several projects in response. 'Project Tiger' began in 1973 to protect the Bengal Tiger. The 'Cheetah Reintroduction Project' began in 2022 to bring back the cheetah. Areas in Gujarat, Rajasthan, and Maharashtra have been declared Protected Areas to save the Great Indian Bustard.",
+      "images": [
+        { "asset": "g6-sci-ch02/bengal-tiger.jpg",          "caption": "Bengal Tiger" },
+        { "asset": "g6-sci-ch02/cheetah.jpg",               "caption": "Cheetah" },
+        { "asset": "g6-sci-ch02/great-indian-bustard.jpg",  "caption": "Great Indian Bustard" }
+      ]
+    },
+
+    { "type": "moreToKnow",
+      "id": "mtk-sacred-groves",
+      "title": "Traditionally protected forests: Sacred groves",
+      "body": "Sacred groves are untouched patches of forest, protected for generations by local communities. Their sizes vary from small clusters of trees to large stretches of forest. They are found all over India. No one is allowed to harm any animal, cut any tree, or disturb the area. Many groves are home to rare medicinal plants. Find out about the sacred groves in your region.",
+      "image": "g6-sci-ch02/sacred-grove.png",
+      "imageCaption": "A sacred grove in the Western Ghats."
+    },
+
+    { "type": "paragraph",
+      "body": "Habitats can be damaged. When a forest is cut, when a wetland is filled in, when grasslands are paved over, the plants and animals that depend on them lose their homes — and many disappear. Loss of habitat is the main cause of loss of biodiversity. Protecting habitats is the most important thing we can do to protect life."
+    },
+
+    { "type": "keywordCloud",
+      "title": "Keywords",
+      "terms": [
+        "Adaptation", "Amphibian", "Aquatic", "Biodiversity", "Climber", "Cotyledon",
+        "Creeper", "Dicot plants", "Fibrous roots", "Habitat", "Herbs", "Monocot plants",
+        "Parallel venation", "Reticulate venation", "Sacred groves", "Shrubs", "Taproot",
+        "Terrestrial", "Trees", "Venation"
+      ]
+    },
+
+    { "type": "summary",
+      "title": "Summary — Key points",
+      "points": [
+        "Our surroundings have a large variety of plants and animals. That variety is called biodiversity.",
+        "We can group plants and animals by their similarities and differences.",
+        "Plants can be grouped by stem, height, and branching as herbs, shrubs, and trees — and also as climbers and creepers.",
+        "Leaves have reticulate or parallel venation.",
+        "Roots are taproot or fibrous.",
+        "Seeds are dicot (two cotyledons) or monocot (one cotyledon).",
+        "Across these three features one pattern appears: dicots tend to have reticulate venation and taproots; monocots tend to have parallel venation and fibrous roots.",
+        "Animals can be grouped by movement, body parts, and habitat.",
+        "Biodiversity varies from region to region because conditions vary.",
+        "Features that help a plant or animal survive in its surroundings are called adaptations.",
+        "The natural place where a plant or animal lives is its habitat.",
+        "Habitats are broadly terrestrial (land) or aquatic (water). Some animals — like frogs — are amphibians.",
+        "When a habitat is damaged, the plants and animals that depend on it can be lost. Protecting habitats protects biodiversity."
+      ]
+    },
+
+    { "type": "sectionHeader", "number": "Let us enhance our learning", "title": "Exercises", "anchor": "exercises" },
+
+    { "type": "exercise",
+      "id": "ex-1-seed-types",
+      "number": "1",
+      "engine": "imageCompare",
+      "prompt": "Here are two types of seeds. What differences do you find among the roots and leaf venation of their plants?",
+      "config": {
+        "leftImage":  "g6-sci-ch02/wheat-seeds.jpg",
+        "leftLabel":  "Wheat",
+        "rightImage": "g6-sci-ch02/kidney-beans.jpg",
+        "rightLabel": "Kidney beans",
+        "promptFields": ["Root type", "Venation type", "Cotyledons"]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-2-habitat-venn",
+      "number": "2",
+      "engine": "venn",
+      "prompt": "Group these animals by habitat. Drag each one into A (aquatic), B (terrestrial), or C (both).",
+      "config": {
+        "regions": [
+          { "id": "A", "label": "A — Aquatic" },
+          { "id": "C", "label": "C — Both" },
+          { "id": "B", "label": "B — Terrestrial" }
+        ],
+        "items": [
+          { "id": "horse",     "label": "Horse",     "correct": "B" },
+          { "id": "dolphin",   "label": "Dolphin",   "correct": "A" },
+          { "id": "frog",      "label": "Frog",      "correct": "C" },
+          { "id": "sheep",     "label": "Sheep",     "correct": "B" },
+          { "id": "crocodile", "label": "Crocodile", "correct": "C" },
+          { "id": "squirrel",  "label": "Squirrel",  "correct": "B" },
+          { "id": "whale",     "label": "Whale",     "correct": "A" },
+          { "id": "earthworm", "label": "Earthworm", "correct": "B" },
+          { "id": "pigeon",    "label": "Pigeon",    "correct": "B" },
+          { "id": "tortoise",  "label": "Tortoise",  "correct": "C" }
+        ]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-3-radish",
+      "number": "3",
+      "engine": "freeText",
+      "prompt": "A kitchen gardener pulls out a radish from the soil. She tells the child that the radish is itself a root. Examine a radish: what type of root is it? What type of venation would you expect to see on the leaves of a radish plant?",
+      "config": {
+        "suggestedAnswerHints": ["Taproot (the radish IS the swollen taproot).", "Reticulate venation — because reticulate venation goes with taproots."]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-4-goats",
+      "number": "4",
+      "engine": "imageCompare",
+      "prompt": "Compare a mountain goat and a goat found in the plains. Point out the similarities and differences. What are the reasons for the differences?",
+      "config": {
+        "leftImage":  "g6-sci-ch02/mountain-goat.jpg",
+        "leftLabel":  "Mountain goat",
+        "rightImage": "g6-sci-ch02/plains-goat.jpg",
+        "rightLabel": "Plains goat",
+        "promptFields": ["Hair / coat", "Body build", "Hooves"]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-5-group-animals",
+      "number": "5",
+      "engine": "freeText",
+      "prompt": "Group the following animals into two groups based on any feature OTHER than those discussed in the chapter — cow, cockroach, pigeon, bat, tortoise, whale, fish, grasshopper, lizard.",
+      "config": {
+        "suggestedAnswerHints": ["Many valid groupings. Example: by body covering (fur/feathers/scales/shell); by skeleton (vertebrate/invertebrate); by birth (egg-laying vs live-bearing)."]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-6-deforestation",
+      "number": "6",
+      "engine": "freeText",
+      "prompt": "As the population grows, forests are being cut down. How can this affect our surroundings? How do you think we can address this challenge?",
+      "config": {
+        "suggestedAnswerHints": ["Loss of habitat → loss of biodiversity → fewer animals, less rainfall, soil erosion.", "Solutions: plant trees, protect existing forests, sacred groves, use less paper, build vertically not horizontally."]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-7-flowchart",
+      "number": "7",
+      "engine": "flowchart",
+      "prompt": "Look at the flowchart. What can A and B be?",
+      "config": {
+        "nodes": [
+          { "id": "n1", "label": "Plant", "type": "start" },
+          { "id": "n2", "label": "Does it have leaves?", "type": "decision" },
+          { "id": "n3", "label": "Does it have reticulate venation?", "type": "decision" },
+          { "id": "A",  "label": "A", "type": "answer" },
+          { "id": "B",  "label": "B", "type": "answer" }
+        ],
+        "edges": [
+          { "from": "n1", "to": "n2", "label": "Yes" },
+          { "from": "n2", "to": "n3", "label": "Yes" },
+          { "from": "n3", "to": "A",  "label": "Yes" },
+          { "from": "n3", "to": "B",  "label": "No" }
+        ],
+        "answers": {
+          "A": "Dicot plant (reticulate venation usually means taproot too).",
+          "B": "Monocot plant (parallel venation, fibrous roots, one cotyledon)."
+        }
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-8-gudhal",
+      "number": "8",
+      "engine": "freeText",
+      "prompt": "Two friends argue: one says 'a hibiscus plant is a shrub.' What questions can the other ask for clarification?",
+      "config": {
+        "suggestedAnswerHints": [
+          "How tall is your hibiscus?",
+          "Does its stem feel hard or soft?",
+          "Does it have many woody stems starting near the ground (shrub) or one main trunk (tree) or a soft green stem (herb)?",
+          "Where do the branches start — near the ground or higher up?"
+        ]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-9-monocot-dicot-table",
+      "number": "9",
+      "engine": "mcq",
+      "prompt": "Based on the table, find examples for each group.",
+      "config": {
+        "kind": "multipleChoice",
+        "headers": ["Group", "Type of seed", "Type of root", "Examples"],
+        "rows": [
+          { "group": "A", "seed": "Dicot",   "root": "Taproot",       "options": ["Mango", "Maize", "Hibiscus", "Wheat"], "correct": ["Mango", "Hibiscus"] },
+          { "group": "B", "seed": "Monocot", "root": "Fibrous roots", "options": ["Mango", "Maize", "Hibiscus", "Wheat"], "correct": ["Maize", "Wheat"] }
+        ],
+        "followUp": ["What other similarities do plants of group A have?", "What other similarities do plants of group B have?"]
+      }
+    },
+
+    { "type": "exercise",
+      "id": "ex-10-duck-feet",
+      "number": "10",
+      "engine": "imageCompare",
+      "prompt": "Compare the feet of a duck and a pigeon. What differences do you notice? What activity would the duck be able to perform that the pigeon could not?",
+      "config": {
+        "leftImage":  "g6-sci-ch02/duck.png",
+        "leftLabel":  "Duck (webbed feet)",
+        "rightImage": "g6-sci-ch02/pigeon.png",
+        "rightLabel": "Pigeon",
+        "promptFields": ["Feet shape", "What it enables"],
+        "answerHint": "Duck's webbed feet act like paddles in water — the duck can swim."
+      }
+    },
+
+    { "type": "learningFurther",
+      "title": "Learning further",
+      "projects": [
+        { "id": "lf-1", "body": "Read about one Indian scientist or wildlife biologist working to protect India's biodiversity. Prepare a brief report." },
+        { "id": "lf-2", "body": "Explore the contributions of Divya Mudappa, Usha Lachungpa, Ghazala Shahabuddin, Nandini Velho, Vidya Athreya, Uma Ramakrishnan, and Divya Karnad to biodiversity in India. Prepare a report on any three." },
+        { "id": "lf-3", "body": "Label the plants in your school with their local names. List them in your notebook." },
+        { "id": "lf-4", "body": "Plan a field visit or nature walk with your teacher. Prepare a class biodiversity register from everyone's notes." },
+        { "id": "lf-5", "body": "Find out about Project Tiger and other similar projects. Prepare a class presentation." },
+        { "id": "lf-6", "body": "Discuss in small groups: how can you protect biodiversity around you? Each group presents one suggestion." },
+        { "id": "lf-7", "body": "Interact with elders in your family — which plants and animals did they see often as children that they don't see now? Collect pictures and find out more." }
+      ]
+    },
+
+    { "type": "quotation",
+      "body": "Look closer. The world is full of patterns — in leaves, in roots, in seeds, in the animals around us. Once you learn to look, you start to see them everywhere.",
+      "attribution": "— A teacher's note"
+    }
+  ]
+}
