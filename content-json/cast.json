@@ -1,0 +1,71 @@
+{
+  "$schema": "LearnLab cast — reusable across chapters and grades.",
+  "_notes": [
+    "These characters appear in chapter narration ('Aarav noticed…', 'Ms Priya asked…').",
+    "Cast is intentionally diverse across regions and gender so chapters can reach naturally for someone with relevant context (e.g. Kashi from Rajasthan for desert; Pema from Sikkim for mountains).",
+    "Avatar paths are placeholders — real illustrations to be commissioned. Until then renderer shows a coloured initial circle.",
+    "These names are original to LearnLab; do not match NCERT cast."
+  ],
+  "characters": [
+    {
+      "id": "ms-priya",
+      "name": "Ms Priya",
+      "role": "teacher",
+      "displayName": "Ms Priya",
+      "region": "—",
+      "shortBio": "The Grade 6 science teacher. Patient, asks questions instead of giving answers.",
+      "avatar": "characters/ms-priya.png",
+      "accentColor": "#0EA5E9"
+    },
+    {
+      "id": "dadi-leela",
+      "name": "Dadi Leela",
+      "role": "elder-expert",
+      "displayName": "Leela dadi",
+      "region": "—",
+      "shortBio": "A neighbourhood elder who's lived in many parts of India. Knows local plants and animals by name.",
+      "avatar": "characters/dadi-leela.png",
+      "accentColor": "#F59E0B"
+    },
+    {
+      "id": "aarav",
+      "name": "Aarav",
+      "role": "student",
+      "displayName": "Aarav",
+      "region": "Bengaluru",
+      "shortBio": "Curious, asks 'why?' a lot. City kid.",
+      "avatar": "characters/aarav.png",
+      "accentColor": "#10B981"
+    },
+    {
+      "id": "diya",
+      "name": "Diya",
+      "role": "student",
+      "displayName": "Diya",
+      "region": "Kerala",
+      "shortBio": "Quiet, careful observer. Sketches what she sees.",
+      "avatar": "characters/diya.png",
+      "accentColor": "#EC4899"
+    },
+    {
+      "id": "kabir",
+      "name": "Kabir",
+      "role": "student",
+      "displayName": "Kabir",
+      "region": "Jaipur",
+      "shortBio": "Knows the desert well — talks about home a lot.",
+      "avatar": "characters/kabir.png",
+      "accentColor": "#F97316"
+    },
+    {
+      "id": "tashi",
+      "name": "Tashi",
+      "role": "student",
+      "displayName": "Tashi",
+      "region": "Sikkim",
+      "shortBio": "Grew up in the mountains. Knows snow and cold like Kabir knows sand.",
+      "avatar": "characters/tashi.png",
+      "accentColor": "#8B5CF6"
+    }
+  ]
+}

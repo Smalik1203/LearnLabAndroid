@@ -22,6 +22,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -294,11 +297,16 @@ private fun StepCard(
                     .background(if (done) t.accent600 else t.surface3),
                 contentAlignment = Alignment.Center,
             ) {
-                LLText(
-                    if (done) "✓" else "$n",
-                    color = if (done) Color.White else t.ink400,
-                    size = 11.sp, weight = FontWeight.Bold,
-                )
+                if (done) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = "Done",
+                        tint = Color.White,
+                        modifier = Modifier.size(14.dp),
+                    )
+                } else {
+                    LLText("$n", color = t.ink400, size = 11.sp, weight = FontWeight.Bold)
+                }
             }
             Spacer(Modifier.width(8.dp))
             LLText(title, color = t.ink50, size = 13.sp, weight = FontWeight.SemiBold)

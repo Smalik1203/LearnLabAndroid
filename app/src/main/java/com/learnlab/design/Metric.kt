@@ -18,14 +18,14 @@ fun MetricChip(label: String, value: String, modifier: Modifier = Modifier) {
     val t = LL.tokens
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(t.surface2)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 10.dp, vertical = 6.dp),
     ) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            LLText(label, color = t.ink500, size = 11.sp, maxLines = 1)
-            LLText(" ", color = t.ink500, size = 11.sp, maxLines = 1)
-            LLText(value, color = t.ink50, size = 11.sp,
+            LLText(label, color = t.ink500, size = 13.sp, maxLines = 1)
+            LLText(" ", color = t.ink500, size = 13.sp, maxLines = 1)
+            LLText(value, color = t.ink50, size = 13.sp,
                 weight = FontWeight.SemiBold, maxLines = 1)
         }
     }

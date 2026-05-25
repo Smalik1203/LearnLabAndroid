@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Science
@@ -27,9 +29,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,10 +49,14 @@ import com.learnlab.content.Chapters
 import com.learnlab.design.AmberBright
 import com.learnlab.design.CyanBright
 import com.learnlab.design.EmeraldBright
+import com.learnlab.design.IconSize
+import com.learnlab.design.LLText
 import com.learnlab.design.NavyDeep
 import com.learnlab.design.OnSurfaceHigh
 import com.learnlab.design.OnSurfaceLow
 import com.learnlab.design.OnSurfaceMed
+import com.learnlab.design.Radius
+import com.learnlab.design.Spacing
 import com.learnlab.design.SurfaceCard
 import com.learnlab.design.SurfaceDark
 import com.learnlab.design.SurfaceElevated
@@ -71,7 +75,7 @@ fun HomeScreen(state: AppState, onScienceClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 40.dp, vertical = 28.dp)
+                .padding(horizontal = Spacing.xxxl, vertical = Spacing.xl + Spacing.xs)
         ) {
             // Header
             Row(
@@ -80,68 +84,74 @@ fun HomeScreen(state: AppState, onScienceClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
-                    Text(
+                    LLText(
                         text = "Learn Lab",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.ExtraBold,
                         color = OnSurfaceHigh,
+                        size = 32.sp,
+                        weight = FontWeight.ExtraBold,
                     )
-                    Text(
+                    LLText(
                         text = "NCERT Virtual Labs · Grade 6",
-                        style = MaterialTheme.typography.bodySmall,
                         color = CyanBright,
+                        size = 13.sp,
                     )
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
                     Surface(
-                        shape = RoundedCornerShape(50),
+                        shape = RoundedCornerShape(Radius.pill),
                         color = SuccessGreen.copy(alpha = 0.15f),
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs + 2.dp),
                         ) {
                             Icon(
                                 Icons.Default.WifiOff,
                                 contentDescription = null,
                                 tint = SuccessGreen,
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.size(IconSize.sm),
                             )
-                            Text(
+                            LLText(
                                 "Offline Ready",
-                                style = MaterialTheme.typography.labelMedium,
                                 color = SuccessGreen,
+                                size = 13.sp,
+                                weight = FontWeight.Medium,
                             )
                         }
                     }
                     IconButton(onClick = { /* settings — future */ }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = OnSurfaceMed)
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            tint = OnSurfaceMed,
+                            modifier = Modifier.size(IconSize.lg),
+                        )
                     }
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Spacing.xl))
 
             // Two-column layout
             Row(
                 modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(32.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xxl),
             ) {
                 // Left column — subject cards
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.lg + Spacing.xs),
                 ) {
-                    Text(
+                    LLText(
                         "Select Subject",
-                        style = MaterialTheme.typography.titleSmall,
                         color = OnSurfaceMed,
-                        fontWeight = FontWeight.SemiBold,
+                        size = 14.sp,
+                        weight = FontWeight.SemiBold,
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth().weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
                     ) {
                         SubjectCard(
                             title = "Science",
@@ -172,10 +182,11 @@ fun HomeScreen(state: AppState, onScienceClick: () -> Unit) {
                     }
                 }
 
-                // Right column — stats
+                // Right column — stats. Min ~ for readability, max prevents it
+                // stealing too much space from subject cards on wide displays.
                 Column(
-                    modifier = Modifier.width(280.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.widthIn(min = 240.dp, max = 320.dp),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.lg),
                 ) {
                     QuickStatsCard(
                         labsAvailable = AllExperiments.size,
@@ -209,55 +220,55 @@ private fun SubjectCard(
 
     Surface(
         modifier = modifier
-            .shadow(elevation, RoundedCornerShape(24.dp))
+            .shadow(elevation, RoundedCornerShape(Radius.xxl))
             .clickable(enabled = enabled) { pressed = true; onClick() },
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(Radius.xxl),
         color = cardColor,
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(accentColor.copy(alpha = 0.18f), Color.Transparent)))
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(Spacing.lg + Spacing.xs),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm + 2.dp)) {
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(Radius.md),
                     color = accentColor.copy(alpha = 0.15f),
                     modifier = Modifier.size(48.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(28.dp))
+                        Icon(icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(IconSize.xl - 4.dp))
                     }
                 }
-                Text(
+                LLText(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
                     color = if (enabled) OnSurfaceHigh else OnSurfaceLow,
-                    fontWeight = FontWeight.Bold,
+                    size = 18.sp,
+                    weight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
+                LLText(
                     text = if (enabled) description else "Coming soon",
-                    style = MaterialTheme.typography.bodySmall,
                     color = OnSurfaceMed,
+                    size = 13.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
             if (enabled) {
                 Surface(
-                    shape = RoundedCornerShape(50),
+                    shape = RoundedCornerShape(Radius.pill),
                     color = accentColor.copy(alpha = 0.12f),
-                    modifier = Modifier.align(Alignment.BottomEnd).size(36.dp),
+                    modifier = Modifier.align(Alignment.BottomEnd).size(44.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            Icons.Default.ArrowForward,
+                            Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = null,
                             tint = accentColor,
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(IconSize.md),
                         )
                     }
                 }
@@ -270,14 +281,14 @@ private fun SubjectCard(
 private fun QuickStatsCard(labsAvailable: Int, chaptersSeeded: Int, grade: Int) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(Radius.xl),
         color = SurfaceCard,
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(Spacing.lg + Spacing.xs),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            Text("Quick Stats", style = MaterialTheme.typography.labelLarge, color = OnSurfaceMed)
+            LLText("Quick Stats", color = OnSurfaceMed, size = 13.sp, weight = FontWeight.Medium)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -289,12 +300,12 @@ private fun QuickStatsCard(labsAvailable: Int, chaptersSeeded: Int, grade: Int) 
                 StatItem("$grade", "Grade", EmeraldBright)
             }
             Surface(
-                shape = RoundedCornerShape(50),
+                shape = RoundedCornerShape(Radius.pill),
                 color = SuccessGreen.copy(alpha = 0.12f),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                 ) {
@@ -302,14 +313,14 @@ private fun QuickStatsCard(labsAvailable: Int, chaptersSeeded: Int, grade: Int) 
                         Icons.Default.WifiOff,
                         contentDescription = null,
                         tint = SuccessGreen,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(IconSize.sm),
                     )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
+                    Spacer(Modifier.width(Spacing.xs + 2.dp))
+                    LLText(
                         "100% Offline Ready",
-                        style = MaterialTheme.typography.labelMedium,
                         color = SuccessGreen,
-                        fontWeight = FontWeight.SemiBold,
+                        size = 13.sp,
+                        weight = FontWeight.SemiBold,
                     )
                 }
             }
@@ -320,8 +331,8 @@ private fun QuickStatsCard(labsAvailable: Int, chaptersSeeded: Int, grade: Int) 
 @Composable
 private fun StatItem(value: String, label: String, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, style = MaterialTheme.typography.headlineSmall, color = color, fontWeight = FontWeight.Bold, maxLines = 1)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceMed, maxLines = 1)
+        LLText(value, color = color, size = 22.sp, weight = FontWeight.Bold, maxLines = 1)
+        LLText(label, color = OnSurfaceMed, size = 11.sp, maxLines = 1)
     }
 }
 

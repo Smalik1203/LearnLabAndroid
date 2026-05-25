@@ -151,13 +151,13 @@ fun NumberPip(n: Int) {
     val t = LL.tokens
     Box(
         modifier = Modifier
-            .size(24.dp)
+            .size(32.dp)
             .clip(CircleShape)
             .background(t.accent50)
             .border(1.dp, t.accent300, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
-        LLText("$n", color = t.accent700, size = 11.sp, weight = FontWeight.Bold)
+        LLText("$n", color = t.accent700, size = 14.sp, weight = FontWeight.Bold)
     }
 }
 
