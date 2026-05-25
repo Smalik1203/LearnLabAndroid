@@ -63,8 +63,20 @@ object SlidePlanner {
                 is ChapterBlock.SectionHeader -> {
                     sectionNum = b.number
                     sectionTitle = b.title
-                    out += Slide(mintId("section"), SlideLayout.SectionTitle, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                    i++
+                    val next = blocks.getOrNull(i + 1)
+                    if (next is ChapterBlock.Paragraph && next.body.length < 600) {
+                        out += Slide(
+                            id = mintId("section-intro"),
+                            layout = SlideLayout.SectionIntro,
+                            blocks = listOf(b, next),
+                            sectionNumber = sectionNum,
+                            sectionTitle = sectionTitle,
+                        )
+                        i += 2
+                    } else {
+                        out += Slide(mintId("section"), SlideLayout.SectionTitle, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                        i++
+                    }
                 }
                 is ChapterBlock.KnowScientist -> {
                     out += Slide(mintId("scientist"), SlideLayout.ScientistInterlude, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
@@ -126,20 +138,35 @@ object SlidePlanner {
                     i++
                 }
                 is ChapterBlock.Activity -> {
-                    out += Slide(mintId("activity"), SlideLayout.ActivityLaunch, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                    // Tables this activity carries become their own slides
-                    b.tables.forEach { spec ->
+                    val singleSmallTable = b.tables.singleOrNull()?.takeIf { it.exampleRows.size <= 2 }
+                    if (singleSmallTable != null) {
+                        val tableBlock = ChapterBlock.TableBlock(
+                            caption = singleSmallTable.caption,
+                            headers = singleSmallTable.headers,
+                            rows = singleSmallTable.exampleRows,
+                        )
                         out += Slide(
-                            id = mintId("activity-table"),
-                            layout = SlideLayout.TableSlide,
-                            blocks = listOf(ChapterBlock.TableBlock(
-                                caption = spec.caption,
-                                headers = spec.headers,
-                                rows = spec.exampleRows,
-                            )),
+                            id = mintId("activity-with-table"),
+                            layout = SlideLayout.ActivityWithTable,
+                            blocks = listOf(b, tableBlock),
                             sectionNumber = sectionNum,
                             sectionTitle = sectionTitle,
                         )
+                    } else {
+                        out += Slide(mintId("activity"), SlideLayout.ActivityLaunch, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                        b.tables.forEach { spec ->
+                            out += Slide(
+                                id = mintId("activity-table"),
+                                layout = SlideLayout.TableSlide,
+                                blocks = listOf(ChapterBlock.TableBlock(
+                                    caption = spec.caption,
+                                    headers = spec.headers,
+                                    rows = spec.exampleRows,
+                                )),
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle,
+                            )
+                        }
                     }
                     i++
                 }
@@ -198,8 +225,40 @@ object SlidePlanner {
                     i = j
                 }
                 is ChapterBlock.Paragraph -> {
-                    out += Slide(mintId("text"), SlideLayout.TextOnly, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                    i++
+                    // Pull in 1..N KeyTerms that follow this paragraph into one slide.
+                    val terms = mutableListOf<ChapterBlock>()
+                    var k = i + 1
+                    while (k < blocks.size && blocks[k] is ChapterBlock.KeyTerm && terms.size < 3) {
+                        terms += blocks[k]
+                        k++
+                    }
+                    if (terms.isNotEmpty()) {
+                        out += Slide(
+                            id = mintId("text-defs"),
+                            layout = SlideLayout.TextWithDefinitions,
+                            blocks = listOf(b) + terms,
+                            sectionNumber = sectionNum,
+                            sectionTitle = sectionTitle,
+                        )
+                        i = k
+                    } else {
+                        // Pull in a single adjacent SpeechBubble as context.
+                        val nextBubble = blocks.getOrNull(i + 1) as? ChapterBlock.SpeechBubble
+                        val nextNextIsBubble = blocks.getOrNull(i + 2) is ChapterBlock.SpeechBubble
+                        if (nextBubble != null && !nextNextIsBubble) {
+                            out += Slide(
+                                id = mintId("story-context"),
+                                layout = SlideLayout.StoryWithContext,
+                                blocks = listOf(b, nextBubble),
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle,
+                            )
+                            i += 2
+                        } else {
+                            out += Slide(mintId("text"), SlideLayout.TextOnly, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                            i++
+                        }
+                    }
                 }
                 is ChapterBlock.TableBlock -> {
                     out += Slide(mintId("table"), SlideLayout.TableSlide, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)

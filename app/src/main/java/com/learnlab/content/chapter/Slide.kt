@@ -35,6 +35,14 @@ enum class SlideLayout {
     Compare,
     /** A single key term, large and centred for emphasis. */
     KeyTermCard,
+    /** A paragraph plus 1..N key-term definition cards absorbed from below it. */
+    TextWithDefinitions,
+    /** Section header + the first paragraph of that section, one slide. */
+    SectionIntro,
+    /** Paragraph + a single adjacent speech bubble, one slide. */
+    StoryWithContext,
+    /** Activity launch with its (one short) table rendered inline. */
+    ActivityWithTable,
     /** One character + one speech bubble, large. */
     Story,
     /** Two-or-more characters arranged spatially with their bubbles. */

@@ -84,6 +84,17 @@ fun SlideContent(
         SlideLayout.FigureFocus -> FigureFocusSlide(slide.blocks[0])
         SlideLayout.Compare -> CompareSlide(slide.blocks[0] as ChapterBlock.SideBySideCompare)
         SlideLayout.KeyTermCard -> KeyTermSlide(slide.blocks[0] as ChapterBlock.KeyTerm)
+        SlideLayout.TextWithDefinitions -> TextWithDefinitionsSlide(slide.blocks, slide)
+        SlideLayout.SectionIntro -> SectionIntroSlide(
+            slide.blocks[0] as ChapterBlock.SectionHeader,
+            slide.blocks[1] as ChapterBlock.Paragraph,
+        )
+        SlideLayout.StoryWithContext -> StoryWithContextSlide(slide.blocks, cast)
+        SlideLayout.ActivityWithTable -> ActivityWithTableSlide(
+            slide.blocks[0] as ChapterBlock.Activity,
+            slide.blocks[1] as ChapterBlock.TableBlock,
+            onOpenActivity,
+        )
         SlideLayout.Story -> StorySlide(slide.blocks, cast)
         SlideLayout.Conversation -> ConversationSlide(slide.blocks, cast)
         SlideLayout.ScientistInterlude -> ScientistSlide(slide.blocks[0] as ChapterBlock.KnowScientist)
@@ -1003,6 +1014,182 @@ private fun ClosingSlide(b: ChapterBlock.Quotation) {
                 Spacer(Modifier.height(28.dp))
                 LLText(b.attribution, color = p.emerald.accent, size = 18.sp, weight = FontWeight.SemiBold)
             }
+        }
+    }
+}
+
+/* ───────────────────────── Text with inline definitions ───────────────────────── */
+
+@Composable
+private fun TextWithDefinitionsSlide(blocks: List<ChapterBlock>, slide: Slide) {
+    val p = lessonPalette()
+    val para = blocks.firstOrNull { it is ChapterBlock.Paragraph } as? ChapterBlock.Paragraph ?: return
+    val terms = blocks.filterIsInstance<ChapterBlock.KeyTerm>()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            HeroParagraph(
+                body = para.body,
+                sectionNumber = slide.sectionNumber,
+                sectionTitle = slide.sectionTitle,
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 64.dp)
+                .padding(bottom = 32.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            terms.forEach { term ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(Radius.md))
+                        .background(p.sky.surface)
+                        .border(1.dp, p.sky.border, RoundedCornerShape(Radius.md))
+                        .padding(horizontal = 18.dp, vertical = 14.dp),
+                ) {
+                    LLText(term.term, color = p.sky.accent, size = 16.sp, weight = FontWeight.Bold, letterSpacing = 0.5.sp)
+                    Spacer(Modifier.height(4.dp))
+                    LLText(term.definition, color = p.sky.ink, size = 14.sp, lineHeight = 20.sp)
+                }
+            }
+        }
+    }
+}
+
+/* ───────────────────────── Section intro (header + first paragraph) ───────────────────────── */
+
+@Composable
+private fun SectionIntroSlide(header: ChapterBlock.SectionHeader, para: ChapterBlock.Paragraph) {
+    val t = LL.tokens
+    val p = lessonPalette()
+    Row(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 64.dp, vertical = 56.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(56.dp),
+    ) {
+        Column(modifier = Modifier.weight(0.9f)) {
+            Box(
+                modifier = Modifier
+                    .height(8.dp).width(72.dp)
+                    .clip(RoundedCornerShape(Radius.pill))
+                    .background(Brush.horizontalGradient(listOf(p.emerald.accent, p.sky.accent))),
+            )
+            Spacer(Modifier.height(24.dp))
+            if (header.number != null) {
+                LLText(header.number, color = p.emerald.accent, size = 64.sp, weight = FontWeight.ExtraBold, lineHeight = 64.sp)
+                Spacer(Modifier.height(8.dp))
+            }
+            LLText(header.title, color = t.ink50, size = 38.sp, weight = FontWeight.Bold, lineHeight = 46.sp)
+        }
+        Column(modifier = Modifier.weight(1.1f)) {
+            LLText(
+                text = para.body.replace(Regex("""\{\{([^}]+)\}\}""")) { it.groupValues[1] },
+                color = t.ink200, size = 22.sp, lineHeight = 34.sp,
+            )
+        }
+    }
+}
+
+/* ───────────────────────── Paragraph + lone speech bubble ───────────────────────── */
+
+@Composable
+private fun StoryWithContextSlide(blocks: List<ChapterBlock>, cast: Map<String, Character>) {
+    val t = LL.tokens
+    val para = blocks.firstOrNull { it is ChapterBlock.Paragraph } as? ChapterBlock.Paragraph ?: return
+    val bubble = blocks.firstOrNull { it is ChapterBlock.SpeechBubble } as? ChapterBlock.SpeechBubble ?: return
+
+    Row(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 56.dp, vertical = 48.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(40.dp),
+    ) {
+        Column(modifier = Modifier.weight(1.2f)) {
+            LLText(
+                text = para.body.replace(Regex("""\{\{([^}]+)\}\}""")) { it.groupValues[1] },
+                color = t.ink50, size = 22.sp, lineHeight = 34.sp,
+            )
+        }
+        Box(modifier = Modifier.weight(1f)) {
+            BigBubble(bubble, cast)
+        }
+    }
+}
+
+/* ───────────────────────── Activity launch + small table inline ───────────────────────── */
+
+@Composable
+private fun ActivityWithTableSlide(
+    activity: ChapterBlock.Activity,
+    table: ChapterBlock.TableBlock,
+    onOpen: (String) -> Unit,
+) {
+    val t = LL.tokens
+    val p = lessonPalette()
+    val interactive = activity.experimentId != null
+    Row(
+        modifier = Modifier.fillMaxSize().padding(40.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(28.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(Radius.xl))
+                .background(p.emerald.surface)
+                .border(1.dp, p.emerald.border, RoundedCornerShape(Radius.xl))
+                .padding(32.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.size(44.dp).clip(CircleShape).background(p.emerald.surfaceStrong),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(Icons.Filled.Science, contentDescription = null, tint = p.emerald.accent, modifier = Modifier.size(26.dp))
+                }
+                Spacer(Modifier.width(14.dp))
+                if (activity.ncertReference != null) {
+                    LLText(activity.ncertReference.uppercase(), color = p.emerald.accent,
+                        size = 13.sp, weight = FontWeight.Bold, letterSpacing = 1.8.sp)
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            LLText(activity.title, color = t.ink50, size = 26.sp, weight = FontWeight.ExtraBold, lineHeight = 32.sp)
+            if (activity.intro != null) {
+                Spacer(Modifier.height(14.dp))
+                LLText(activity.intro, color = t.ink200, size = 16.sp, lineHeight = 24.sp)
+            }
+            Spacer(Modifier.height(20.dp))
+            if (interactive) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(Radius.md))
+                        .background(p.emerald.accent)
+                        .clickable { onOpen(activity.experimentId!!) }
+                        .padding(horizontal = 24.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = t.surface, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(10.dp))
+                    LLText("Open activity", color = t.surface, size = 16.sp, weight = FontWeight.Bold)
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(Radius.pill))
+                        .background(p.emerald.surfaceStrong)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    LLText("${activity.kind.uppercase()} — teacher-led",
+                        color = p.emerald.accent, size = 12.sp, weight = FontWeight.Bold, letterSpacing = 1.2.sp)
+                }
+            }
+        }
+        Box(modifier = Modifier.weight(1.1f).fillMaxHeight()) {
+            BuildUpTable(caption = table.caption, headers = table.headers, rows = table.rows)
         }
     }
 }
