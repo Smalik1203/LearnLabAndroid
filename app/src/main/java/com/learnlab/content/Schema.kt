@@ -20,4 +20,6 @@ data class Chapter(
     val title: String,
     val description: String,
     val experiments: List<Experiment>,
+    val grade: Int = 6,
+    val comingSoon: Boolean = false,
 )

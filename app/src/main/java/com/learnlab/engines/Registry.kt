@@ -42,6 +42,12 @@ val experimentRegistry: Map<String, ExperimentComposable> = mapOf(
     "convex-lens"       to { _, c -> com.learnlab.experiments.ConvexLens(c) },
     "em-induction"      to { _, c -> com.learnlab.experiments.EMInduction(c) },
 
+    // Chapter 5 — Grade 8 magnetism + motor
+    "magnetic-motor"    to { _, c -> com.learnlab.experiments.MotorFunctioning(c) },
+
+    // Chapter 6 — Cell biology
+    "cell-explorer"     to { _, c -> com.learnlab.experiments.CellExplorer(c) },
+
     // Still placeholders (later turns)
     "leaf-venation"   to { e, _ -> ComingSoonExperiment(e) },
     "root-system"     to { e, _ -> ComingSoonExperiment(e) },

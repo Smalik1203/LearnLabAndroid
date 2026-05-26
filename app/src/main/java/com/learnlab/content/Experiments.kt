@@ -8,6 +8,7 @@ val Chapters: List<Chapter> = listOf(
     Chapter(
         id = "ch01",
         number = 1,
+        grade = 6,
         title = "The Wonderful World of Science",
         description = "How scientists think: observe, question, guess, test, analyse.",
         experiments = listOf(
@@ -29,6 +30,7 @@ val Chapters: List<Chapter> = listOf(
     Chapter(
         id = "ch02",
         number = 2,
+        grade = 6,
         title = "Diversity in the Living World",
         description = "Group plants and animals by their features and habitats.",
         experiments = listOf(
@@ -109,6 +111,7 @@ val Chapters: List<Chapter> = listOf(
     Chapter(
         id = "ch03",
         number = 3,
+        grade = 6,
         title = "Mindful Eating",
         description = "Test what's in our food and what keeps our body healthy.",
         experiments = listOf(
@@ -189,8 +192,9 @@ val Chapters: List<Chapter> = listOf(
     Chapter(
         id = "ch04",
         number = 4,
-        title = "Physics Lab · Class 9–10",
-        description = "Mechanics, optics, and electromagnetism — interactive labs.",
+        grade = 9,
+        title = "Describing Motion Around Us",
+        description = "Speed, velocity, projectile paths, and oscillating pendulums.",
         experiments = listOf(
             Experiment("projectile-motion", "ch04", "Projectile Motion Lab",
                 "Set speed, angle, and gravity. Launch. Watch the parabola.",
@@ -210,25 +214,205 @@ val Chapters: List<Chapter> = listOf(
                     "Start swinging — watch the bob and the angle-vs-time graph",
                     "Save the pendulum; add another with different parameters and compare side-by-side",
                 )),
-            Experiment("convex-lens", "ch04", "Convex Lens · Optical Bench",
-                "Drag the candle and the screen. Find sharp focus.",
-                "Use the thin-lens equation in a classroom-style optical bench: slide a screen until the projected image of a candle comes into sharp focus.",
-                "NCERT Class 10 Physics · Light",
+        ),
+    ),
+    Chapter(
+        id = "ch05",
+        number = 1,
+        grade = 8,
+        title = "Exploring the Investigative World of Science",
+        description = "Discover magnetism — fields, forces, and how a motor turns electricity into motion.",
+        experiments = listOf(
+            Experiment("magnetic-motor", "ch05", "Magnetic Field & Motor Functioning",
+                "Feel the force. Spin the coil. See electricity turn into motion.",
+                "Discover that a current-carrying coil in a magnetic field experiences a torque (F = BIL, τ = NBIA cos θ) — the heart of every motor.",
+                "NCERT Class 8 Science · Some Natural Phenomena / Class 10 · Magnetic Effects of Current",
                 listOf(
-                    "Set the focal length",
-                    "Drag the candle on the bench (changes u)",
-                    "Drag the screen until the projected image is sharp",
+                    "Switch the motor on — watch the coil spin",
+                    "Move the field-strength and current sliders — what changes?",
+                    "Press Reverse current — predict, then observe, which way the coil spins",
+                    "Tap the ⓘ button to see Fleming's left-hand rule",
                 )),
-            Experiment("em-induction", "ch04", "Electromagnetic Induction",
+        ),
+    ),
+    Chapter(
+        id = "ch06",
+        number = 2,
+        grade = 8,
+        title = "The Invisible Living World: Beyond Our Naked Eye",
+        description = "Peer into the microscopic world — cells, organelles, and how life is built.",
+        experiments = listOf(
+            Experiment("cell-explorer", "ch06", "Cell Explorer · Structure and Types",
+                "Rotate, click, label, compare — meet the building blocks of life.",
+                "Identify the major organelles of plant and animal cells, recognise common cell shapes, and contrast plant vs animal cell structure.",
+                "NCERT Class 8 Science · Cell — Structure and Functions",
+                listOf(
+                    "Explore — drag to rotate the cell; tap any organelle to see its job",
+                    "Shapes — open the gallery, see why nerve cells are long and RBCs are round",
+                    "Compare — see plant and animal cells side by side; highlight the differences",
+                    "Table — read the plant-vs-animal organelle checklist",
+                )),
+        ),
+    ),
+    Chapter(
+        id = "ch07", number = 3, grade = 8, comingSoon = true,
+        title = "Health: Ultimate Treasure",
+        description = "Coming soon — nutrition, hygiene, and how the body stays well.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch08", number = 4, grade = 8,
+        title = "Electricity: Magnetic and Heating Effects",
+        description = "Currents, magnetic effects, and electromagnetic induction.",
+        experiments = listOf(
+            Experiment("em-induction", "ch08", "Electromagnetic Induction",
                 "Move a magnet near a coil. Watch the galvanometer swing.",
                 "Verify Faraday's law and Lenz's law: a changing magnetic flux induces an EMF; direction reverses with the direction of motion.",
-                "NCERT Class 10 Physics · Magnetic Effects of Current",
+                "NCERT Class 8 Science · Magnetic Effects of Current",
                 listOf(
                     "Drag the bar magnet toward or away from the coil",
                     "Watch the galvanometer needle, the LED, and the EMF graph",
                     "Switch on Auto-oscillate to generate alternating current",
                 )),
         ),
+    ),
+    Chapter(
+        id = "ch09", number = 5, grade = 8, comingSoon = true,
+        title = "Exploring Forces",
+        description = "Coming soon — push, pull, friction, and Newton's everyday rules.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch10", number = 6, grade = 8, comingSoon = true,
+        title = "Pressure, Winds, Storms, and Cyclones",
+        description = "Coming soon — air pressure, weather systems, and storms.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch11", number = 7, grade = 8, comingSoon = true,
+        title = "Particulate Nature of Matter",
+        description = "Coming soon — why matter is made of particles.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch12", number = 8, grade = 8, comingSoon = true,
+        title = "Nature of Matter: Elements, Compounds, and Mixtures",
+        description = "Coming soon — telling pure substances from mixtures.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch13", number = 9, grade = 8, comingSoon = true,
+        title = "The Amazing World of Solutes, Solvents, and Solutions",
+        description = "Coming soon — what dissolves in what, and why.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch14", number = 10, grade = 8,
+        title = "Light: Mirrors and Lenses",
+        description = "Reflection, refraction, and image formation.",
+        experiments = listOf(
+            Experiment("convex-lens", "ch14", "Convex Lens · Optical Bench",
+                "Drag the candle and the screen. Find sharp focus.",
+                "Use the thin-lens equation in a classroom-style optical bench: slide a screen until the projected image of a candle comes into sharp focus.",
+                "NCERT Class 8 Science · Light",
+                listOf(
+                    "Set the focal length",
+                    "Drag the candle on the bench (changes u)",
+                    "Drag the screen until the projected image is sharp",
+                )),
+        ),
+    ),
+    Chapter(
+        id = "ch15", number = 11, grade = 8, comingSoon = true,
+        title = "Keeping Time with the Skies",
+        description = "Coming soon — day, night, seasons, and the calendar.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch16", number = 12, grade = 8, comingSoon = true,
+        title = "How Nature Works in Harmony",
+        description = "Coming soon — ecosystems, food webs, and balance.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch17", number = 13, grade = 8, comingSoon = true,
+        title = "Our Home: Earth, a Unique Life Sustaining Planet",
+        description = "Coming soon — what makes Earth fit for life.",
+        experiments = emptyList(),
+    ),
+    // ───── Grade 9 ─────
+    Chapter(
+        id = "ch18", number = 1, grade = 9, comingSoon = true,
+        title = "Exploration: Entering the World of Secondary Science",
+        description = "Coming soon — how science scales up at the secondary stage.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch19", number = 2, grade = 9, comingSoon = true,
+        title = "Cell: The Building Block of Life",
+        description = "Coming soon — cell structure at higher resolution.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch20", number = 3, grade = 9, comingSoon = true,
+        title = "Tissues in Action",
+        description = "Coming soon — animal and plant tissues at work.",
+        experiments = emptyList(),
+    ),
+    // ch04 (number=4, grade=9) is "Describing Motion Around Us" defined earlier above
+    Chapter(
+        id = "ch21", number = 5, grade = 9, comingSoon = true,
+        title = "Exploring Mixtures and their Separation",
+        description = "Coming soon — filtration, distillation, chromatography.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch22", number = 6, grade = 9, comingSoon = true,
+        title = "How Forces Affect Motion",
+        description = "Coming soon — Newton's laws and everyday forces.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch23", number = 7, grade = 9, comingSoon = true,
+        title = "Work, Energy, and Simple Machines",
+        description = "Coming soon — levers, pulleys, and energy transfer.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch24", number = 8, grade = 9, comingSoon = true,
+        title = "Journey Inside the Atom",
+        description = "Coming soon — electrons, protons, atomic models.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch25", number = 9, grade = 9, comingSoon = true,
+        title = "Atomic Foundations of Matter",
+        description = "Coming soon — moles, atomic mass, formulae.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch26", number = 10, grade = 9, comingSoon = true,
+        title = "Sound Waves: Characteristics and Applications",
+        description = "Coming soon — pitch, loudness, echoes, ultrasound.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch27", number = 11, grade = 9, comingSoon = true,
+        title = "Reproduction: How Life Continues",
+        description = "Coming soon — asexual, sexual, and human reproduction.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch28", number = 12, grade = 9, comingSoon = true,
+        title = "Patterns in Life: Diversity and Classification",
+        description = "Coming soon — kingdoms, phyla, and biodiversity.",
+        experiments = emptyList(),
+    ),
+    Chapter(
+        id = "ch29", number = 13, grade = 9, comingSoon = true,
+        title = "Earth as a System: Energy, Matter, and Life",
+        description = "Coming soon — biogeochemical cycles and our planet.",
+        experiments = emptyList(),
     ),
 )
 

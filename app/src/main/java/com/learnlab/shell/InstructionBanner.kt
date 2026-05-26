@@ -39,11 +39,11 @@ fun InstructionBanner(steps: List<String>) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         LLText(
-            "PROCEDURE",
-            color = t.ink500, size = 10.sp,
-            weight = FontWeight.SemiBold, letterSpacing = 1.6.sp,
+            "Procedure",
+            color = t.ink50, size = 18.sp,
+            weight = FontWeight.Bold,
         )
-        Box(Modifier.width(10.dp))
+        Box(Modifier.width(14.dp))
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),

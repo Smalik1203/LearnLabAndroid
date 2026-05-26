@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material3.Icon
@@ -39,6 +42,7 @@ fun TopBar(
     title: String? = null,
     showBack: Boolean = false,
     onBack: () -> Unit = {},
+    onHomeClick: (() -> Unit)? = null,
 ) {
     val t = LL.tokens
     Row(
@@ -97,22 +101,43 @@ fun TopBar(
             }
         }
 
-        // Right: theme toggle
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(t.surface2)
-                .border(1.dp, t.line, CircleShape)
-                .clickable { state.toggleTheme() },
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                contentDescription = if (state.isDark) "Switch to light theme" else "Switch to dark theme",
-                tint = t.ink400,
-                modifier = Modifier.size(16.dp),
-            )
+        // Right: optional home, then theme toggle
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (onHomeClick != null) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(t.surface2)
+                        .border(1.dp, t.line, CircleShape)
+                        .clickable(onClick = onHomeClick),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = "Go to home",
+                        tint = t.ink400,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+            }
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(t.surface2)
+                    .border(1.dp, t.line, CircleShape)
+                    .clickable { state.toggleTheme() },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                    contentDescription = if (state.isDark) "Switch to light theme" else "Switch to dark theme",
+                    tint = t.ink400,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
         }
     }
 }

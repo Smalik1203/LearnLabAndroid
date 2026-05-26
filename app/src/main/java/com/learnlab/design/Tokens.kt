@@ -55,42 +55,42 @@ data class LearnLabTokens(
 
 val LightTokens = LearnLabTokens(
     isDark   = false,
-    bg       = Color(0xFFF8FAFC),
-    bgDeep   = Color(0xFFFFFFFF),
-    surface  = Color(0xFFFFFFFF),
-    surface2 = Color(0xFFF1F5F9),
-    surface3 = Color(0xFFE2E8F0),
-    line     = Color(0xFFE2E8F0),
-    lineStrong = Color(0xFFCBD5E1),
-    ink50    = Color(0xFF0F172A),
-    ink200   = Color(0xFF1E293B),
-    ink400   = Color(0xFF475569),
-    ink500   = Color(0xFF64748B),
-    ink600   = Color(0xFF94A3B8),
-    accent50 = Color(0xFFECFDF5),
-    accent700= Color(0xFF047857),
+    bg       = Color(0xFFFAFAFA),   // zinc-50
+    bgDeep   = Color(0xFFFFFFFF),   // white
+    surface  = Color(0xFFFFFFFF),   // white
+    surface2 = Color(0xFFF4F4F5),   // zinc-100
+    surface3 = Color(0xFFE4E4E7),   // zinc-200
+    line     = Color(0xFFE4E4E7),   // zinc-200
+    lineStrong = Color(0xFFD4D4D8), // zinc-300
+    ink50    = Color(0xFF18181B),   // zinc-900
+    ink200   = Color(0xFF27272A),   // zinc-800
+    ink400   = Color(0xFF52525B),   // zinc-600
+    ink500   = Color(0xFF71717A),   // zinc-500
+    ink600   = Color(0xFFA1A1AA),   // zinc-400
+    accent50 = Color(0xFFECFDF5),   // emerald-50 (kept — matches accent palette)
+    accent700= Color(0xFF047857),   // emerald-700
 )
 
 val DarkTokens = LearnLabTokens(
     isDark     = true,
-    bg         = NavyDeep,
-    bgDeep     = Color(0xFF050D1A),
-    surface    = SurfaceDark,
-    surface2   = SurfaceMid,
-    surface3   = SurfaceCard,
-    line       = SurfaceMid,
-    lineStrong = SurfaceElevated,
-    ink50      = OnSurfaceHigh,
-    ink200     = OnSurfaceHigh,
-    ink400     = OnSurfaceMed,
-    ink500     = OnSurfaceLow,
-    ink600     = Color(0xFF4A6A8A),
-    accent300  = CyanSoft,
-    accent400  = CyanMid,
-    accent500  = CyanBright,
-    accent600  = Color(0xFF0099BB),
-    accent50   = Color(0xFF0A2040),
-    accent700  = CyanBright,
+    bg         = Color(0xFF18181B),   // zinc-900
+    bgDeep     = Color(0xFF09090B),   // zinc-950
+    surface    = Color(0xFF27272A),   // zinc-800
+    surface2   = Color(0xFF3F3F46),   // zinc-700
+    surface3   = Color(0xFF52525B),   // zinc-600
+    line       = Color(0xFF3F3F46),   // zinc-700
+    lineStrong = Color(0xFF52525B),   // zinc-600
+    ink50      = Color(0xFFFAFAFA),   // zinc-50
+    ink200     = Color(0xFFE4E4E7),   // zinc-200
+    ink400     = Color(0xFFA1A1AA),   // zinc-400
+    ink500     = Color(0xFF71717A),   // zinc-500
+    ink600     = Color(0xFF52525B),   // zinc-600
+    accent300  = Color(0xFF6EE7B7),   // emerald-300
+    accent400  = Color(0xFF34D399),   // emerald-400
+    accent500  = Color(0xFF10B981),   // emerald-500
+    accent600  = Color(0xFF059669),   // emerald-600
+    accent50   = Color(0xFF0E2A20),   // dim emerald tint over zinc surface
+    accent700  = Color(0xFF34D399),   // emerald-400 (for text on accent50)
 )
 
 val LocalTokens = compositionLocalOf { LightTokens }
@@ -114,9 +114,10 @@ fun gradHeadline(): Brush = Brush.linearGradient(
 )
 
 @Composable
-fun gradCta(): Brush = Brush.linearGradient(
-    colors = listOf(CyanBright, CyanMid, Color(0xFF4ECDC4)),
-)
+fun gradCta(): Brush {
+    val t = LL.tokens
+    return Brush.linearGradient(listOf(t.accent500, t.accent400, t.accent300))
+}
 
 @Composable
 fun gradLogo(): Brush = Brush.linearGradient(
@@ -124,9 +125,10 @@ fun gradLogo(): Brush = Brush.linearGradient(
 )
 
 @Composable
-fun gradProgress(): Brush = Brush.horizontalGradient(
-    colors = listOf(CyanBright, CyanMid),
-)
+fun gradProgress(): Brush {
+    val t = LL.tokens
+    return Brush.horizontalGradient(listOf(t.accent500, t.accent400))
+}
 
 // Common spacings
 object Spacing {

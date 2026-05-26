@@ -26,13 +26,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,39 +44,42 @@ import androidx.compose.ui.unit.sp
 import com.learnlab.content.Chapter
 import com.learnlab.content.Chapters
 import com.learnlab.content.Experiment
-import com.learnlab.design.CyanBright
-import com.learnlab.design.CyanMid
-import com.learnlab.design.CyanSoft
-import com.learnlab.design.NavyDeep
-import com.learnlab.design.OnSurfaceHigh
-import com.learnlab.design.OnSurfaceLow
-import com.learnlab.design.OnSurfaceMed
-import com.learnlab.design.SurfaceCard
-import com.learnlab.design.SurfaceDark
-import com.learnlab.design.SurfaceElevated
-import com.learnlab.design.SurfaceMid
+import com.learnlab.design.LL
 import com.learnlab.shell.TopBar
 import com.learnlab.store.AppState
 
 @Composable
 fun CurriculumScreen(
     state: AppState,
+    grade: Int,
     onExperimentSelected: (String) -> Unit,
     onBack: () -> Unit,
+    onHome: () -> Unit,
 ) {
-    val expanded = remember {
-        mutableStateMapOf<String, Boolean>().apply {
-            // Expand the first chapter by default
-            Chapters.firstOrNull()?.let { put(it.id, true) }
-        }
+    val t = LL.tokens
+    val gradeChapters = remember(grade) {
+        Chapters.filter { it.grade == grade }.sortedBy { it.number }
     }
+    val expandedIds: SnapshotStateList<String> = rememberSaveable(
+        grade,
+        saver = listSaver<SnapshotStateList<String>, String>(
+            save = { it.toList() },
+            restore = { it.toMutableStateList() },
+        ),
+    ) { mutableListOf<String>().toMutableStateList() }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(listOf(NavyDeep, SurfaceDark, Color(0xFF0E1F3D))))
+            .background(t.bg)
     ) {
-        TopBar(state = state, title = "Grade 6 Science", showBack = true, onBack = onBack)
+        TopBar(
+            state = state,
+            title = "Back to Grades",
+            showBack = true,
+            onBack = onBack,
+            onHomeClick = onHome,
+        )
 
         Row(
             modifier = Modifier
@@ -83,15 +90,15 @@ fun CurriculumScreen(
         ) {
             Column {
                 Text(
-                    "Curriculum",
+                    "Grade $grade",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = OnSurfaceHigh,
+                    color = t.ink50,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    "${Chapters.size} chapters · ${Chapters.sumOf { it.experiments.size }} experiments",
+                    "${gradeChapters.size} chapters · ${gradeChapters.sumOf { it.experiments.size }} experiments",
                     style = MaterialTheme.typography.bodySmall,
-                    color = CyanBright,
+                    color = t.accent500,
                 )
             }
         }
@@ -101,12 +108,15 @@ fun CurriculumScreen(
             contentPadding = PaddingValues(horizontal = 40.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Chapters.forEach { chapter ->
+            gradeChapters.forEach { chapter ->
                 item(key = chapter.id) {
                     ChapterCard(
                         chapter = chapter,
-                        isExpanded = expanded[chapter.id] == true,
-                        onToggle = { expanded[chapter.id] = expanded[chapter.id] != true },
+                        isExpanded = chapter.id in expandedIds,
+                        onToggle = {
+                            if (chapter.id in expandedIds) expandedIds.remove(chapter.id)
+                            else expandedIds.add(chapter.id)
+                        },
                         onExperimentSelected = onExperimentSelected,
                     )
                 }
@@ -123,26 +133,31 @@ private fun ChapterCard(
     onToggle: () -> Unit,
     onExperimentSelected: (String) -> Unit,
 ) {
+    val t = LL.tokens
     val rotation by animateFloatAsState(if (isExpanded) 90f else 0f, label = "chevron")
     val borderColor by animateColorAsState(
-        if (isExpanded) CyanBright.copy(alpha = 0.5f) else SurfaceElevated,
+        if (isExpanded) t.accent500.copy(alpha = 0.5f) else t.lineStrong,
         label = "chapterBorder",
     )
 
     Surface(
         shape = RoundedCornerShape(20.dp),
-        color = SurfaceCard,
+        color = if (chapter.comingSoon) t.surface.copy(alpha = 0.55f) else t.surface,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
-            // Chapter header row
+            // Chapter header row — green gradient L→R for active chapters
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onToggle() }
+                    .clickable(enabled = !chapter.comingSoon) { onToggle() }
                     .background(
-                        if (isExpanded) Brush.horizontalGradient(
-                            listOf(CyanBright.copy(alpha = 0.08f), Color.Transparent)
+                        if (!chapter.comingSoon) Brush.horizontalGradient(
+                            listOf(
+                                t.accent500.copy(alpha = 0.22f),
+                                t.accent500.copy(alpha = 0.08f),
+                                Color.Transparent,
+                            )
                         ) else Brush.horizontalGradient(listOf(Color.Transparent, Color.Transparent))
                     )
                     .padding(horizontal = 20.dp, vertical = 16.dp),
@@ -153,14 +168,22 @@ private fun ChapterCard(
                     // Chapter number badge
                     Surface(
                         shape = RoundedCornerShape(10.dp),
-                        color = if (isExpanded) CyanBright.copy(alpha = 0.15f) else SurfaceMid,
+                        color = when {
+                            chapter.comingSoon -> t.surface2.copy(alpha = 0.6f)
+                            isExpanded -> t.accent500.copy(alpha = 0.15f)
+                            else -> t.surface2
+                        },
                         modifier = Modifier.size(44.dp),
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 "${chapter.number}",
                                 style = MaterialTheme.typography.titleSmall,
-                                color = if (isExpanded) CyanBright else OnSurfaceMed,
+                                color = when {
+                                    chapter.comingSoon -> t.ink500
+                                    isExpanded -> t.accent500
+                                    else -> t.ink400
+                                },
                                 fontWeight = FontWeight.Bold,
                             )
                         }
@@ -170,14 +193,22 @@ private fun ChapterCard(
                         Text(
                             "CH ${chapter.number}",
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (isExpanded) CyanBright else OnSurfaceLow,
+                            color = when {
+                                chapter.comingSoon -> t.ink600
+                                isExpanded -> t.accent500
+                                else -> t.ink500
+                            },
                             letterSpacing = 1.6.sp,
                             fontWeight = FontWeight.SemiBold,
                         )
                         Text(
                             chapter.title,
                             style = MaterialTheme.typography.titleSmall,
-                            color = if (isExpanded) OnSurfaceHigh else OnSurfaceMed,
+                            color = when {
+                                chapter.comingSoon -> t.ink500
+                                isExpanded -> t.ink50
+                                else -> t.ink400
+                            },
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -185,24 +216,39 @@ private fun ChapterCard(
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "${chapter.experiments.size} exp",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceLow,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = OnSurfaceMed,
-                        modifier = Modifier.size(20.dp).rotate(rotation),
-                    )
+                    if (chapter.comingSoon) {
+                        Surface(
+                            shape = RoundedCornerShape(999.dp),
+                            color = t.surface2,
+                        ) {
+                            Text(
+                                "Coming soon",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = t.ink500,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            )
+                        }
+                    } else {
+                        Text(
+                            "${chapter.experiments.size} exp",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = t.ink500,
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = t.ink400,
+                            modifier = Modifier.size(20.dp).rotate(rotation),
+                        )
+                    }
                 }
             }
 
             // Expanded experiments list
-            if (isExpanded) {
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(SurfaceElevated))
+            if (isExpanded && !chapter.comingSoon) {
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.line))
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     chapter.experiments.forEach { experiment ->
                         ExperimentRow(experiment = experiment, onClick = { onExperimentSelected(experiment.id) })
@@ -215,6 +261,7 @@ private fun ChapterCard(
 
 @Composable
 private fun ExperimentRow(experiment: Experiment, onClick: () -> Unit) {
+    val t = LL.tokens
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,7 +274,7 @@ private fun ExperimentRow(experiment: Experiment, onClick: () -> Unit) {
             Text(
                 experiment.title,
                 style = MaterialTheme.typography.labelLarge,
-                color = OnSurfaceHigh,
+                color = t.ink50,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -235,21 +282,21 @@ private fun ExperimentRow(experiment: Experiment, onClick: () -> Unit) {
             Text(
                 experiment.blurb,
                 style = MaterialTheme.typography.labelSmall,
-                color = OnSurfaceMed,
+                color = t.ink400,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
         Surface(
             shape = RoundedCornerShape(50),
-            color = CyanBright.copy(alpha = 0.10f),
+            color = t.accent500.copy(alpha = 0.10f),
             modifier = Modifier.size(32.dp),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     Icons.Default.ChevronRight,
                     contentDescription = null,
-                    tint = CyanMid,
+                    tint = t.accent400,
                     modifier = Modifier.size(16.dp),
                 )
             }
