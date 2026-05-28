@@ -154,8 +154,8 @@ private fun ChapterCard(
                     .background(
                         if (!chapter.comingSoon) Brush.horizontalGradient(
                             listOf(
-                                t.accent500.copy(alpha = 0.22f),
-                                t.accent500.copy(alpha = 0.08f),
+                                t.accent400.copy(alpha = 0.22f),
+                                t.accent400.copy(alpha = 0.08f),
                                 Color.Transparent,
                             )
                         ) else Brush.horizontalGradient(listOf(Color.Transparent, Color.Transparent))

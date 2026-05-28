@@ -195,15 +195,7 @@ private fun SubjectCard(
                 .padding(horizontal = 20.dp, vertical = 20.dp),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = accentColor.copy(alpha = 0.15f),
-                    modifier = Modifier.size(48.dp),
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(28.dp))
-                    }
-                }
+                Icon(icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(36.dp))
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,

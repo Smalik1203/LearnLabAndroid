@@ -145,20 +145,12 @@ private fun GradeCard(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Top — compact grade number on tinted square
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(accent.copy(alpha = 0.14f))
-                    .border(1.dp, accent.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
-                    .padding(horizontal = 12.dp, vertical = 4.dp),
-            ) {
-                LLText(
-                    "${option.grade}",
-                    color = if (option.available) accent else accent.copy(alpha = 0.6f),
-                    size = 28.sp, weight = FontWeight.ExtraBold,
-                )
-            }
+            // Top — compact grade number
+            LLText(
+                "${option.grade}",
+                color = if (option.available) accent else accent.copy(alpha = 0.6f),
+                size = 28.sp, weight = FontWeight.ExtraBold,
+            )
             // Tagline
             LLText(
                 if (option.available) option.tagline else "Coming soon",
