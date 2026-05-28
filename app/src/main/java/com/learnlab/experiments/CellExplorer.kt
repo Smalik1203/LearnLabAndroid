@@ -94,6 +94,7 @@ import kotlin.math.sin
 
 private enum class Mode(val label: String) {
     Explore("Explore"),
+    Detail("Detail"),
     Shapes("Shapes"),
     Compare("Compare"),
     Table("Table"),
@@ -115,6 +116,7 @@ private data class OrganelleKind(
     val presentInPlant: Boolean,
     val presentInAnimal: Boolean,
     val animKind: AnimKind,
+    val detail: String,               // 3–4 line description for Detail mode
 )
 
 private enum class OrganelleShape { Circle, Oval, Disk, Squiggle, RoundedRect, PairedRods }
@@ -128,6 +130,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Control centre — stores DNA, directs all cell activity.",
         presentInPlant = true, presentInAnimal = true,
         animKind = AnimKind.DnaHelix,
+        detail = "The nucleus holds the cell's DNA, tightly packed as chromatin around a darker nucleolus. " +
+            "A double membrane (the nuclear envelope) studded with pores controls what enters and leaves. " +
+            "Inside, the nucleolus assembles ribosomes that the rest of the cell uses to make proteins.",
     ),
     OrganelleKind(
         id = "mitochondrion", name = "Mitochondrion", color = Color(0xFFEF4444),
@@ -135,6 +140,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Power-house — burns sugar with oxygen to make ATP energy.",
         presentInPlant = true, presentInAnimal = true,
         animKind = AnimKind.AtpSparks,
+        detail = "Mitochondria release energy from glucose using oxygen — a process called aerobic respiration. " +
+            "The inner membrane folds into cristae, packing in lots of surface area where ATP (the cell's energy currency) is made. " +
+            "Active cells like muscle have many mitochondria; resting cells have fewer.",
     ),
     OrganelleKind(
         id = "chloroplast", name = "Chloroplast", color = Color(0xFF10B981),
@@ -142,6 +150,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Solar kitchen — uses sunlight to make glucose (photosynthesis).",
         presentInPlant = true, presentInAnimal = false,
         animKind = AnimKind.LightRays,
+        detail = "Chloroplasts capture sunlight using the green pigment chlorophyll, then turn carbon dioxide and water into glucose. " +
+            "Inside, stacks of disc-like thylakoids (grana) are linked by stroma lamellae. " +
+            "Only plant cells and some algae have them — animals must eat plants to get the energy plants made here.",
     ),
     OrganelleKind(
         id = "ribosome", name = "Ribosome", color = Color(0xFFFCD34D),
@@ -149,6 +160,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Protein factory — reads mRNA and links amino acids into proteins.",
         presentInPlant = true, presentInAnimal = true,
         animKind = AnimKind.ProteinChain,
+        detail = "Ribosomes are tiny two-part machines that read messenger RNA and join amino acids in the right order to build proteins. " +
+            "Some float free in the cytoplasm; others stick to the rough ER. " +
+            "They are the only organelle found in every kind of cell, from bacteria up.",
     ),
     OrganelleKind(
         id = "er", name = "Endoplasmic reticulum", color = Color(0xFF60A5FA),
@@ -156,6 +170,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Transport network — moves proteins and lipids around the cell.",
         presentInPlant = true, presentInAnimal = true,
         animKind = AnimKind.VesiclePinch,
+        detail = "The endoplasmic reticulum is a network of folded membranes that runs from the nucleus through the cytoplasm. " +
+            "The rough ER is studded with ribosomes and makes proteins for export; the smooth ER builds lipids and detoxifies. " +
+            "Finished molecules bud off in vesicles bound for the Golgi.",
     ),
     OrganelleKind(
         id = "golgi", name = "Golgi apparatus", color = Color(0xFFF59E0B),
@@ -163,6 +180,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Packaging plant — modifies and ships proteins in vesicles.",
         presentInPlant = true, presentInAnimal = true,
         animKind = AnimKind.VesiclePinch,
+        detail = "The Golgi apparatus is a stack of flattened sacs (cisternae). " +
+            "Proteins arrive at the cis face from the ER, get sorted, tagged, and modified across the stack, " +
+            "then leave from the trans face in vesicles bound for the membrane, lysosomes, or secretion.",
     ),
     OrganelleKind(
         id = "vacuole", name = "Vacuole", color = Color(0xFFA7F3D0),
@@ -170,6 +190,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Storage tank — holds water, food, and waste. Big in plant cells.",
         presentInPlant = true, presentInAnimal = true,
         animKind = AnimKind.FluidLevel,
+        detail = "Vacuoles are fluid-filled sacs bounded by a single membrane called the tonoplast. " +
+            "In plant cells one huge central vacuole holds water and salts, giving the cell its turgor (pressure that keeps the plant upright). " +
+            "Animal cells have many tiny vacuoles for short-term storage.",
     ),
     OrganelleKind(
         id = "centriole", name = "Centriole", color = Color(0xFFE879F9),
@@ -177,6 +200,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Cell-division helper — organises spindle fibres when cells divide.",
         presentInPlant = false, presentInAnimal = true,
         animKind = AnimKind.Pulse,
+        detail = "Centrioles are a pair of short cylinders set at right angles, each built from nine triplets of microtubules. " +
+            "When an animal cell divides they organise the spindle fibres that pull chromosomes apart. " +
+            "Plant cells manage cell division without them.",
     ),
     OrganelleKind(
         id = "lysosome", name = "Lysosome", color = Color(0xFFFB923C),
@@ -184,6 +210,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Digestion sac — recycles old cell parts and breaks down waste.",
         presentInPlant = false, presentInAnimal = true,
         animKind = AnimKind.Membrane,
+        detail = "Lysosomes are membrane sacs packed with digestive enzymes. " +
+            "They break down worn-out organelles, food particles, and invading bacteria — recycling the parts. " +
+            "Sometimes called the cell's 'suicide bags', because if they burst they can dissolve the cell itself.",
     ),
     OrganelleKind(
         id = "cell-wall", name = "Cell wall", color = Color(0xFF065F46),
@@ -191,6 +220,9 @@ private val KINDS: List<OrganelleKind> = listOf(
         role = "Rigid outer jacket — gives plant cells their fixed shape and protection.",
         presentInPlant = true, presentInAnimal = false,
         animKind = AnimKind.Pulse,
+        detail = "The cell wall sits just outside the cell membrane of plant cells. " +
+            "It is made mostly of cellulose fibres laid down in cross-crossing layers, giving the cell a fixed shape and protection. " +
+            "Between neighbouring walls a thin middle lamella glues cells together.",
     ),
 )
 
@@ -227,6 +259,35 @@ private val ANIMAL_LAYOUT: List<OrganelleInstance> = listOf(
     OrganelleInstance("centriole",    Vec3(-0.25f,  0.30f,  0.55f)),
     OrganelleInstance("lysosome",     Vec3(-0.05f,  0.55f,  0.30f)),
     OrganelleInstance("lysosome",     Vec3( 0.60f,  0.10f,  0.10f)),
+)
+
+// Label placement for the persistent organelle labels around each layout.
+// anchorDx / anchorDy = offset from the organelle centre, in units of organelle radius (r).
+// labelX / labelY    = label end position, in units of cellR (relative to cell centre).
+private data class LabelPlacement(
+    val anchorDx: Float, val anchorDy: Float,
+    val labelX: Float, val labelY: Float,
+)
+
+private val PLANT_LABELS: Map<String, LabelPlacement> = mapOf(
+    "nucleus"       to LabelPlacement(-1.0f,  0.0f, -1.60f, -0.10f),
+    "mitochondrion" to LabelPlacement( 1.3f,  0.0f,  1.55f, -0.55f),
+    "chloroplast"   to LabelPlacement( 1.3f,  0.0f,  1.55f,  0.55f),
+    "ribosome"      to LabelPlacement( 0.0f, -1.5f,  0.30f, -1.50f),
+    "er"            to LabelPlacement( 1.5f,  0.0f,  1.55f, -0.18f),
+    "golgi"         to LabelPlacement( 0.0f, -1.5f, -1.55f, -0.65f),
+    "vacuole"       to LabelPlacement( 0.0f,  1.0f,  0.25f,  1.55f),
+)
+
+private val ANIMAL_LABELS: Map<String, LabelPlacement> = mapOf(
+    "nucleus"       to LabelPlacement(-1.0f,  0.0f, -1.60f, -0.10f),
+    "mitochondrion" to LabelPlacement( 1.3f,  0.0f,  1.55f, -0.55f),
+    "ribosome"      to LabelPlacement( 0.0f, -1.5f,  0.20f, -1.50f),
+    "er"            to LabelPlacement( 1.5f,  0.0f,  1.55f,  0.20f),
+    "golgi"         to LabelPlacement( 0.0f, -1.5f, -1.55f, -0.50f),
+    "vacuole"       to LabelPlacement( 1.3f,  0.0f,  1.55f,  0.60f),
+    "centriole"     to LabelPlacement( 0.0f,  1.3f, -1.55f,  0.55f),
+    "lysosome"      to LabelPlacement( 0.0f,  1.2f, -0.30f,  1.55f),
 )
 
 // ────────────────────────────────────────────────────────────────────
@@ -269,7 +330,8 @@ fun CellExplorer(controls: ExperimentControls) {
                         weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
                     LLText(
                         when (mode) {
-                            Mode.Explore -> "Drag to rotate the cell. Tap any organelle for its job."
+                            Mode.Explore -> "Tap any organelle to see its job. Switch between plant and animal."
+                            Mode.Detail -> "The full labelled cell. Tap any label for more about that organelle."
                             Mode.Shapes -> "Tap a card to see why this shape fits its function."
                             Mode.Compare -> "Plant vs animal — toggle a difference to highlight it."
                             Mode.Table -> "Plant / Animal organelle checklist."
@@ -303,6 +365,7 @@ fun CellExplorer(controls: ExperimentControls) {
             Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().background(t.surface2)) {
                 when (mode) {
                     Mode.Explore -> ExploreMode()
+                    Mode.Detail -> DetailMode()
                     Mode.Shapes -> ShapesMode()
                     Mode.Compare -> CompareMode()
                     Mode.Table -> TableMode()
@@ -352,7 +415,6 @@ private fun ModeTabs(current: Mode, onSelect: (Mode) -> Unit) {
 private fun ExploreMode() {
     val t = LL.tokens
     var cellType by remember { mutableStateOf(CellType.Plant) }
-    var theta by remember { mutableStateOf(0.5f) }
     var selectedKindId by remember { mutableStateOf<String?>(null) }
     var pulse by remember { mutableStateOf(0f) }
 
@@ -384,23 +446,22 @@ private fun ExploreMode() {
                 .clip(RoundedCornerShape(12.dp))
                 .background(t.surface)
                 .border(1.dp, t.line, RoundedCornerShape(12.dp))
-                .pointerInput(cellType, theta) {
+                .pointerInput(cellType) {
                     detectTapGestures { tap ->
                         selectedKindId = hitTestCell(
                             tap = tap,
                             canvasW = size.width.toFloat(),
                             canvasH = size.height.toFloat(),
-                            theta = theta,
                             cellType = cellType,
                         )
                     }
                 },
         ) {
             CellSceneCanvas(
-                theta = theta,
                 cellType = cellType,
                 selectedKindId = selectedKindId,
                 pulse = pulse,
+                showLabels = true,
             )
         }
 
@@ -439,12 +500,6 @@ private fun ExploreMode() {
                         ) { LLText(label, color = fg, size = 13.sp, weight = FontWeight.SemiBold) }
                     }
                 }
-                LLSlider(
-                    label = "Rotate", value = theta, onValueChange = { theta = it },
-                    min = 0f, max = 2f * PI.toFloat(), step = null, unit = "rad",
-                    info = "Drag the cell or move this slider to spin the cell around its vertical axis.",
-                    valueFormat = { "%.2f".format(it) },
-                )
             }
             // Info panel
             OrganelleInfoPanel(selectedKindId = selectedKindId)
@@ -619,21 +674,18 @@ private fun MiniAnimation(kind: AnimKind, color: Color) {
     }
 }
 
-// Project a Vec3 to screen Offset given canvas dims, theta, cellR
+// Project a Vec3 to screen Offset — flat NCERT-style.
+// pos.z is preserved only as a static layering hint (back-to-front draw order).
 private fun project(
     pos: Vec3,
-    theta: Float,
     cx: Float, cy: Float,
     cellR: Float,
 ): ProjectedPoint {
-    val xRot = pos.x * cos(theta) - pos.z * sin(theta)
-    val zRot = pos.x * sin(theta) + pos.z * cos(theta)
-    val scale = 1f + 0.25f * zRot
     return ProjectedPoint(
-        x = cx + xRot * cellR,
+        x = cx + pos.x * cellR,
         y = cy + pos.y * cellR,
-        zRot = zRot,
-        scale = scale,
+        zRot = pos.z,
+        scale = 1f,
     )
 }
 
@@ -641,10 +693,10 @@ private data class ProjectedPoint(val x: Float, val y: Float, val zRot: Float, v
 
 @Composable
 private fun CellSceneCanvas(
-    theta: Float,
     cellType: CellType,
     selectedKindId: String?,
     pulse: Float,
+    showLabels: Boolean,
 ) {
     val t = LL.tokens
     val textMeasurer = rememberTextMeasurer()
@@ -656,27 +708,29 @@ private fun CellSceneCanvas(
         val cellR = min(w, h) * 0.35f
 
         // Cell wall + membrane + cytoplasm (shared renderer)
-        drawCellOutline(cx, cy, cellR, isPlant = cellType == CellType.Plant, theta = theta)
+        drawCellOutline(cx, cy, cellR, isPlant = cellType == CellType.Plant)
 
-        // Labels
-        if (cellType == CellType.Plant) {
-            drawTextAt(textMeasurer, "Cell wall",
-                Offset(cx - cellR * 1.18f, cy - cellR * 1.18f - 20f),
-                color = inkLabel, size = 10.sp)
+        // Outer chrome labels (cell wall + membrane)
+        if (showLabels) {
+            if (cellType == CellType.Plant) {
+                drawLabel(textMeasurer, "Cell wall",
+                    anchor = Offset(cx - cellR * 1.18f, cy - cellR * 0.9f),
+                    labelEnd = Offset(cx - cellR * 1.45f, cy - cellR * 1.1f),
+                    color = Color(0xFF065F46))
+            }
+            drawLabel(textMeasurer, "Cell membrane",
+                anchor = Offset(cx - cellR * 0.71f, cy + cellR * 0.71f),
+                labelEnd = Offset(cx - cellR * 1.15f, cy + cellR * 1.0f),
+                color = Color(0xFFEC4899))
         }
-        val vScale = 1f - 0.05f * kotlin.math.abs(sin(theta))
-        drawTextAt(textMeasurer, "Cell membrane",
-            Offset(cx - cellR, cy + cellR * vScale + 4f),
-            color = Color(0xFFEC4899), size = 10.sp)
 
-        // Organelles, sorted back to front
-        val projected = instances.map { it to project(it.pos, theta, cx, cy, cellR) }
+        // Organelles, sorted back to front by static z
+        val projected = instances.map { it to project(it.pos, cx, cy, cellR) }
             .sortedBy { it.second.zRot }
         for ((inst, p) in projected) {
             val k = kindOf(inst.kindId)
-            val r = cellR * k.radiusUnit * p.scale
+            val r = cellR * k.radiusUnit
             val isSelected = selectedKindId == k.id
-            // halo on selected
             if (isSelected) {
                 drawCircle(
                     color = k.color.copy(alpha = 0.35f + 0.4f * pulse),
@@ -686,53 +740,103 @@ private fun CellSceneCanvas(
             }
             drawOrganelle(k, Offset(p.x, p.y), r)
         }
+
+        // Persistent organelle labels (only the first instance of each kind is labelled,
+        // so we don't repeat "Mitochondrion" three times).
+        if (showLabels) {
+            val labelTable = if (cellType == CellType.Plant) PLANT_LABELS else ANIMAL_LABELS
+            val labelled = mutableSetOf<String>()
+            for (inst in instances) {
+                if (inst.kindId in labelled) continue
+                val place = labelTable[inst.kindId] ?: continue
+                val k = kindOf(inst.kindId)
+                val p = project(inst.pos, cx, cy, cellR)
+                val r = cellR * k.radiusUnit
+                val anchor = Offset(p.x + place.anchorDx * r, p.y + place.anchorDy * r)
+                val labelEnd = Offset(cx + place.labelX * cellR, cy + place.labelY * cellR)
+                drawLabel(textMeasurer, k.name, anchor, labelEnd, color = inkLabel)
+                labelled += inst.kindId
+            }
+        }
     }
 }
 
 private fun DrawScope.drawCellOutline(
     cx: Float, cy: Float, cellR: Float,
     isPlant: Boolean,
-    theta: Float = 0f,
     wallStrokeColor: Color = Color(0xFF065F46),
     wallStrokeWidth: Float = 3f,
 ) {
-    // ── Plant cell wall — hatched outer rectangle ──
+    // ── Plant cell wall — cellulose hatched outer band with middle lamella ──
     if (isPlant) {
-        val outer = cellR * 1.18f
+        val outer = cellR * 1.20f
         val left = cx - outer
         val top = cy - outer
         val side = outer * 2f
-        // wash
+        // wall fill wash
         drawRect(Color(0xFF065F46).copy(alpha = 0.18f),
             topLeft = Offset(left, top), size = Size(side, side))
-        // outer stroke (thicker)
+        // outer stroke (cellulose boundary)
         drawRect(wallStrokeColor,
             topLeft = Offset(left, top), size = Size(side, side),
             style = Stroke(wallStrokeWidth))
-        // inner stroke (thinner, parallel) → double-stroke look
+        // middle lamella — thin faint stripe between wall and membrane
+        val lamInset = 10f
+        drawRect(Color(0xFFCBD5E1).copy(alpha = 0.85f),
+            topLeft = Offset(left + lamInset, top + lamInset),
+            size = Size(side - lamInset * 2f, side - lamInset * 2f),
+            style = Stroke(2f))
+        // inner stroke (wall→membrane gap)
         val inset = 4f
-        drawRect(wallStrokeColor.copy(alpha = 0.6f),
+        drawRect(wallStrokeColor.copy(alpha = 0.55f),
             topLeft = Offset(left + inset, top + inset),
             size = Size(side - inset * 2f, side - inset * 2f),
             style = Stroke(1f))
-        // cellulose hatch lines just inside the inner stroke
-        val hatchCol = Color(0xFF065F46).copy(alpha = 0.45f)
-        val hatchStep = 14f
+        // cellulose hatch — short cross-hatched fibres around the perimeter
+        val hatchCol = Color(0xFF065F46).copy(alpha = 0.50f)
+        val hatchStep = 16f
         val hatchInset = 8f
-        var y = top + hatchInset + 6f
-        while (y < top + hatchInset + 26f) {
+        // top edge
+        var x = left + hatchInset + 8f
+        while (x < left + side - hatchInset - 8f) {
             drawLine(hatchCol,
-                Offset(left + hatchInset, y),
-                Offset(left + hatchInset + 22f, y - 16f),
+                Offset(x, top + hatchInset),
+                Offset(x + 10f, top + hatchInset + 10f),
                 strokeWidth = 1f)
-            y += hatchStep
+            x += hatchStep
+        }
+        // bottom edge
+        x = left + hatchInset + 8f
+        while (x < left + side - hatchInset - 8f) {
+            drawLine(hatchCol,
+                Offset(x, top + side - hatchInset),
+                Offset(x + 10f, top + side - hatchInset - 10f),
+                strokeWidth = 1f)
+            x += hatchStep
+        }
+        // left edge
+        var yy = top + hatchInset + 8f
+        while (yy < top + side - hatchInset - 8f) {
+            drawLine(hatchCol,
+                Offset(left + hatchInset, yy),
+                Offset(left + hatchInset + 10f, yy + 10f),
+                strokeWidth = 1f)
+            yy += hatchStep
+        }
+        // right edge
+        yy = top + hatchInset + 8f
+        while (yy < top + side - hatchInset - 8f) {
+            drawLine(hatchCol,
+                Offset(left + side - hatchInset, yy),
+                Offset(left + side - hatchInset - 10f, yy + 10f),
+                strokeWidth = 1f)
+            yy += hatchStep
         }
     }
 
-    // ── Cell membrane — foreshortened ellipse with bilayer look ──
-    val vScale = 1f - 0.05f * kotlin.math.abs(sin(theta))
-    val memTL = Offset(cx - cellR, cy - cellR * vScale)
-    val memSize = Size(cellR * 2f, cellR * 2f * vScale)
+    // ── Cell membrane — circular bilayer ──
+    val memTL = Offset(cx - cellR, cy - cellR)
+    val memSize = Size(cellR * 2f, cellR * 2f)
     // cytoplasm wash (radial gradient)
     val cytoBrush = Brush.radialGradient(
         colors = listOf(
@@ -744,19 +848,21 @@ private fun DrawScope.drawCellOutline(
     drawOval(cytoBrush, topLeft = memTL, size = memSize)
     // outer bilayer stroke
     drawOval(Color(0xFFEC4899), topLeft = memTL, size = memSize, style = Stroke(2.5f))
-    // inner bilayer stroke (slightly smaller — phospholipid bilayer effect)
+    // inner bilayer stroke (phospholipid bilayer)
     drawOval(Color(0xFFEC4899).copy(alpha = 0.55f),
-        topLeft = Offset(memTL.x + 3f, memTL.y + 3f * vScale),
-        size = Size(memSize.width - 6f, memSize.height - 6f * vScale),
+        topLeft = Offset(memTL.x + 4f, memTL.y + 4f),
+        size = Size(memSize.width - 8f, memSize.height - 8f),
         style = Stroke(1f))
-    // embedded membrane proteins — small ovals at intervals along the ring
-    val proteinCount = 8
-    val proteinCol = Color(0xFFC026D3).copy(alpha = 0.85f)
+    // embedded membrane proteins (ion channels)
+    val proteinCount = 10
+    val proteinCol = Color(0xFFC026D3).copy(alpha = 0.90f)
     for (i in 0 until proteinCount) {
         val a = i * (2f * PI.toFloat() / proteinCount) + 0.15f
         val px = cx + cos(a) * cellR
-        val py = cy + sin(a) * cellR * vScale
-        drawCircle(proteinCol, 2.6f, Offset(px, py))
+        val py = cy + sin(a) * cellR
+        // small "tube" through the bilayer
+        drawCircle(proteinCol, 3.5f, Offset(px, py))
+        drawCircle(Color(0xFFFBCFE8), 1.4f, Offset(px, py))
     }
 }
 
@@ -777,40 +883,64 @@ private fun DrawScope.drawOrganelle(k: OrganelleKind, center: Offset, r: Float) 
 }
 
 private fun DrawScope.drawNucleus(c: Offset, r: Float, color: Color) {
-    // gradient sphere
+    // base sphere with soft gradient (nucleoplasm)
     val brush = Brush.radialGradient(
         colors = listOf(
-            color.copy(alpha = 0.55f),
-            color,
+            color.copy(alpha = 0.50f),
+            color.copy(alpha = 0.80f),
             color.copy(red = color.red * 0.55f, green = color.green * 0.55f, blue = color.blue * 0.55f),
         ),
         center = Offset(c.x - r * 0.25f, c.y - r * 0.25f),
         radius = r * 1.3f,
     )
     drawCircle(brush, r, c)
-    // nuclear envelope
-    drawCircle(color.copy(alpha = 0.6f), r * 1.04f, c, style = Stroke(1.2f))
-    // chromatin (a few short curves inside)
-    val chroma = Color(0xFFE9D5FF).copy(alpha = 0.7f)
-    val r6 = r * 0.6f
-    for (i in 0 until 4) {
-        val a = i * (PI.toFloat() / 2f) + 0.4f
-        val p1 = Offset(c.x + cos(a) * r * 0.15f, c.y + sin(a) * r * 0.15f)
+    // heterochromatin ring (slightly darker near the envelope)
+    drawCircle(
+        Color(0xFF4C1D95).copy(alpha = 0.25f),
+        r * 0.95f, c, style = Stroke(r * 0.10f),
+    )
+    // nuclear envelope — outer + inner (double membrane)
+    drawCircle(Color(0xFF4C1D95), r * 1.04f, c, style = Stroke(1.6f))
+    drawCircle(Color(0xFF4C1D95).copy(alpha = 0.55f), r * 0.96f, c, style = Stroke(1f))
+    // nuclear pores — 10 small breaks/dots around the envelope
+    if (r > 8f) {
+        val poreCount = 10
+        val poreCol = Color(0xFFFAF5FF)
+        val poreEdge = Color(0xFF4C1D95)
+        for (i in 0 until poreCount) {
+            val a = i * (2f * PI.toFloat() / poreCount) + 0.15f
+            val px = c.x + cos(a) * r * 1.00f
+            val py = c.y + sin(a) * r * 1.00f
+            drawCircle(poreCol, 2.4f, Offset(px, py))
+            drawCircle(poreEdge, 2.4f, Offset(px, py), style = Stroke(0.8f))
+        }
+    }
+    // chromatin (denser — 8 curves radiating from centre)
+    val chroma = Color(0xFFE9D5FF).copy(alpha = 0.75f)
+    val r6 = r * 0.62f
+    val strands = 8
+    for (i in 0 until strands) {
+        val a = i * (2f * PI.toFloat() / strands) + 0.3f
+        val p1 = Offset(c.x + cos(a) * r * 0.18f, c.y + sin(a) * r * 0.18f)
         val p2 = Offset(c.x + cos(a) * r6, c.y + sin(a) * r6)
-        val mid = Offset((p1.x + p2.x) / 2f + cos(a + 1.5f) * r * 0.12f,
-            (p1.y + p2.y) / 2f + sin(a + 1.5f) * r * 0.12f)
+        val mid = Offset((p1.x + p2.x) / 2f + cos(a + 1.5f) * r * 0.14f,
+            (p1.y + p2.y) / 2f + sin(a + 1.5f) * r * 0.14f)
         val path = Path().apply {
-            moveTo(p1.x, p1.y); quadraticBezierTo(mid.x, mid.y, p2.x, p2.y)
+            moveTo(p1.x, p1.y); quadraticTo(mid.x, mid.y, p2.x, p2.y)
         }
         drawPath(path, chroma, style = Stroke(1.4f, cap = StrokeCap.Round))
     }
-    // nucleolus
-    drawCircle(Color(0xFFFCD34D), r * 0.22f, Offset(c.x + r * 0.15f, c.y - r * 0.05f))
+    // nucleolus — prominent darker yellow blob, off-centre
+    val nlc = Offset(c.x + r * 0.18f, c.y - r * 0.06f)
+    drawCircle(Color(0xFFCA8A04), r * 0.26f, nlc)
+    drawCircle(Color(0xFFFCD34D), r * 0.21f, nlc)
+    drawCircle(Color(0xFF92400E).copy(alpha = 0.55f), r * 0.08f,
+        Offset(nlc.x + r * 0.03f, nlc.y))
 }
 
 private fun DrawScope.drawMitochondrion(c: Offset, r: Float, color: Color) {
-    val w = r * 2.6f
-    val h = r * 1.4f
+    val w = r * 2.8f
+    val h = r * 1.5f
     val tl = Offset(c.x - w / 2f, c.y - h / 2f)
     // outer membrane (gradient)
     val outer = Brush.linearGradient(
@@ -818,62 +948,101 @@ private fun DrawScope.drawMitochondrion(c: Offset, r: Float, color: Color) {
         start = Offset(tl.x, tl.y), end = Offset(tl.x + w, tl.y + h),
     )
     drawOval(outer, topLeft = tl, size = Size(w, h))
-    // matrix (inner darker)
-    val inner = Color(0xFFB91C1C).copy(alpha = 0.75f)
-    drawOval(inner,
-        topLeft = Offset(c.x - w * 0.42f, c.y - h * 0.35f),
-        size = Size(w * 0.84f, h * 0.7f))
-    // cristae — wavy zigzag across matrix
-    if (r > 8f) {
-        val cristaCol = Color(0xFFFEE2E2).copy(alpha = 0.85f)
-        val left = c.x - w * 0.36f
-        val right = c.x + w * 0.36f
-        val steps = 5
-        val path = Path().apply {
-            moveTo(left, c.y)
-            for (i in 1..steps) {
-                val xx = left + (right - left) * (i / steps.toFloat())
-                val yy = c.y + (if (i % 2 == 0) -h * 0.22f else h * 0.22f)
-                lineTo(xx, yy)
+    // matrix (inner space — darker)
+    val matrixTL = Offset(c.x - w * 0.43f, c.y - h * 0.37f)
+    val matrixSize = Size(w * 0.86f, h * 0.74f)
+    val matrixBrush = Brush.radialGradient(
+        colors = listOf(Color(0xFF991B1B), Color(0xFF7F1D1D)),
+        center = c, radius = w * 0.45f,
+    )
+    drawOval(matrixBrush, topLeft = matrixTL, size = matrixSize)
+
+    // Cristae — many continuous finger-like invaginations of the inner membrane.
+    if (r > 6f) {
+        val cristaCol = Color(0xFFFCA5A5).copy(alpha = 0.95f)
+        val cristaCount = 10
+        val matrixLeft = matrixTL.x
+        val matrixTop = matrixTL.y
+        val matrixW = matrixSize.width
+        val matrixH = matrixSize.height
+        // Alternate cristae from top and bottom edges, like a fan-fold pattern.
+        for (i in 0 until cristaCount) {
+            val tFrac = (i + 0.5f) / cristaCount.toFloat()
+            val xMid = matrixLeft + matrixW * tFrac
+            val fromTop = i % 2 == 0
+            val yEdge = if (fromTop) matrixTop + 2f else matrixTop + matrixH - 2f
+            val yTip = if (fromTop) matrixTop + matrixH * 0.78f else matrixTop + matrixH * 0.22f
+            val controlOffset = matrixW * 0.045f
+            val path = Path().apply {
+                moveTo(xMid - controlOffset, yEdge)
+                quadraticTo(xMid, yTip, xMid + controlOffset, yEdge)
             }
+            drawPath(path, cristaCol, style = Stroke(1.4f, cap = StrokeCap.Round))
         }
-        drawPath(path, cristaCol, style = Stroke(1.2f, cap = StrokeCap.Round))
+        // Tiny granules in the matrix (mitochondrial ribosomes / DNA)
+        val granuleCol = Color(0xFFFEF3C7).copy(alpha = 0.7f)
+        listOf(
+            Offset(c.x - w * 0.18f, c.y + h * 0.08f),
+            Offset(c.x + w * 0.12f, c.y - h * 0.12f),
+            Offset(c.x + w * 0.30f, c.y + h * 0.18f),
+        ).forEach { drawCircle(granuleCol, r * 0.06f, it) }
     }
-    // double-membrane outline
-    drawOval(Color(0xFF7F1D1D), topLeft = tl, size = Size(w, h), style = Stroke(1.2f))
+    // double-membrane outline (outer + inner trace)
+    drawOval(Color(0xFF7F1D1D), topLeft = tl, size = Size(w, h), style = Stroke(1.4f))
+    drawOval(Color(0xFFFCA5A5).copy(alpha = 0.55f),
+        topLeft = Offset(tl.x + 3f, tl.y + 3f),
+        size = Size(w - 6f, h - 6f), style = Stroke(0.8f))
 }
 
 private fun DrawScope.drawChloroplast(c: Offset, r: Float, color: Color) {
-    val w = r * 2.6f
-    val h = r * 1.4f
+    val w = r * 2.8f
+    val h = r * 1.6f
     val tl = Offset(c.x - w / 2f, c.y - h / 2f)
-    // stroma (light green oval)
-    val stroma = Brush.linearGradient(
-        colors = listOf(Color(0xFFA7F3D0), color.copy(alpha = 0.9f)),
-        start = Offset(tl.x, tl.y), end = Offset(tl.x + w, tl.y + h),
+    // stroma fill (light green inside)
+    val stroma = Brush.radialGradient(
+        colors = listOf(Color(0xFFA7F3D0), color.copy(alpha = 0.85f), Color(0xFF047857)),
+        center = c, radius = w * 0.55f,
     )
     drawOval(stroma, topLeft = tl, size = Size(w, h))
-    // grana — 3 small dark-green disc stacks inside
-    if (r > 8f) {
-        val grana = Color(0xFF065F46)
-        val granaCount = 3
+    // grana stacks: 5 stacks, each 5 thylakoid discs, linked by stroma lamellae
+    if (r > 6f) {
+        val granaDark = Color(0xFF064E3B)
+        val granaLight = Color(0xFF065F46)
+        val granaCount = 5
+        val discsPerStack = 5
+        val firstStackX = c.x - w * 0.32f
+        val stackSpacing = w * 0.16f
+        val discW = r * 0.32f
+        val discH = r * 0.08f
+        val stackTop = c.y - r * 0.45f
+        val centerYsOfStacks = FloatArray(granaCount) { c.y }
         for (g in 0 until granaCount) {
-            val cxg = c.x - w * 0.25f + g * (w * 0.25f)
-            // each stack: 3 thin ovals
-            for (i in 0 until 3) {
-                drawOval(grana,
-                    topLeft = Offset(cxg - r * 0.18f, c.y - r * 0.30f + i * (r * 0.20f)),
-                    size = Size(r * 0.36f, r * 0.14f))
+            val cxg = firstStackX + g * stackSpacing
+            // jitter stack vertical position slightly for organic feel
+            val yJitter = if (g % 2 == 0) -r * 0.06f else r * 0.06f
+            val sTop = stackTop + yJitter
+            for (i in 0 until discsPerStack) {
+                val y0 = sTop + i * (discH + 1.5f)
+                drawOval(if (i % 2 == 0) granaDark else granaLight,
+                    topLeft = Offset(cxg - discW / 2f, y0),
+                    size = Size(discW, discH))
             }
+            centerYsOfStacks[g] = sTop + (discsPerStack * (discH + 1.5f)) / 2f
         }
-        // thylakoid connecting lines
-        val link = Color(0xFF065F46).copy(alpha = 0.55f)
-        drawLine(link,
-            Offset(c.x - w * 0.25f, c.y),
-            Offset(c.x + w * 0.25f, c.y),
-            strokeWidth = 1f)
+        // Stroma lamellae — connecting lines between adjacent grana
+        val lamella = Color(0xFF064E3B).copy(alpha = 0.60f)
+        for (g in 0 until granaCount - 1) {
+            val x1 = firstStackX + g * stackSpacing + discW / 2f
+            val x2 = firstStackX + (g + 1) * stackSpacing - discW / 2f
+            val y = (centerYsOfStacks[g] + centerYsOfStacks[g + 1]) / 2f
+            drawLine(lamella, Offset(x1, y), Offset(x2, y), strokeWidth = 1.2f)
+        }
     }
-    drawOval(Color(0xFF064E3B), topLeft = tl, size = Size(w, h), style = Stroke(1.2f))
+    // double envelope outline (outer + inner)
+    drawOval(Color(0xFF064E3B), topLeft = tl, size = Size(w, h), style = Stroke(1.4f))
+    drawOval(Color(0xFF065F46).copy(alpha = 0.55f),
+        topLeft = Offset(tl.x + 3f, tl.y + 3f),
+        size = Size(w - 6f, h - 6f), style = Stroke(0.8f))
 }
 
 private fun DrawScope.drawRibosome(c: Offset, r: Float, color: Color) {
@@ -885,153 +1054,293 @@ private fun DrawScope.drawRibosome(c: Offset, r: Float, color: Color) {
 }
 
 private fun DrawScope.drawER(c: Offset, r: Float, color: Color) {
-    val span = r * 1.5f
-    val path = Path().apply {
-        moveTo(c.x - span, c.y)
-        cubicTo(
-            c.x - span * 0.5f, c.y - r * 1.1f,
-            c.x + span * 0.2f, c.y + r * 1.0f,
-            c.x + span, c.y - r * 0.2f,
-        )
+    // Rough ER — 3 stacked parallel curving cisternae with ribosomes on the surfaces.
+    val span = r * 1.7f
+    val cisternaCount = 3
+    val gap = r * 0.30f
+    val baseY = c.y - gap * (cisternaCount - 1) / 2f
+    val membraneCol = color.copy(alpha = 0.95f)
+    val membraneStrokeW = r * 0.10f
+    for (i in 0 until cisternaCount) {
+        val yLine = baseY + i * gap
+        val path = Path().apply {
+            moveTo(c.x - span, yLine + r * 0.05f * (i - 1f))
+            cubicTo(
+                c.x - span * 0.35f, yLine - r * 0.25f,
+                c.x + span * 0.25f, yLine + r * 0.30f,
+                c.x + span, yLine - r * 0.10f,
+            )
+        }
+        drawPath(path, membraneCol, style = Stroke(membraneStrokeW, cap = StrokeCap.Round))
     }
-    val w = r * 0.35f
-    drawPath(path, color.copy(alpha = 0.85f), style = Stroke(w, cap = StrokeCap.Round))
-    // attached ribosomes
-    if (r > 12f) {
+    // Ribosomes — small yellow dots dotted along the membranes.
+    if (r > 10f) {
         val ribCol = Color(0xFFFCD34D)
-        // sample along the path with a few discrete control points
-        val pts = listOf(
-            Offset(c.x - span * 0.6f, c.y - r * 0.45f),
-            Offset(c.x - span * 0.1f, c.y - r * 0.15f),
-            Offset(c.x + span * 0.4f, c.y + r * 0.30f),
-            Offset(c.x + span * 0.85f, c.y),
-        )
-        pts.forEach { drawCircle(ribCol, r * 0.10f, it) }
+        val ribStroke = Color(0xFFB45309).copy(alpha = 0.5f)
+        for (i in 0 until cisternaCount) {
+            val yLine = baseY + i * gap
+            // ribosomes above and below the membrane
+            for (j in 0 until 7) {
+                val tFrac = j / 7f
+                val px = c.x - span + tFrac * (2 * span)
+                // approximate y on the curve using a sin-shape
+                val curveOffset = sin(tFrac * PI.toFloat() * 1.4f) * r * 0.20f * (1f - i * 0.15f)
+                val side = if (j % 2 == 0) -1f else 1f
+                val py = yLine + curveOffset + side * (membraneStrokeW / 2f + r * 0.06f)
+                drawCircle(ribCol, r * 0.07f, Offset(px, py))
+                drawCircle(ribStroke, r * 0.07f, Offset(px, py), style = Stroke(0.6f))
+            }
+        }
     }
 }
 
+private fun DrawScope.drawSmoothER(c: Offset, r: Float, color: Color) {
+    // A tangled tubular network — winding, no ribosomes.
+    val net = color.copy(alpha = 0.80f)
+    val stroke = r * 0.08f
+    val path = Path().apply {
+        moveTo(c.x - r * 1.2f, c.y)
+        cubicTo(
+            c.x - r * 0.6f, c.y - r * 0.8f,
+            c.x - r * 0.2f, c.y + r * 0.8f,
+            c.x + r * 0.4f, c.y - r * 0.2f,
+        )
+        cubicTo(
+            c.x + r * 0.9f, c.y - r * 0.6f,
+            c.x + r * 1.2f, c.y + r * 0.5f,
+            c.x + r * 0.5f, c.y + r * 0.8f,
+        )
+        cubicTo(
+            c.x, c.y + r * 1.1f,
+            c.x - r * 0.6f, c.y + r * 0.4f,
+            c.x - r * 1.0f, c.y - r * 0.4f,
+        )
+    }
+    drawPath(path, net, style = Stroke(stroke, cap = StrokeCap.Round))
+}
+
 private fun DrawScope.drawGolgi(c: Offset, r: Float, color: Color) {
-    // stacked curved sacs
-    val sacCount = 5
-    val sacW = r * 2.2f
-    val sacH = r * 0.22f
+    // Stack of 6 curved cisternae; widest at the cis face (top), narrowest at trans (bottom).
+    val sacCount = 6
+    val sacWMax = r * 2.6f
+    val sacWMin = r * 1.7f
+    val sacH = r * 0.30f
+    val gap = r * 0.22f
+    val stackTop = c.y - (sacCount - 1) * gap / 2f - sacH * 0.3f
     for (i in 0 until sacCount) {
-        val alpha = 0.95f - i * 0.10f
-        val xJitter = (i - sacCount / 2f) * (r * 0.08f)
-        val y = c.y - r * 0.5f + i * (r * 0.25f)
-        // top arc of sac
-        val sacBrush = color.copy(alpha = alpha)
-        drawArc(sacBrush,
+        val tFrac = i / (sacCount - 1f)
+        val sacW = sacWMax + (sacWMin - sacWMax) * tFrac
+        val xJitter = if (i % 2 == 0) -r * 0.06f else r * 0.06f
+        val y = stackTop + i * gap
+        val sacCol = color.copy(alpha = 0.95f - i * 0.06f)
+        // filled stroke band
+        drawArc(sacCol,
             startAngle = 180f, sweepAngle = 180f,
             useCenter = false,
             topLeft = Offset(c.x - sacW / 2f + xJitter, y - sacH * 0.6f),
             size = Size(sacW, sacH * 1.2f),
-            style = Stroke(1.6f, cap = StrokeCap.Round))
+            style = Stroke(2f, cap = StrokeCap.Round))
     }
-    // vesicles budding off (right side)
-    if (r > 10f) {
-        val vCol = color.copy(alpha = 0.9f)
-        drawCircle(vCol, r * 0.16f, Offset(c.x + sacW / 2f + r * 0.15f, c.y - r * 0.25f))
-        drawCircle(vCol, r * 0.13f, Offset(c.x + sacW / 2f + r * 0.30f, c.y + r * 0.15f))
-        drawCircle(vCol, r * 0.10f, Offset(c.x + sacW / 2f + r * 0.45f, c.y + r * 0.35f))
+    // cis / trans labels (only if the icon is big enough for the text to make sense)
+    if (r > 16f) {
+        // We can't draw text in DrawScope without a textMeasurer here.
+        // Mark cis (top) and trans (bottom) with small coloured pips instead.
+        val cisCol = Color(0xFF60A5FA)
+        val transCol = Color(0xFFEC4899)
+        drawCircle(cisCol, r * 0.10f, Offset(c.x - sacWMax / 2f - r * 0.18f, stackTop))
+        drawCircle(transCol, r * 0.10f,
+            Offset(c.x - sacWMin / 2f - r * 0.18f, stackTop + (sacCount - 1) * gap))
+    }
+    // Vesicles budding off the trans face (bottom-right side).
+    if (r > 6f) {
+        val vCol = color.copy(alpha = 0.92f)
+        val vEdge = Color(0xFF92400E).copy(alpha = 0.55f)
+        val transY = stackTop + (sacCount - 1) * gap
+        val budRight = c.x + sacWMin / 2f
+        val buds = listOf(
+            Triple(Offset(budRight + r * 0.10f, transY + r * 0.20f), r * 0.16f, 0),
+            Triple(Offset(budRight + r * 0.32f, transY + r * 0.42f), r * 0.13f, 0),
+            Triple(Offset(budRight + r * 0.55f, transY + r * 0.62f), r * 0.10f, 0),
+            Triple(Offset(c.x - sacWMin / 2f - r * 0.30f, transY + r * 0.45f), r * 0.12f, 0),
+        )
+        buds.forEach { (pt, rad, _) ->
+            drawCircle(vCol, rad, pt)
+            drawCircle(vEdge, rad, pt, style = Stroke(0.8f))
+        }
     }
 }
 
 private fun DrawScope.drawVacuole(c: Offset, r: Float, color: Color) {
+    // Cell sap (radial gradient from clear centre to greener edge)
     val brush = Brush.radialGradient(
-        colors = listOf(color.copy(alpha = 0.40f), color.copy(alpha = 0.18f)),
+        colors = listOf(
+            Color(0xFFECFDF5).copy(alpha = 0.55f),
+            color.copy(alpha = 0.40f),
+            color.copy(alpha = 0.20f),
+        ),
         center = c, radius = r,
     )
     drawCircle(brush, r, c)
-    drawCircle(Color(0xFF10B981).copy(alpha = 0.55f), r, c, style = Stroke(1.2f))
-    // subtle inner swirl
+    // Tonoplast — single membrane, slightly thicker than other organelle outlines
+    drawCircle(Color(0xFF047857).copy(alpha = 0.70f), r, c, style = Stroke(1.6f))
+    // Inner highlight to suggest fluid
     if (r > 18f) {
-        val swirl = Path().apply {
-            moveTo(c.x - r * 0.5f, c.y + r * 0.1f)
-            cubicTo(
-                c.x - r * 0.2f, c.y - r * 0.4f,
-                c.x + r * 0.3f, c.y + r * 0.4f,
-                c.x + r * 0.6f, c.y - r * 0.1f,
-            )
+        val highlight = Brush.radialGradient(
+            colors = listOf(Color.White.copy(alpha = 0.25f), Color.Transparent),
+            center = Offset(c.x - r * 0.3f, c.y - r * 0.3f),
+            radius = r * 0.5f,
+        )
+        drawCircle(highlight, r * 0.6f, Offset(c.x - r * 0.3f, c.y - r * 0.3f))
+        // Few faint drift lines
+        val drift = Color(0xFF10B981).copy(alpha = 0.18f)
+        for (i in 0 until 3) {
+            val yy = c.y + (i - 1) * r * 0.25f + r * 0.05f
+            val path = Path().apply {
+                moveTo(c.x - r * 0.55f, yy)
+                quadraticTo(c.x, yy - r * 0.15f, c.x + r * 0.55f, yy)
+            }
+            drawPath(path, drift, style = Stroke(1f, cap = StrokeCap.Round))
         }
-        drawPath(swirl, Color(0xFF10B981).copy(alpha = 0.25f),
-            style = Stroke(1f, cap = StrokeCap.Round))
     }
 }
 
 private fun DrawScope.drawCentriole(c: Offset, r: Float, color: Color) {
-    val rodW = r * 0.7f
-    val rodH = r * 1.6f
-    // vertical rod
-    drawRect(color,
-        topLeft = Offset(c.x - rodW - r * 0.2f, c.y - rodH / 2f),
-        size = Size(rodW, rodH))
-    // horizontal rod
-    drawRect(color,
-        topLeft = Offset(c.x + r * 0.2f, c.y - rodW / 2f),
-        size = Size(rodH, rodW))
-    if (r > 8f) {
-        // striations
-        val str = Color(0xFFF5D0FE).copy(alpha = 0.8f)
-        for (i in 1..3) {
-            val yy = c.y - rodH / 2f + i * (rodH / 4f)
+    val rodW = r * 0.8f
+    val rodH = r * 1.8f
+    // vertical cylinder (left)
+    val vRodTL = Offset(c.x - rodW - r * 0.25f, c.y - rodH / 2f)
+    drawRect(color, topLeft = vRodTL, size = Size(rodW, rodH))
+    // horizontal cylinder (right)
+    val hRodTL = Offset(c.x + r * 0.25f, c.y - rodW / 2f)
+    drawRect(color, topLeft = hRodTL, size = Size(rodH, rodW))
+
+    // End caps with 9-triplet hint — small radial ticks at each cylinder end.
+    if (r > 6f) {
+        val tickCol = Color(0xFFF5D0FE)
+        // Vertical cylinder top + bottom end caps
+        val vEndTop = Offset(vRodTL.x + rodW / 2f, vRodTL.y)
+        val vEndBot = Offset(vRodTL.x + rodW / 2f, vRodTL.y + rodH)
+        // small ellipse at each end to suggest the open end of the cylinder
+        drawOval(color.copy(alpha = 0.85f),
+            topLeft = Offset(vEndTop.x - rodW / 2f, vEndTop.y - rodW * 0.15f),
+            size = Size(rodW, rodW * 0.30f))
+        drawOval(Color(0xFF86198F),
+            topLeft = Offset(vEndTop.x - rodW / 2f, vEndTop.y - rodW * 0.15f),
+            size = Size(rodW, rodW * 0.30f), style = Stroke(0.8f))
+        // 9 small ticks around the top opening
+        for (i in 0 until 9) {
+            val a = i * (2f * PI.toFloat() / 9f) + 0.2f
+            val tickX = vEndTop.x + cos(a) * rodW * 0.42f
+            val tickY = vEndTop.y + sin(a) * rodW * 0.15f
+            drawCircle(tickCol, 1.2f, Offset(tickX, tickY))
+        }
+        // Bottom opening
+        drawOval(color.copy(alpha = 0.85f),
+            topLeft = Offset(vEndBot.x - rodW / 2f, vEndBot.y - rodW * 0.15f),
+            size = Size(rodW, rodW * 0.30f))
+        drawOval(Color(0xFF86198F),
+            topLeft = Offset(vEndBot.x - rodW / 2f, vEndBot.y - rodW * 0.15f),
+            size = Size(rodW, rodW * 0.30f), style = Stroke(0.8f))
+
+        // Horizontal cylinder left + right end caps
+        val hEndL = Offset(hRodTL.x, hRodTL.y + rodW / 2f)
+        val hEndR = Offset(hRodTL.x + rodH, hRodTL.y + rodW / 2f)
+        drawOval(color.copy(alpha = 0.85f),
+            topLeft = Offset(hEndL.x - rodW * 0.15f, hEndL.y - rodW / 2f),
+            size = Size(rodW * 0.30f, rodW))
+        drawOval(Color(0xFF86198F),
+            topLeft = Offset(hEndL.x - rodW * 0.15f, hEndL.y - rodW / 2f),
+            size = Size(rodW * 0.30f, rodW), style = Stroke(0.8f))
+        // 9 ticks around the right opening
+        for (i in 0 until 9) {
+            val a = i * (2f * PI.toFloat() / 9f) + 0.2f
+            val tickX = hEndR.x + cos(a) * rodW * 0.15f
+            val tickY = hEndR.y + sin(a) * rodW * 0.42f
+            drawCircle(tickCol, 1.2f, Offset(tickX, tickY))
+        }
+        drawOval(color.copy(alpha = 0.85f),
+            topLeft = Offset(hEndR.x - rodW * 0.15f, hEndR.y - rodW / 2f),
+            size = Size(rodW * 0.30f, rodW))
+        drawOval(Color(0xFF86198F),
+            topLeft = Offset(hEndR.x - rodW * 0.15f, hEndR.y - rodW / 2f),
+            size = Size(rodW * 0.30f, rodW), style = Stroke(0.8f))
+
+        // Longitudinal striations on the cylinder bodies
+        val str = Color(0xFFF5D0FE).copy(alpha = 0.75f)
+        for (i in 1..2) {
+            val xx = vRodTL.x + rodW * (i / 3f)
             drawLine(str,
-                Offset(c.x - rodW - r * 0.2f + 1f, yy),
-                Offset(c.x - r * 0.2f - 1f, yy),
-                strokeWidth = 0.8f)
-            val xx = c.x + r * 0.2f + i * (rodH / 4f)
+                Offset(xx, vRodTL.y + 2f),
+                Offset(xx, vRodTL.y + rodH - 2f),
+                strokeWidth = 0.6f)
+            val yy = hRodTL.y + rodW * (i / 3f)
             drawLine(str,
-                Offset(xx, c.y - rodW / 2f + 1f),
-                Offset(xx, c.y + rodW / 2f - 1f),
-                strokeWidth = 0.8f)
+                Offset(hRodTL.x + 2f, yy),
+                Offset(hRodTL.x + rodH - 2f, yy),
+                strokeWidth = 0.6f)
         }
     }
     // outlines
-    drawRect(Color(0xFF86198F),
-        topLeft = Offset(c.x - rodW - r * 0.2f, c.y - rodH / 2f),
-        size = Size(rodW, rodH), style = Stroke(0.8f))
-    drawRect(Color(0xFF86198F),
-        topLeft = Offset(c.x + r * 0.2f, c.y - rodW / 2f),
-        size = Size(rodH, rodW), style = Stroke(0.8f))
+    drawRect(Color(0xFF86198F), topLeft = vRodTL, size = Size(rodW, rodH), style = Stroke(0.8f))
+    drawRect(Color(0xFF86198F), topLeft = hRodTL, size = Size(rodH, rodW), style = Stroke(0.8f))
 }
 
 private fun DrawScope.drawLysosome(c: Offset, r: Float, color: Color) {
+    // Slightly irregular outline (lobed) drawn as path
     val brush = Brush.radialGradient(
-        colors = listOf(color.copy(alpha = 0.95f), color),
-        center = Offset(c.x - r * 0.3f, c.y - r * 0.3f), radius = r * 1.2f,
+        colors = listOf(color.copy(alpha = 0.95f), color, Color(0xFFC2410C)),
+        center = Offset(c.x - r * 0.3f, c.y - r * 0.3f), radius = r * 1.3f,
     )
-    drawCircle(brush, r, c)
-    // enzyme speckles
-    if (r > 6f) {
-        val speck = Color(0xFF7C2D12).copy(alpha = 0.75f)
-        val dots = listOf(
-            Offset(c.x - r * 0.3f, c.y - r * 0.1f),
-            Offset(c.x + r * 0.25f, c.y - r * 0.35f),
-            Offset(c.x + r * 0.4f, c.y + r * 0.15f),
-            Offset(c.x - r * 0.1f, c.y + r * 0.4f),
-            Offset(c.x - r * 0.45f, c.y + r * 0.2f),
-        )
-        dots.forEach { drawCircle(speck, r * 0.10f, it) }
+    val outline = Path().apply {
+        val sides = 10
+        for (i in 0 until sides) {
+            val a = i * (2f * PI.toFloat() / sides)
+            val rad = r * (1f + (if (i % 2 == 0) 0.05f else -0.05f))
+            val x = c.x + cos(a) * rad
+            val y = c.y + sin(a) * rad
+            if (i == 0) moveTo(x, y) else lineTo(x, y)
+        }
+        close()
     }
-    drawCircle(Color(0xFF9A3412).copy(alpha = 0.6f), r, c, style = Stroke(0.8f))
+    drawPath(outline, brush)
+    drawPath(outline, Color(0xFF9A3412).copy(alpha = 0.75f), style = Stroke(1f))
+
+    // Enzyme speckle cluster — denser, jittered cluster of small dark dots
+    if (r > 5f) {
+        val speck = Color(0xFF7C2D12).copy(alpha = 0.80f)
+        val speckLight = Color(0xFFFEF3C7).copy(alpha = 0.6f)
+        val dots = listOf(
+            Offset(c.x - r * 0.30f, c.y - r * 0.10f) to r * 0.10f,
+            Offset(c.x + r * 0.20f, c.y - r * 0.32f) to r * 0.09f,
+            Offset(c.x + r * 0.35f, c.y + r * 0.10f) to r * 0.11f,
+            Offset(c.x - r * 0.05f, c.y + r * 0.35f) to r * 0.09f,
+            Offset(c.x - r * 0.40f, c.y + r * 0.18f) to r * 0.08f,
+            Offset(c.x + r * 0.05f, c.y + r * 0.05f) to r * 0.07f,
+            Offset(c.x - r * 0.15f, c.y - r * 0.30f) to r * 0.08f,
+            Offset(c.x + r * 0.40f, c.y - r * 0.05f) to r * 0.07f,
+        )
+        dots.forEach { (pt, rad) ->
+            drawCircle(speck, rad, pt)
+            drawCircle(speckLight, rad * 0.45f, Offset(pt.x - rad * 0.3f, pt.y - rad * 0.3f))
+        }
+    }
 }
 
 private fun hitTestCell(
     tap: Offset,
     canvasW: Float,
     canvasH: Float,
-    theta: Float,
     cellType: CellType,
 ): String? {
     val cx = canvasW / 2f
     val cy = canvasH / 2f
     val cellR = min(canvasW, canvasH) * 0.35f
     val instances = if (cellType == CellType.Plant) PLANT_LAYOUT else ANIMAL_LAYOUT
-    val projected = instances.map { it to project(it.pos, theta, cx, cy, cellR) }
+    val projected = instances.map { it to project(it.pos, cx, cy, cellR) }
         .sortedByDescending { it.second.zRot }
     for ((inst, p) in projected) {
         val k = kindOf(inst.kindId)
-        val r = cellR * k.radiusUnit * p.scale
+        val r = cellR * k.radiusUnit
         val hitR = r * 1.3f
         val d = Offset(tap.x - p.x, tap.y - p.y).getDistance()
         if (d < hitR) return k.id
@@ -1046,12 +1355,18 @@ private fun hitTestCell(
 private data class CellShape(
     val id: String, val name: String, val tagline: String, val detail: String,
     val drawer: DrawScope.(center: Offset, r: Float) -> Unit,
+    val keyParts: List<String> = emptyList(),
 )
 
 private val CELL_SHAPES: List<CellShape> = listOf(
     CellShape(
         id = "rbc", name = "Red Blood Cell", tagline = "Biconcave disc",
         detail = "Flexible, no nucleus, biconcave so it has max surface area for picking up oxygen — and squeezes through tiny capillaries.",
+        keyParts = listOf(
+            "Biconcave disc shape",
+            "No nucleus (more room for haemoglobin)",
+            "Flexible — bends through tiny capillaries",
+        ),
         drawer = { c, r ->
             // Three biconcave cells in a cluster
             val cells = listOf(
@@ -1087,6 +1402,13 @@ private val CELL_SHAPES: List<CellShape> = listOf(
     CellShape(
         id = "neuron", name = "Nerve Cell (Neuron)", tagline = "Long branching",
         detail = "Long axon carries electrical signals from one place to another in the body. The branches receive signals from other neurons.",
+        keyParts = listOf(
+            "Soma (cell body) — holds the nucleus",
+            "Dendrites — receive incoming signals",
+            "Axon — long fibre that carries the signal",
+            "Myelin sheath — insulates the axon",
+            "Axon terminals — pass the signal on",
+        ),
         drawer = { c, r ->
             val somaC = Offset(c.x - r * 0.4f, c.y)
             val somaR = r * 0.45f
@@ -1153,6 +1475,12 @@ private val CELL_SHAPES: List<CellShape> = listOf(
     CellShape(
         id = "plant-leaf", name = "Plant Leaf Cell", tagline = "Rectangular brick",
         detail = "Boxy, rigid cell wall — packs neatly side by side so leaves can capture lots of sunlight per area.",
+        keyParts = listOf(
+            "Cell wall — fixed rectangular shape",
+            "Chloroplasts — capture sunlight",
+            "Large central vacuole — keeps the cell turgid",
+            "Nucleus — pushed to one side by the vacuole",
+        ),
         drawer = { c, r ->
             // Leaf silhouette (left side)
             val leafC = Offset(c.x - r * 0.85f, c.y)
@@ -1231,6 +1559,12 @@ private val CELL_SHAPES: List<CellShape> = listOf(
     CellShape(
         id = "amoeba", name = "Amoeba", tagline = "Irregular / changing",
         detail = "Has no fixed shape — pushes out pseudopodia (false-feet) to crawl and engulf food. Single-celled organism.",
+        keyParts = listOf(
+            "Pseudopodia — temporary 'false feet' for moving and feeding",
+            "Nucleus — control centre",
+            "Contractile vacuole — pumps out excess water",
+            "Food vacuole — holds engulfed food being digested",
+        ),
         drawer = { c, r ->
             // Irregular blob with multiple pseudopodia (4 sides)
             val path = Path().apply {
@@ -1353,6 +1687,15 @@ private fun ShapesMode() {
                             if (isExpanded) {
                                 LLText(shape.detail, color = t.ink200,
                                     size = 12.sp, lineHeight = 16.sp)
+                                if (shape.keyParts.isNotEmpty()) {
+                                    Spacer(Modifier.height(2.dp))
+                                    LLText("LOOK FOR", color = t.ink500, size = 10.sp,
+                                        weight = FontWeight.SemiBold, letterSpacing = 1.4.sp)
+                                    shape.keyParts.forEach { part ->
+                                        LLText("• $part", color = t.ink400,
+                                            size = 11.sp, lineHeight = 15.sp)
+                                    }
+                                }
                             }
                         }
                     }
@@ -1471,15 +1814,14 @@ private fun CompareCellPanel(
                 drawCellOutline(
                     cx, cy, cellR,
                     isPlant = isPlant,
-                    theta = 0f,
                     wallStrokeColor = if (hCellWall) Color(0xFFFCD34D) else Color(0xFF065F46),
                     wallStrokeWidth = if (hCellWall) 4f else 3f,
                 )
                 // Organelles
                 for (inst in instances) {
                     val k = kindOf(inst.kindId)
-                    val p = project(inst.pos, 0f, cx, cy, cellR)
-                    val r = cellR * k.radiusUnit * p.scale
+                    val p = project(inst.pos, cx, cy, cellR)
+                    val r = cellR * k.radiusUnit
                     val isHighlighted = (k.id == "chloroplast" && hChloroplast) ||
                         (k.id == "vacuole" && hVacuole) ||
                         (k.id == "centriole" && hCentriole)
@@ -1490,8 +1832,170 @@ private fun CompareCellPanel(
                     }
                     drawOrganelle(k, Offset(p.x, p.y), r)
                 }
+                // Persistent labels
+                val labelTable = if (isPlant) PLANT_LABELS else ANIMAL_LABELS
+                val labelled = mutableSetOf<String>()
+                for (inst in instances) {
+                    if (inst.kindId in labelled) continue
+                    val place = labelTable[inst.kindId] ?: continue
+                    val k = kindOf(inst.kindId)
+                    val p = project(inst.pos, cx, cy, cellR)
+                    val r = cellR * k.radiusUnit
+                    val anchor = Offset(p.x + place.anchorDx * r, p.y + place.anchorDy * r)
+                    val labelEnd = Offset(cx + place.labelX * cellR, cy + place.labelY * cellR)
+                    drawLabel(textMeasurer, k.name, anchor, labelEnd,
+                        color = Color(0xFF52525B))
+                    labelled += inst.kindId
+                }
             }
         }
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Mode: Detail — large fully-labelled cell diagram (NCERT-style)
+// ────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun DetailMode() {
+    val t = LL.tokens
+    var cellType by remember { mutableStateOf(CellType.Plant) }
+    var selectedKindId by remember { mutableStateOf<String?>(null) }
+
+    Row(
+        modifier = Modifier.fillMaxSize().padding(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        // Diagram surface
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(12.dp))
+                .background(t.surface)
+                .border(1.dp, t.line, RoundedCornerShape(12.dp))
+                .pointerInput(cellType) {
+                    detectTapGestures { tap ->
+                        selectedKindId = hitTestCell(
+                            tap = tap,
+                            canvasW = size.width.toFloat(),
+                            canvasH = size.height.toFloat(),
+                            cellType = cellType,
+                        )
+                    }
+                },
+        ) {
+            CellSceneCanvas(
+                cellType = cellType,
+                selectedKindId = selectedKindId,
+                pulse = 0.6f,
+                showLabels = true,
+            )
+        }
+
+        // Right rail — type toggle + long detail
+        Column(
+            modifier = Modifier.width(320.dp).fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            // Plant / Animal toggle
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(t.surface)
+                    .border(1.dp, t.line, RoundedCornerShape(16.dp))
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                LLText("CELL TYPE", color = t.ink500, size = 11.sp,
+                    weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(CellType.Plant to "Plant", CellType.Animal to "Animal")
+                        .forEach { (ct, label) ->
+                            val sel = cellType == ct
+                            val bg = if (sel) t.accent600 else t.surface2
+                            val fg = if (sel) Color.White else t.ink200
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(bg)
+                                    .clickable {
+                                        cellType = ct
+                                        selectedKindId = null
+                                    }
+                                    .padding(vertical = 8.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                LLText(label, color = fg, size = 13.sp,
+                                    weight = FontWeight.SemiBold)
+                            }
+                        }
+                }
+            }
+            // Detail panel
+            DetailInfoPanel(selectedKindId = selectedKindId, cellType = cellType)
+        }
+    }
+}
+
+@Composable
+private fun DetailInfoPanel(selectedKindId: String?, cellType: CellType) {
+    val t = LL.tokens
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(16.dp))
+            .background(t.surface)
+            .border(1.dp, t.line, RoundedCornerShape(16.dp))
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        LLText("ORGANELLE", color = t.ink500, size = 11.sp,
+            weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+        if (selectedKindId == null) {
+            LLText("Tap any organelle in the cell to read about it.",
+                color = t.ink400, size = 12.sp, lineHeight = 16.sp)
+            Spacer(Modifier.height(4.dp))
+            LLText(
+                if (cellType == CellType.Plant)
+                    "Plant cell — note the cell wall, large central vacuole, and chloroplasts. " +
+                        "Animal cells lack all three."
+                else
+                    "Animal cell — note the centrioles, many small vacuoles, and lysosomes. " +
+                        "Plant cells don't have these.",
+                color = t.ink400, size = 12.sp, lineHeight = 16.sp,
+            )
+            return@Column
+        }
+        val k = kindOf(selectedKindId)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(14.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(k.color),
+            )
+            LLText(k.name, color = t.ink50, size = 17.sp, weight = FontWeight.Bold)
+        }
+        LLText(k.role, color = t.ink200, size = 13.sp, lineHeight = 18.sp,
+            weight = FontWeight.SemiBold)
+        Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+        LLText(k.detail, color = t.ink400, size = 12.sp, lineHeight = 18.sp)
+        Spacer(Modifier.height(2.dp))
+        LLText(
+            when {
+                k.presentInPlant && k.presentInAnimal -> "Present in: Plant · Animal"
+                k.presentInPlant -> "Present in: Plant only"
+                else -> "Present in: Animal only"
+            },
+            color = t.ink500, size = 11.sp,
+        )
     }
 }
 
@@ -1628,4 +2132,27 @@ private fun DrawScope.drawTextAt(
         style = TextStyle(color = color, fontSize = size, fontWeight = weight),
     )
     drawText(textLayoutResult = layout, topLeft = topLeft)
+}
+
+private fun DrawScope.drawLabel(
+    textMeasurer: TextMeasurer,
+    text: String,
+    anchor: Offset,
+    labelEnd: Offset,
+    color: Color,
+    fontSize: androidx.compose.ui.unit.TextUnit = 10.sp,
+) {
+    drawLine(color.copy(alpha = 0.70f), anchor, labelEnd, strokeWidth = 1f)
+    drawCircle(color, 2.2f, anchor)
+    val layout = textMeasurer.measure(
+        text = text,
+        style = TextStyle(color = color, fontSize = fontSize, fontWeight = FontWeight.SemiBold),
+    )
+    val pad = 4f
+    val textTopLeft = if (labelEnd.x >= anchor.x) {
+        Offset(labelEnd.x + pad, labelEnd.y - layout.size.height / 2f)
+    } else {
+        Offset(labelEnd.x - pad - layout.size.width, labelEnd.y - layout.size.height / 2f)
+    }
+    drawText(textLayoutResult = layout, topLeft = textTopLeft)
 }
