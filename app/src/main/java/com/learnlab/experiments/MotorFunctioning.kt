@@ -27,6 +27,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -298,6 +300,21 @@ fun MotorFunctioning(controls: ExperimentControls) {
     }
 }
 
+// Cabinet projection: back of scene tilts up (and left or right depending on mirror).
+// World axes: +x right, +y down, +z toward viewer (front).
+private const val DEPTH_DX = 0.45f
+private const val DEPTH_DY = 0.30f
+
+private fun projP(
+    x: Float, y: Float, z: Float,
+    origin: Offset,
+    mirror: Boolean = false,
+): Offset {
+    val dx = if (mirror) -z * DEPTH_DX else z * DEPTH_DX
+    val dy = z * DEPTH_DY
+    return Offset(origin.x + x + dx, origin.y + y + dy)
+}
+
 @Composable
 private fun MotorScene(
     theta: Float,
@@ -309,6 +326,10 @@ private fun MotorScene(
     val textMeasurer = rememberTextMeasurer()
     val t = LL.tokens
     val inkLabel = t.ink400
+    val purple = Color(0xFFA855F7)
+    val coilColor = Color(0xFFB45309)
+    val coilHighlight = Color(0xFFFBBF24)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -316,210 +337,323 @@ private fun MotorScene(
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val w = size.width; val h = size.height
-            val cx = w / 2f
+            val origin = Offset(w / 2f, h * 0.44f)
+            val u = min(w, h) * 0.0038f
 
-            // Layout anchors
-            val magCy = h * 0.32f
-            val magW = w * 0.08f
-            val magH = h * 0.34f
-            val magGap = h * 0.03f
-            val leftMagInner = cx - h * 0.26f
-            val rightMagInner = cx + h * 0.26f
+            // World dimensions
+            val magW = u * 38f
+            val magH = u * 110f
+            val magD = u * 60f
+            val magGap = u * 70f
+            val coilR = u * 28f
+            val coilZ = u * 52f
+            val shaftLen = u * 38f
+            val commZ = coilZ + shaftLen
+            val commR = u * 14f
+            val brushW = u * 7f
+            val brushH = u * 22f
+            val battY = u * 95f
+            val battW = u * 80f
+            val battH = u * 22f
+            val battZ = commZ + u * 30f
 
-            val coilR = h * 0.11f
-
-            val commCy = h * 0.66f
-            val commR = h * 0.05f
-
-            val brushW = w * 0.018f
-            val brushH = h * 0.07f
-            val brushLx = cx - commR
-            val brushRx = cx + commR
-
-            val battCy = h * 0.86f
-            val battW = w * 0.16f
-            val battH = h * 0.06f
-            val battLx = cx - battW / 2f
-            val battRx = cx + battW / 2f
-
-            // ── Magnets ──
-            drawRect(Color(0xFFEF4444),
-                topLeft = Offset(leftMagInner - magW, magCy - magH / 2f),
-                size = Size(magW, magH))
-            drawRect(Color(0xFF0F172A),
-                topLeft = Offset(leftMagInner - magW, magCy - magH / 2f),
-                size = Size(magW, magH),
-                style = Stroke(1.5f))
-            drawRect(Color(0xFF3B82F6),
-                topLeft = Offset(rightMagInner, magCy - magH / 2f),
-                size = Size(magW, magH))
-            drawRect(Color(0xFF0F172A),
-                topLeft = Offset(rightMagInner, magCy - magH / 2f),
-                size = Size(magW, magH),
-                style = Stroke(1.5f))
-
-            // N / S text on inner pole face
+            // ── Magnets (3D cuboids, inner faces visible via mirrored projection) ──
+            val nXc = -(magGap + magW / 2f)
+            drawCuboid3D(
+                origin,
+                xMin = nXc - magW / 2f, xMax = nXc + magW / 2f,
+                yMin = -magH / 2f, yMax = magH / 2f,
+                zMin = -magD / 2f, zMax = magD / 2f,
+                frontColor = Color(0xFFEF4444),
+                topColor = Color(0xFFB91C1C),
+                sideColor = Color(0xFFDC2626),
+                borderColor = Color(0xFF7F1D1D),
+                mirror = true,
+            )
             drawCenteredText(textMeasurer, "N",
-                Offset(leftMagInner - magW * 0.3f, magCy),
-                color = Color.White, size = 28.sp, weight = FontWeight.Bold)
+                center = projP(nXc + magW / 2f, 0f, 0f, origin, mirror = true),
+                color = Color.White, size = 38.sp, weight = FontWeight.Bold)
+
+            val sXc = magGap + magW / 2f
+            drawCuboid3D(
+                origin,
+                xMin = sXc - magW / 2f, xMax = sXc + magW / 2f,
+                yMin = -magH / 2f, yMax = magH / 2f,
+                zMin = -magD / 2f, zMax = magD / 2f,
+                frontColor = Color(0xFF3B82F6),
+                topColor = Color(0xFF1D4ED8),
+                sideColor = Color(0xFF2563EB),
+                borderColor = Color(0xFF1E3A8A),
+                mirror = false,
+            )
             drawCenteredText(textMeasurer, "S",
-                Offset(rightMagInner + magW * 0.3f, magCy),
-                color = Color.White, size = 28.sp, weight = FontWeight.Bold)
+                center = projP(sXc - magW / 2f, 0f, 0f, origin, mirror = false),
+                color = Color.White, size = 38.sp, weight = FontWeight.Bold)
 
-            // Magnet labels
-            drawCenteredText(textMeasurer, "Permanent magnet",
-                Offset(leftMagInner - magW / 2f, magCy - magH / 2f - 14f),
-                color = inkLabel, size = 10.sp)
-            drawCenteredText(textMeasurer, "Permanent magnet",
-                Offset(rightMagInner + magW / 2f, magCy - magH / 2f - 14f),
-                color = inkLabel, size = 10.sp)
+            drawCenteredText(textMeasurer, "North pole",
+                projP(nXc, -magH / 2f - u * 14f, 0f, origin, mirror = true),
+                color = Color(0xFFB91C1C), size = 11.sp, weight = FontWeight.SemiBold)
+            drawCenteredText(textMeasurer, "South pole",
+                projP(sXc, -magH / 2f - u * 14f, 0f, origin, mirror = false),
+                color = Color(0xFF1D4ED8), size = 11.sp, weight = FontWeight.SemiBold)
 
-            // ── Field arrows N → S ──
+            // ── Magnetic field (B) ──
             val nLines = 5
-            val lineSpacing = magH * 0.16f
-            val fieldColor = Color(0xFF94A3B8).copy(alpha = 0.4f + 0.5f * fieldStrength)
+            val lineSpacing = magH * 0.17f
+            val fieldGreen = Color(0xFF22C55E)
+            val fieldColor = fieldGreen.copy(alpha = 0.35f + 0.55f * fieldStrength)
             for (i in 0 until nLines) {
-                val yLine = magCy - magH * 0.32f + i * lineSpacing
-                drawLine(fieldColor,
-                    Offset(leftMagInner + magGap, yLine),
-                    Offset(rightMagInner - magGap, yLine),
-                    strokeWidth = 1.5f,
+                val yLine = -magH * 0.34f + i * lineSpacing
+                val start = projP(-magGap + u * 3f, yLine, 0f, origin)
+                val end = projP(magGap - u * 3f, yLine, 0f, origin)
+                drawLine(fieldColor, start, end,
+                    strokeWidth = 1.6f,
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f)))
-                val ah = 6f
-                val ax = rightMagInner - magGap
-                drawLine(fieldColor, Offset(ax, yLine),
-                    Offset(ax - ah, yLine - ah * 0.7f), strokeWidth = 1.5f)
-                drawLine(fieldColor, Offset(ax, yLine),
-                    Offset(ax - ah, yLine + ah * 0.7f), strokeWidth = 1.5f)
+                val ah = 7f
+                drawLine(fieldColor, end,
+                    Offset(end.x - ah, end.y - ah * 0.65f), strokeWidth = 1.6f)
+                drawLine(fieldColor, end,
+                    Offset(end.x - ah, end.y + ah * 0.65f), strokeWidth = 1.6f)
             }
-            drawCenteredText(textMeasurer, "Magnetic field (B)",
-                Offset(cx, magCy + magH / 2f + 12f),
-                color = Color(0xFF94A3B8), size = 10.sp)
+            drawCenteredText(textMeasurer, "B  magnetic field",
+                projP(0f, magH / 2f + u * 16f, 0f, origin),
+                color = fieldGreen, size = 11.sp, weight = FontWeight.SemiBold)
 
-            // ── Coil ──
-            val sideA = Offset(cx + coilR * cos(theta), magCy + coilR * sin(theta))
-            val sideB = Offset(cx - coilR * cos(theta), magCy - coilR * sin(theta))
-            drawLine(Color(0xFFB45309).copy(alpha = 0.95f),
-                sideA, sideB,
-                strokeWidth = 4f, cap = StrokeCap.Round)
-            val sideADotOut = direction == 1
-            drawCoilSide(sideA, isOut = sideADotOut)
-            drawCoilSide(sideB, isOut = !sideADotOut)
-            drawCircle(Color(0xFF334155), 6f, Offset(cx, magCy))
+            // ── Armature coil ──
+            // Long sides parallel to z-axis at angle theta around the z-axis.
+            val legAx = coilR * sin(theta)
+            val legAy = -coilR * cos(theta)
+            val legBx = -coilR * sin(theta)
+            val legBy =  coilR * cos(theta)
 
-            // Coil leader-line + label
-            val coilLabelEnd = Offset(rightMagInner - magGap - 20f, magCy + magH / 2f - 18f)
-            drawLine(inkLabel, Offset(cx + coilR * 0.7f, magCy + coilR * 0.7f),
-                coilLabelEnd, strokeWidth = 1f)
-            drawTextAt(textMeasurer,"Coil",
-                Offset(coilLabelEnd.x + 4f, coilLabelEnd.y - 6f),
-                color = inkLabel, size = 10.sp)
+            val legABack = projP(legAx, legAy, -coilZ, origin)
+            val legAFront = projP(legAx, legAy, coilZ, origin)
+            val legBBack = projP(legBx, legBy, -coilZ, origin)
+            val legBFront = projP(legBx, legBy, coilZ, origin)
 
-            // ── Force arrows ──
-            val torqueDir = direction.toFloat()
-            val tangentA = Offset(-sin(theta) * torqueDir, cos(theta) * torqueDir)
-            val tangentB = Offset(sin(theta) * torqueDir, -cos(theta) * torqueDir)
-            val maxLen = h * 0.10f
-            val arrLen = maxLen * forceScale.coerceAtLeast(0.20f)
-            val pulse = if (powerOn) 1f else 0.65f
-            drawForceArrow(sideA, sideA + tangentA * (arrLen * pulse), Color(0xFFFCA5A5))
-            drawForceArrow(sideB, sideB + tangentB * (arrLen * pulse), Color(0xFFFCA5A5))
-            drawTextAt(textMeasurer,"F = B·I·L",
-                Offset(sideA.x + 14f, sideA.y + 14f),
-                color = Color(0xFFFCA5A5), size = 10.sp, weight = FontWeight.SemiBold)
+            // Back short side (connects legA-back to legB-back)
+            drawLine(coilColor, legABack, legBBack,
+                strokeWidth = 4.5f, cap = StrokeCap.Round)
 
-            // ── Commutator (two half-disks, flipping every π) ──
-            val commTopGold = ((theta / PI.toFloat()).toInt() % 2 == 0)
+            // Long active sides
+            drawLine(coilColor, legABack, legAFront,
+                strokeWidth = 5.5f, cap = StrokeCap.Round)
+            drawLine(coilColor, legBBack, legBFront,
+                strokeWidth = 5.5f, cap = StrokeCap.Round)
+
+            // Shaft (axis of rotation, +z direction toward commutator)
+            val shaftBack = projP(0f, 0f, coilZ, origin)
+            val commCenter = projP(0f, 0f, commZ, origin)
+            drawLine(Color(0xFF52525B), shaftBack, commCenter,
+                strokeWidth = 3.5f, cap = StrokeCap.Round)
+
+            // Coil-to-commutator wires (front short sides routed via commutator outer edge)
+            val attachAx = commR * sin(theta)
+            val attachAy = -commR * cos(theta)
+            val attachBx = -commR * sin(theta)
+            val attachBy =  commR * cos(theta)
+            val attachA = projP(attachAx, attachAy, commZ - u * 1f, origin)
+            val attachB = projP(attachBx, attachBy, commZ - u * 1f, origin)
+            drawLine(coilColor, legAFront, attachA,
+                strokeWidth = 3.5f, cap = StrokeCap.Round)
+            drawLine(coilColor, legBFront, attachB,
+                strokeWidth = 3.5f, cap = StrokeCap.Round)
+
+            // ── Commutator (front disc split into two halves) ──
             val gold = Color(0xFFCA8A04)
             val copper = Color(0xFFB45309)
-            drawArc(if (commTopGold) gold else copper,
-                startAngle = 180f, sweepAngle = 180f, useCenter = true,
-                topLeft = Offset(cx - commR, commCy - commR),
-                size = Size(commR * 2f, commR * 2f))
-            drawArc(if (commTopGold) copper else gold,
-                startAngle = 0f, sweepAngle = 180f, useCenter = true,
-                topLeft = Offset(cx - commR, commCy - commR),
-                size = Size(commR * 2f, commR * 2f))
-            drawCircle(Color(0xFF0F172A), commR, Offset(cx, commCy), style = Stroke(1.5f))
-            drawLine(Color(0xFF0F172A),
-                Offset(cx - commR, commCy), Offset(cx + commR, commCy),
-                strokeWidth = 1.5f)
+            val degrees = theta * 180f / PI.toFloat()
+            withTransform({
+                rotate(degrees, pivot = commCenter)
+            }) {
+                drawArc(gold,
+                    startAngle = 180f, sweepAngle = 180f, useCenter = true,
+                    topLeft = Offset(commCenter.x - commR, commCenter.y - commR),
+                    size = Size(commR * 2f, commR * 2f))
+                drawArc(copper,
+                    startAngle = 0f, sweepAngle = 180f, useCenter = true,
+                    topLeft = Offset(commCenter.x - commR, commCenter.y - commR),
+                    size = Size(commR * 2f, commR * 2f))
+                drawLine(Color(0xFF1F2937),
+                    Offset(commCenter.x - commR, commCenter.y),
+                    Offset(commCenter.x + commR, commCenter.y),
+                    strokeWidth = 1.5f)
+            }
+            drawCircle(Color(0xFF1F2937), commR, commCenter, style = Stroke(1.5f))
 
-            // Commutator label
-            drawTextAt(textMeasurer,"Commutator",
-                Offset(cx + commR + 10f, commCy - 6f),
-                color = inkLabel, size = 10.sp)
-
-            // ── Brushes ──
-            drawRect(Color(0xFF64748B),
-                topLeft = Offset(brushLx - brushW, commCy - brushH / 2f),
+            // ── Brushes (touch commutator from below) ──
+            val brushLCx = commCenter.x - commR - brushW * 0.5f
+            val brushRCx = commCenter.x + commR + brushW * 0.5f
+            val brushCy = commCenter.y + brushH * 0.35f
+            drawRect(Color(0xFF52525B),
+                topLeft = Offset(brushLCx - brushW / 2f, brushCy - brushH / 2f),
                 size = Size(brushW, brushH))
-            drawRect(Color(0xFF64748B),
-                topLeft = Offset(brushRx, commCy - brushH / 2f),
+            drawRect(Color(0xFF18181B),
+                topLeft = Offset(brushLCx - brushW / 2f, brushCy - brushH / 2f),
+                size = Size(brushW, brushH), style = Stroke(1f))
+            drawRect(Color(0xFF52525B),
+                topLeft = Offset(brushRCx - brushW / 2f, brushCy - brushH / 2f),
                 size = Size(brushW, brushH))
-            drawTextAt(textMeasurer,"Brushes",
-                Offset(brushLx - brushW - 60f, commCy - 6f),
-                color = inkLabel, size = 10.sp)
+            drawRect(Color(0xFF18181B),
+                topLeft = Offset(brushRCx - brushW / 2f, brushCy - brushH / 2f),
+                size = Size(brushW, brushH), style = Stroke(1f))
 
-            // ── Battery ──
-            drawRect(Color(0xFF1E293B),
-                topLeft = Offset(battLx, battCy - battH / 2f),
-                size = Size(battW, battH))
-            drawRect(Color(0xFF94A3B8),
-                topLeft = Offset(battLx, battCy - battH / 2f),
+            // ── Current direction chevrons on coil legs ──
+            // Current in legA is along +z * direction; in legB along -z * direction.
+            val chevOffset = u * 9f
+            val legAMid = projP(legAx, legAy, 0f, origin)
+            val legAChevTo = projP(legAx, legAy, direction * chevOffset, origin)
+            drawArrowChevron(legAMid, legAChevTo, coilHighlight)
+            val legBMid = projP(legBx, legBy, 0f, origin)
+            val legBChevTo = projP(legBx, legBy, -direction * chevOffset, origin)
+            drawArrowChevron(legBMid, legBChevTo, coilHighlight)
+
+            // ── Force arrows on the two active legs (vertical in world) ──
+            // F = I*L × B. Current along z, B along +x → force along ±y.
+            val pulse = if (powerOn) 1f else 0.55f
+            val arrLen = u * 40f * forceScale.coerceAtLeast(0.30f) * pulse
+            val fA = direction * arrLen
+            val fB = -direction * arrLen
+            val fAEnd = Offset(legAMid.x, legAMid.y + fA)
+            val fBEnd = Offset(legBMid.x, legBMid.y + fB)
+            drawForceArrow3D(legAMid, fAEnd, purple)
+            drawForceArrow3D(legBMid, fBEnd, purple)
+            drawTextAt(textMeasurer, "F",
+                Offset(fAEnd.x + 6f, fAEnd.y - if (fA > 0) -6f else 14f),
+                color = purple, size = 14.sp, weight = FontWeight.Bold)
+            drawTextAt(textMeasurer, "F",
+                Offset(fBEnd.x + 6f, fBEnd.y - if (fB > 0) -6f else 14f),
+                color = purple, size = 14.sp, weight = FontWeight.Bold)
+
+            // ── Battery + wires ──
+            val battCenterScreen = projP(0f, battY, battZ, origin)
+            val battTopLeft = Offset(battCenterScreen.x - battW / 2f,
+                                     battCenterScreen.y - battH / 2f)
+            // Body (cylindrical look via rounded rect)
+            drawRoundRect(
+                color = Color(0xFFE7E5E4),
+                topLeft = battTopLeft,
                 size = Size(battW, battH),
-                style = Stroke(1.5f))
-            // long bar (+) and short bar (−) inside body
-            val barX1 = battLx + battW * 0.30f
-            val barX2 = battLx + battW * 0.40f
-            drawLine(Color(0xFFFCA5A5),
-                Offset(barX1, battCy - battH * 0.35f),
-                Offset(barX1, battCy + battH * 0.35f),
-                strokeWidth = 3f)
-            drawLine(Color(0xFF93C5FD),
-                Offset(barX2, battCy - battH * 0.20f),
-                Offset(barX2, battCy + battH * 0.20f),
-                strokeWidth = 3f)
+                cornerRadius = CornerRadius(battH / 2f, battH / 2f),
+            )
+            drawRoundRect(
+                color = Color(0xFF52525B),
+                topLeft = battTopLeft,
+                size = Size(battW, battH),
+                cornerRadius = CornerRadius(battH / 2f, battH / 2f),
+                style = Stroke(1.5f),
+            )
+            // Positive cap (red nub on right end)
+            drawRect(Color(0xFFEF4444),
+                topLeft = Offset(battTopLeft.x + battW - u * 5f,
+                                 battCenterScreen.y - battH * 0.22f),
+                size = Size(u * 4f, battH * 0.44f))
             drawCenteredText(textMeasurer, "+",
-                Offset(battLx + 14f, battCy),
-                color = Color(0xFFFCA5A5), size = 14.sp, weight = FontWeight.Bold)
+                Offset(battTopLeft.x + battW - battH * 0.5f, battCenterScreen.y),
+                color = Color(0xFF7F1D1D), size = 14.sp, weight = FontWeight.Bold)
             drawCenteredText(textMeasurer, "−",
-                Offset(battRx - 14f, battCy),
-                color = Color(0xFF93C5FD), size = 14.sp, weight = FontWeight.Bold)
+                Offset(battTopLeft.x + battH * 0.5f, battCenterScreen.y),
+                color = Color(0xFF27272A), size = 14.sp, weight = FontWeight.Bold)
             drawCenteredText(textMeasurer, "Battery",
-                Offset(cx, battCy + battH / 2f + 10f),
+                Offset(battCenterScreen.x, battTopLeft.y + battH + 12f),
                 color = inkLabel, size = 10.sp)
 
-            // ── Wires battery → brushes ──
-            val wireColor = if (powerOn) Color(0xFFFBBF24) else Color(0xFF64748B)
-            val wireMidY = (battCy - battH / 2f + commCy + brushH / 2f) / 2f
-            val leftBrushBottom = Offset(brushLx - brushW / 2f, commCy + brushH / 2f)
-            val rightBrushBottom = Offset(brushRx + brushW / 2f, commCy + brushH / 2f)
-            val battTopL = Offset(battLx + 14f, battCy - battH / 2f)
-            val battTopR = Offset(battRx - 14f, battCy - battH / 2f)
+            // Wires (battery terminals → brushes) — bend up around the assembly
+            val wireColor = if (powerOn) coilHighlight else Color(0xFF94A3B8)
+            val rightTerm = Offset(battTopLeft.x + battW + u * 3f, battCenterScreen.y)
+            val leftTerm = Offset(battTopLeft.x - u * 3f, battCenterScreen.y)
+            val rightBrushPort = Offset(brushRCx + brushW / 2f, brushCy + brushH * 0.2f)
+            val leftBrushPort = Offset(brushLCx - brushW / 2f, brushCy + brushH * 0.2f)
 
-            drawPath(
-                Path().apply {
-                    moveTo(battTopL.x, battTopL.y)
-                    lineTo(battTopL.x, wireMidY)
-                    lineTo(leftBrushBottom.x, wireMidY)
-                    lineTo(leftBrushBottom.x, leftBrushBottom.y)
-                },
-                color = wireColor,
-                style = Stroke(2.5f, cap = StrokeCap.Round),
-            )
-            drawPath(
-                Path().apply {
-                    moveTo(battTopR.x, battTopR.y)
-                    lineTo(battTopR.x, wireMidY)
-                    lineTo(rightBrushBottom.x, wireMidY)
-                    lineTo(rightBrushBottom.x, rightBrushBottom.y)
-                },
-                color = wireColor,
-                style = Stroke(2.5f, cap = StrokeCap.Round),
-            )
+            val rightWire = Path().apply {
+                moveTo(rightTerm.x, rightTerm.y)
+                quadraticTo(
+                    rightTerm.x + u * 30f, (rightTerm.y + rightBrushPort.y) / 2f,
+                    rightBrushPort.x, rightBrushPort.y,
+                )
+            }
+            drawPath(rightWire, wireColor, style = Stroke(3f, cap = StrokeCap.Round))
+
+            val leftWire = Path().apply {
+                moveTo(leftTerm.x, leftTerm.y)
+                quadraticTo(
+                    leftTerm.x - u * 30f, (leftTerm.y + leftBrushPort.y) / 2f,
+                    leftBrushPort.x, leftBrushPort.y,
+                )
+            }
+            drawPath(leftWire, wireColor, style = Stroke(3f, cap = StrokeCap.Round))
+
+            // ── Component labels ──
+            drawTextAt(textMeasurer, "Armature (coil)",
+                Offset(legAFront.x + 8f, legAFront.y + u * 12f),
+                color = inkLabel, size = 10.sp)
+            drawTextAt(textMeasurer, "Commutator",
+                Offset(commCenter.x + commR + 6f, commCenter.y - 6f),
+                color = inkLabel, size = 10.sp)
+            drawTextAt(textMeasurer, "Brush",
+                Offset(brushLCx - 46f, brushCy - 4f),
+                color = inkLabel, size = 10.sp)
+            drawTextAt(textMeasurer, "Brush",
+                Offset(brushRCx + 10f, brushCy - 4f),
+                color = inkLabel, size = 10.sp)
+            drawTextAt(textMeasurer, "F = B · I · L",
+                Offset(w - 110f, 6f),
+                color = purple, size = 12.sp, weight = FontWeight.SemiBold)
         }
     }
+}
+
+private fun DrawScope.drawCuboid3D(
+    origin: Offset,
+    xMin: Float, xMax: Float,
+    yMin: Float, yMax: Float,
+    zMin: Float, zMax: Float,
+    frontColor: Color,
+    topColor: Color,
+    sideColor: Color,
+    borderColor: Color,
+    mirror: Boolean,
+) {
+    fun p(x: Float, y: Float, z: Float) = projP(x, y, z, origin, mirror)
+    val ftl = p(xMin, yMin, zMax)
+    val ftr = p(xMax, yMin, zMax)
+    val fbl = p(xMin, yMax, zMax)
+    val fbr = p(xMax, yMax, zMax)
+    val btl = p(xMin, yMin, zMin)
+    val btr = p(xMax, yMin, zMin)
+
+    // Top face (visible)
+    val topPath = Path().apply {
+        moveTo(ftl.x, ftl.y); lineTo(ftr.x, ftr.y)
+        lineTo(btr.x, btr.y); lineTo(btl.x, btl.y); close()
+    }
+    drawPath(topPath, topColor)
+    drawPath(topPath, borderColor, style = Stroke(1.5f))
+
+    // Inner side face: right if mirror=true, left otherwise
+    val sidePath = if (mirror) {
+        val bbr = p(xMax, yMax, zMin)
+        Path().apply {
+            moveTo(ftr.x, ftr.y); lineTo(fbr.x, fbr.y)
+            lineTo(bbr.x, bbr.y); lineTo(btr.x, btr.y); close()
+        }
+    } else {
+        val bbl = p(xMin, yMax, zMin)
+        Path().apply {
+            moveTo(ftl.x, ftl.y); lineTo(fbl.x, fbl.y)
+            lineTo(bbl.x, bbl.y); lineTo(btl.x, btl.y); close()
+        }
+    }
+    drawPath(sidePath, sideColor)
+    drawPath(sidePath, borderColor, style = Stroke(1.5f))
+
+    // Front face (drawn last so labels sit clean on top)
+    val frontPath = Path().apply {
+        moveTo(ftl.x, ftl.y); lineTo(ftr.x, ftr.y)
+        lineTo(fbr.x, fbr.y); lineTo(fbl.x, fbl.y); close()
+    }
+    drawPath(frontPath, frontColor)
+    drawPath(frontPath, borderColor, style = Stroke(1.5f))
 }
 
 private fun DrawScope.drawTextAt(
@@ -555,38 +689,41 @@ private fun DrawScope.drawCenteredText(
     ))
 }
 
-private fun DrawScope.drawCoilSide(pos: Offset, isOut: Boolean) {
-    val r = 14f
-    drawCircle(Color(0xFFFEF3C7), r, pos)
-    drawCircle(Color(0xFF92400E), r, pos, style = Stroke(2f))
-    if (isOut) {
-        drawCircle(Color(0xFF92400E), 4f, pos)
-    } else {
-        val s = r * 0.55f
-        drawLine(Color(0xFF92400E),
-            Offset(pos.x - s, pos.y - s), Offset(pos.x + s, pos.y + s),
-            strokeWidth = 2.5f, cap = StrokeCap.Round)
-        drawLine(Color(0xFF92400E),
-            Offset(pos.x - s, pos.y + s), Offset(pos.x + s, pos.y - s),
-            strokeWidth = 2.5f, cap = StrokeCap.Round)
-    }
-}
-
-private fun DrawScope.drawForceArrow(start: Offset, end: Offset, color: Color) {
-    drawLine(color, start, end, strokeWidth = 3f, cap = StrokeCap.Round)
+private fun DrawScope.drawForceArrow3D(start: Offset, end: Offset, color: Color) {
+    drawLine(color, start, end, strokeWidth = 3.5f, cap = StrokeCap.Round)
     val dx = end.x - start.x
     val dy = end.y - start.y
     val len = sqrt(dx * dx + dy * dy)
     if (len < 1f) return
     val ux = dx / len; val uy = dy / len
     val px = -uy; val py = ux
-    val head = 8f
+    val head = 10f
     drawLine(color, end,
-        Offset(end.x - ux * head + px * head * 0.5f, end.y - uy * head + py * head * 0.5f),
-        strokeWidth = 3f, cap = StrokeCap.Round)
+        Offset(end.x - ux * head + px * head * 0.55f,
+               end.y - uy * head + py * head * 0.55f),
+        strokeWidth = 3.5f, cap = StrokeCap.Round)
     drawLine(color, end,
-        Offset(end.x - ux * head - px * head * 0.5f, end.y - uy * head - py * head * 0.5f),
-        strokeWidth = 3f, cap = StrokeCap.Round)
+        Offset(end.x - ux * head - px * head * 0.55f,
+               end.y - uy * head - py * head * 0.55f),
+        strokeWidth = 3.5f, cap = StrokeCap.Round)
+}
+
+private fun DrawScope.drawArrowChevron(start: Offset, end: Offset, color: Color) {
+    val dx = end.x - start.x
+    val dy = end.y - start.y
+    val len = sqrt(dx * dx + dy * dy)
+    if (len < 1f) return
+    val ux = dx / len; val uy = dy / len
+    val px = -uy; val py = ux
+    val head = 6f
+    drawLine(color, end,
+        Offset(end.x - ux * head + px * head * 0.55f,
+               end.y - uy * head + py * head * 0.55f),
+        strokeWidth = 2.5f, cap = StrokeCap.Round)
+    drawLine(color, end,
+        Offset(end.x - ux * head - px * head * 0.55f,
+               end.y - uy * head - py * head * 0.55f),
+        strokeWidth = 2.5f, cap = StrokeCap.Round)
 }
 
 @Composable
