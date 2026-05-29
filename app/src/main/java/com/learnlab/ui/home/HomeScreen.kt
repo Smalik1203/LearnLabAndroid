@@ -1,8 +1,5 @@
 package com.learnlab.ui.home
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -172,19 +169,12 @@ private fun SubjectCard(
     onClick: () -> Unit,
 ) {
     val t = LL.tokens
-    var pressed by remember { mutableStateOf(false) }
-    val elevation by animateDpAsState(
-        targetValue = if (pressed) 2.dp else 12.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "subjectElevation",
-    )
     val cardColor = if (enabled) t.surface else t.surface.copy(alpha = 0.5f)
     val accentColor = if (enabled) color else color.copy(alpha = 0.4f)
 
     Surface(
         modifier = modifier
-            .shadow(elevation, RoundedCornerShape(24.dp))
-            .clickable(enabled = enabled) { pressed = true; onClick() },
+            .clickable(enabled = enabled) { onClick() },
         shape = RoundedCornerShape(24.dp),
         color = cardColor,
     ) {

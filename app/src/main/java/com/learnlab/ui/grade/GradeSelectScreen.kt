@@ -1,8 +1,5 @@
 package com.learnlab.ui.grade
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -118,27 +114,20 @@ private fun GradeCard(
     onClick: () -> Unit,
 ) {
     val t = LL.tokens
-    var pressed by remember { mutableStateOf(false) }
-    val elevation by animateDpAsState(
-        targetValue = if (pressed) 2.dp else 10.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "gradeElevation",
-    )
     val accent = if (option.available) t.accent500 else t.accent500.copy(alpha = 0.35f)
     val cardBg = if (option.available) t.surface else t.surface.copy(alpha = 0.55f)
     val titleColor = if (option.available) t.ink50 else t.ink500
     val taglineColor = if (option.available) t.ink400 else t.ink500
     Box(
         modifier = modifier
-            .shadow(elevation, RoundedCornerShape(24.dp))
             .clip(RoundedCornerShape(24.dp))
             .background(cardBg)
             .border(
-                width = if (option.available) 1.dp else 1.dp,
+                width = 1.dp,
                 color = if (option.available) accent.copy(alpha = 0.4f) else t.line,
                 shape = RoundedCornerShape(24.dp),
             )
-            .clickable(enabled = option.available) { pressed = true; onClick() }
+            .clickable(enabled = option.available) { onClick() }
             .padding(20.dp),
     ) {
         Column(
