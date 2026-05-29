@@ -45,8 +45,10 @@ val experimentRegistry: Map<String, ExperimentComposable> = mapOf(
     // Chapter 5 — Grade 8 magnetism + motor
     "magnetic-motor"    to { _, c -> com.learnlab.experiments.MotorFunctioning(c) },
 
-    // Chapter 6 — Cell biology
+    // Chapter 6 — Cell biology / the invisible living world
     "cell-explorer"     to { _, c -> com.learnlab.experiments.CellExplorer(c) },
+    "soil-suspension"   to { _, c -> com.learnlab.experiments.SoilSuspension(c) },
+    "microbe-guide"     to { _, c -> com.learnlab.experiments.MicrobeGuide(c) },
 
     // Still placeholders (later turns)
     "leaf-venation"   to { e, _ -> ComingSoonExperiment(e) },
