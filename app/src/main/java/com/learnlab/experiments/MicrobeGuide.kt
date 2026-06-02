@@ -3,28 +3,30 @@ package com.learnlab.experiments
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -40,14 +42,6 @@ import com.learnlab.store.ExperimentControls
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-
-/**
- * Microbes of Pond Water & Soil — Grade 8 "The Invisible Living World".
- *
- * A content-first learning module (not an interactive experiment): a scrollable
- * field guide of the common microorganisms with a stylised diagram and an
- * NCERT-style description for each, plus the two summary tables (2.1 & 2.2).
- */
 
 private enum class Organism { Amoeba, Paramecium, PondAlga, BreadMould, Mould, SoilAlga, Bacteria }
 
@@ -78,15 +72,17 @@ private val SOIL_CARDS = listOf(
         "The smallest of all. They can be spherical, comma, spiral or rod-shaped, often with one long hair-like structure and many tiny projections around the cell."),
 )
 
+private val ALL_CARDS = POND_CARDS + SOIL_CARDS
+
 @Composable
 fun MicrobeGuide(controls: ExperimentControls) {
     val t = LL.tokens
-    val scroll = rememberScrollState()
+    var page by remember { mutableStateOf(0) }
+    val totalPages = 9 // 0=intro, 1–3=pond, 4–7=soil, 8=summary
 
-    LaunchedEffect(scroll.value, scroll.maxValue) {
-        val frac = if (scroll.maxValue == 0) 1f else scroll.value / scroll.maxValue.toFloat()
-        controls.onProgress(frac.coerceIn(0f, 1f))
-        if (frac >= 0.98f) controls.onComplete(1f)
+    LaunchedEffect(page) {
+        controls.onProgress(page / (totalPages - 1).toFloat())
+        if (page == totalPages - 1) controls.onComplete(1f)
     }
 
     Box(modifier = Modifier.fillMaxSize().padding(20.dp)) {
@@ -96,72 +92,96 @@ fun MicrobeGuide(controls: ExperimentControls) {
                 .clip(RoundedCornerShape(16.dp))
                 .background(t.surface)
                 .border(1.dp, t.line, RoundedCornerShape(16.dp))
-                .verticalScroll(scroll)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            // Intro
-            LLText("THE INVISIBLE LIVING WORLD", color = t.ink500, size = 11.sp,
-                weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
             LLText(
-                "Microorganisms — or microbes — are living things too small to see with the naked eye. " +
-                    "A single drop of pond water or soil suspension can hold many of them. " +
-                    "Under a microscope they come alive: some move, some are green, some are just threads.",
-                color = t.ink200, size = 14.sp, lineHeight = 20.sp,
+                "THE INVISIBLE LIVING WORLD",
+                color = t.ink500, size = 11.sp,
+                weight = FontWeight.SemiBold, letterSpacing = 1.8.sp,
             )
-
-            SectionHeader("In pond water")
-            POND_CARDS.forEach { MicrobeCard(it) }
-
-            SectionHeader("In soil suspension")
-            SOIL_CARDS.forEach { MicrobeCard(it) }
-
-            SectionHeader("Summary")
-            MicrobeTable(
-                caption = "Table 2.1 — Organisms in pond water",
-                rows = POND_CARDS,
-            )
-            MicrobeTable(
-                caption = "Table 2.2 — Organisms in soil suspension",
-                rows = SOIL_CARDS,
-            )
-            Spacer(Modifier.height(4.dp))
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                when (page) {
+                    0 -> IntroPage()
+                    in 1..3 -> OrganismPage(ALL_CARDS[page - 1], "In pond water")
+                    in 4..7 -> OrganismPage(ALL_CARDS[page - 1], "In soil suspension")
+                    else -> SummaryPage()
+                }
+            }
+            PageNavRow(page, totalPages) { page = it }
         }
     }
 }
 
 @Composable
-private fun SectionHeader(text: String) {
+private fun IntroPage() {
     val t = LL.tokens
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Spacer(Modifier.height(2.dp))
-        LLText(text, color = t.ink50, size = 18.sp, weight = FontWeight.Bold)
-        Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+    Row(
+        Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Box(
+            Modifier
+                .weight(2f)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(12.dp))
+                .background(t.surface2)
+                .border(1.dp, t.line, RoundedCornerShape(12.dp)),
+        ) {
+            Canvas(Modifier.fillMaxSize()) { drawIntroCollage() }
+        }
+        Column(
+            Modifier.weight(3f).fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            LLText("What are microorganisms?", color = t.ink50, size = 20.sp, weight = FontWeight.Bold)
+            LLText(
+                "Microorganisms — or microbes — are living things too small to see with the naked eye. " +
+                    "A single drop of pond water or soil suspension can hold many of them. " +
+                    "Under a microscope they come alive: some move, some are green, some are just threads.",
+                color = t.ink200, size = 14.sp, lineHeight = 22.sp,
+            )
+            Spacer(Modifier.height(4.dp))
+            LLText("In this guide", color = t.ink50, size = 16.sp, weight = FontWeight.SemiBold)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                listOf(
+                    "3 microbes found in pond water",
+                    "4 microbes found in soil",
+                    "Summary tables with key traits",
+                ).forEach { line ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.Top,
+                    ) {
+                        LLText("•", color = t.accent500, size = 16.sp, weight = FontWeight.Bold)
+                        LLText(line, color = t.ink200, size = 14.sp, lineHeight = 20.sp)
+                    }
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            LLText("Use the arrows below to explore each microbe.", color = t.ink500, size = 12.sp)
+        }
     }
 }
 
 @Composable
-private fun MicrobeCard(card: Card) {
+private fun OrganismPage(card: Card, sectionLabel: String) {
     val t = LL.tokens
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(t.surface2)
-            .border(1.dp, t.line, RoundedCornerShape(12.dp))
-            .padding(14.dp),
+        Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(t.surface),
+            Modifier
+                .weight(2f)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(12.dp))
+                .background(t.surface2)
+                .border(1.dp, t.line, RoundedCornerShape(12.dp)),
         ) {
-            Canvas(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+            Canvas(Modifier.fillMaxSize().padding(16.dp)) {
                 val c = Offset(size.width / 2f, size.height / 2f)
-                val r = minOf(size.width, size.height) * 0.34f
+                val r = minOf(size.width, size.height) * 0.38f
                 when (card.microbe) {
                     Organism.Amoeba -> drawAmoebaGlyph(c, r)
                     Organism.Paramecium -> drawParameciumGlyph(c, r)
@@ -172,33 +192,119 @@ private fun MicrobeCard(card: Card) {
                     Organism.Bacteria -> drawBacteriaGlyph(c, r)
                 }
             }
+            Box(
+                Modifier
+                    .align(Alignment.TopStart)
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(t.surface.copy(alpha = 0.9f))
+                    .border(1.dp, t.line, RoundedCornerShape(999.dp))
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+            ) {
+                LLText(sectionLabel, color = t.ink400, size = 10.sp,
+                    weight = FontWeight.SemiBold, letterSpacing = 0.8.sp)
+            }
         }
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            Modifier.weight(3f).fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                LLText(card.name, color = t.ink50, size = 16.sp, weight = FontWeight.Bold)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                LLText(card.name, color = t.ink50, size = 24.sp, weight = FontWeight.Bold)
                 Box(
-                    modifier = Modifier
+                    Modifier
                         .clip(RoundedCornerShape(999.dp))
                         .background(t.accent50)
                         .border(1.dp, t.accent500.copy(alpha = 0.5f), RoundedCornerShape(999.dp))
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
-                ) { LLText(card.group, color = t.accent700, size = 11.sp, weight = FontWeight.SemiBold) }
+                        .padding(horizontal = 10.dp, vertical = 3.dp),
+                ) {
+                    LLText(card.group, color = t.accent700, size = 12.sp, weight = FontWeight.SemiBold)
+                }
             }
-            LLText(card.description, color = t.ink400, size = 13.sp, lineHeight = 18.sp)
+            Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+            LLText(card.description, color = t.ink200, size = 15.sp, lineHeight = 24.sp)
+            Spacer(Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun MicrobeTable(caption: String, rows: List<Card>) {
+private fun SummaryPage() {
     val t = LL.tokens
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        LLText("Summary", color = t.ink50, size = 20.sp, weight = FontWeight.Bold)
+        Row(
+            Modifier.weight(1f).fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            MicrobeTable(
+                caption = "Table 2.1 — Organisms in pond water",
+                rows = POND_CARDS,
+                modifier = Modifier.weight(1f),
+            )
+            MicrobeTable(
+                caption = "Table 2.2 — Organisms in soil suspension",
+                rows = SOIL_CARDS,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PageNavRow(page: Int, total: Int, onPage: (Int) -> Unit) {
+    val t = LL.tokens
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val canPrev = page > 0
+        val canNext = page < total - 1
+        Box(
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(if (canPrev) t.accent500 else t.surface2)
+                .border(1.dp, if (canPrev) t.accent500 else t.line, RoundedCornerShape(8.dp))
+                .then(if (canPrev) Modifier.clickable { onPage(page - 1) } else Modifier)
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            LLText("←", color = if (canPrev) Color.White else t.ink500, size = 16.sp)
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            repeat(total) { i ->
+                Box(
+                    Modifier
+                        .size(if (i == page) 10.dp else 7.dp)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(if (i == page) t.accent500 else t.line),
+                )
+            }
+        }
+        Box(
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(if (canNext) t.accent500 else t.surface2)
+                .border(1.dp, if (canNext) t.accent500 else t.line, RoundedCornerShape(8.dp))
+                .then(if (canNext) Modifier.clickable { onPage(page + 1) } else Modifier)
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            LLText("→", color = if (canNext) Color.White else t.ink500, size = 16.sp)
+        }
+    }
+}
+
+@Composable
+private fun MicrobeTable(caption: String, rows: List<Card>, modifier: Modifier = Modifier) {
+    val t = LL.tokens
+    Column(
+        modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .border(1.dp, t.line, RoundedCornerShape(12.dp)),
     ) {
@@ -234,6 +340,19 @@ private fun MicrobeTable(caption: String, rows: List<Card>) {
     }
 }
 
+// ───────────────────────── intro collage ─────────────────────────
+
+private fun DrawScope.drawIntroCollage() {
+    val w = size.width
+    val h = size.height
+    val r = minOf(w, h) * 0.13f
+    drawAmoebaGlyph(Offset(w * 0.28f, h * 0.25f), r)
+    drawGreenAlgaGlyph(Offset(w * 0.72f, h * 0.25f), r * 0.9f, flagellated = true)
+    drawParameciumGlyph(Offset(w * 0.50f, h * 0.52f), r * 1.05f)
+    drawBacteriaGlyph(Offset(w * 0.28f, h * 0.78f), r * 0.75f)
+    drawBreadMouldGlyph(Offset(w * 0.72f, h * 0.78f), r * 0.80f)
+}
+
 // ───────────────────────── organism glyphs ─────────────────────────
 
 private fun DrawScope.drawAmoebaGlyph(c: Offset, r: Float) {
@@ -258,7 +377,6 @@ private fun DrawScope.drawAmoebaGlyph(c: Offset, r: Float) {
 private fun DrawScope.drawParameciumGlyph(c: Offset, r: Float) {
     val body = Color(0xFF65A30D).copy(alpha = 0.28f)
     val edge = Color(0xFF3F6212)
-    // slipper shape
     val path = Path().apply {
         moveTo(c.x - r * 1.7f, c.y)
         cubicTo(c.x - r * 1.4f, c.y - r * 1.1f, c.x + r * 0.6f, c.y - r * 1.0f, c.x + r * 1.7f, c.y - r * 0.35f)
@@ -268,10 +386,8 @@ private fun DrawScope.drawParameciumGlyph(c: Offset, r: Float) {
     }
     drawPath(path, body)
     drawPath(path, edge, style = Stroke(2f))
-    // oral groove
     drawLine(edge.copy(alpha = 0.7f), Offset(c.x - r * 0.2f, c.y - r * 0.2f),
         Offset(c.x + r * 0.8f, c.y + r * 0.3f), strokeWidth = 1.5f)
-    // cilia around the rim
     val n = 22
     for (i in 0 until n) {
         val a = i * (2f * PI.toFloat() / n)
@@ -280,7 +396,6 @@ private fun DrawScope.drawParameciumGlyph(c: Offset, r: Float) {
         drawLine(edge.copy(alpha = 0.6f), Offset(ex, ey),
             Offset(ex + cos(a) * r * 0.3f, ey + sin(a) * r * 0.3f), strokeWidth = 1f)
     }
-    // macronucleus
     drawCircle(Color(0xFF365314).copy(alpha = 0.5f), r * 0.3f, c)
 }
 
@@ -291,7 +406,6 @@ private fun DrawScope.drawGreenAlgaGlyph(c: Offset, r: Float, flagellated: Boole
     )
     drawCircle(brush, r * 1.1f, c)
     drawCircle(Color(0xFF14532D), r * 1.1f, c, style = Stroke(2f))
-    // chloroplast (cup)
     val cup = Path().apply {
         addArc(
             androidx.compose.ui.geometry.Rect(c.x - r * 0.7f, c.y - r * 0.5f, c.x + r * 0.7f, c.y + r * 0.8f),
@@ -300,7 +414,6 @@ private fun DrawScope.drawGreenAlgaGlyph(c: Offset, r: Float, flagellated: Boole
     }
     drawPath(cup, Color(0xFF14532D).copy(alpha = 0.6f), style = Stroke(r * 0.25f, cap = StrokeCap.Round))
     if (flagellated) {
-        // two whip-like flagella
         for (s in listOf(-1f, 1f)) {
             val tail = Path().apply {
                 moveTo(c.x + s * r * 0.4f, c.y - r * 1.0f)
@@ -315,22 +428,18 @@ private fun DrawScope.drawGreenAlgaGlyph(c: Offset, r: Float, flagellated: Boole
 
 private fun DrawScope.drawBreadMouldGlyph(c: Offset, r: Float) {
     val filament = Color(0xFF92400E)
-    // horizontal hypha
     val baseY = c.y + r * 1.3f
     drawLine(filament, Offset(c.x - r * 2.0f, baseY), Offset(c.x + r * 2.0f, baseY),
         strokeWidth = 2.5f, cap = StrokeCap.Round)
-    // upright stalks with sac-like sporangia (round heads)
     val stalkX = listOf(-1.3f, 0f, 1.3f)
     for (sx in stalkX) {
         val x = c.x + sx * r
         drawLine(filament, Offset(x, baseY), Offset(x, c.y - r * 0.8f), strokeWidth = 2f)
         drawCircle(Color(0xFF6B3F18), r * 0.5f, Offset(x, c.y - r * 1.1f))
         drawCircle(Color(0xFF3F2410), r * 0.5f, Offset(x, c.y - r * 1.1f), style = Stroke(1.2f))
-        // spore dots
         drawCircle(Color(0xFFFDE68A).copy(alpha = 0.7f), 1.6f, Offset(x - r * 0.15f, c.y - r * 1.2f))
         drawCircle(Color(0xFFFDE68A).copy(alpha = 0.7f), 1.6f, Offset(x + r * 0.15f, c.y - r * 1.05f))
     }
-    // root-like rhizoids
     for (s in listOf(-1f, 1f)) {
         drawLine(filament.copy(alpha = 0.7f), Offset(c.x + s * r * 1.3f, baseY),
             Offset(c.x + s * r * 1.7f, baseY + r * 0.5f), strokeWidth = 1.4f)
@@ -347,7 +456,6 @@ private fun DrawScope.drawMouldGlyph(c: Offset, r: Float) {
         val x = c.x + sx * r
         val topY = c.y - r * 0.6f
         drawLine(filament, Offset(x, baseY), Offset(x, topY), strokeWidth = 2f)
-        // brush-like conidiophore: several diverging bristles
         for (b in -2..2) {
             drawLine(Color(0xFF0F766E), Offset(x, topY),
                 Offset(x + b * r * 0.18f, topY - r * 0.7f), strokeWidth = 1.4f, cap = StrokeCap.Round)
@@ -359,16 +467,13 @@ private fun DrawScope.drawMouldGlyph(c: Offset, r: Float) {
 private fun DrawScope.drawBacteriaGlyph(c: Offset, r: Float) {
     val fill = Color(0xFFB45309).copy(alpha = 0.85f)
     val edge = Color(0xFF7C2D12)
-    // cocci (spherical)
     drawCircle(fill, r * 0.4f, Offset(c.x - r * 1.6f, c.y - r * 1.0f))
     drawCircle(edge, r * 0.4f, Offset(c.x - r * 1.6f, c.y - r * 1.0f), style = Stroke(1f))
-    // comma (vibrio)
     val comma = Path().apply {
         moveTo(c.x + r * 0.9f, c.y - r * 1.4f)
         cubicTo(c.x + r * 1.8f, c.y - r * 1.2f, c.x + r * 1.8f, c.y - r * 0.4f, c.x + r * 1.1f, c.y - r * 0.5f)
     }
     drawPath(comma, fill, style = Stroke(r * 0.34f, cap = StrokeCap.Round))
-    // spiral (spirillum)
     val spiral = Path().apply {
         moveTo(c.x - r * 2.0f, c.y + r * 0.6f)
         var x = -2.0f
@@ -380,18 +485,15 @@ private fun DrawScope.drawBacteriaGlyph(c: Offset, r: Float) {
         }
     }
     drawPath(spiral, fill, style = Stroke(r * 0.3f, cap = StrokeCap.Round))
-    // rod (bacillus) with one long flagellum + many pili
     val rodC = Offset(c.x + r * 1.0f, c.y + r * 1.1f)
     drawLine(fill, Offset(rodC.x - r * 0.9f, rodC.y), Offset(rodC.x + r * 0.9f, rodC.y),
         strokeWidth = r * 0.7f, cap = StrokeCap.Round)
-    // long flagellum
     val flag = Path().apply {
         moveTo(rodC.x + r * 0.9f, rodC.y)
         cubicTo(rodC.x + r * 1.6f, rodC.y - r * 0.3f, rodC.x + r * 1.6f, rodC.y + r * 0.5f,
             rodC.x + r * 2.3f, rodC.y + r * 0.2f)
     }
     drawPath(flag, edge, style = Stroke(1.4f, cap = StrokeCap.Round))
-    // small pili around the rod
     for (i in 0 until 8) {
         val sx = rodC.x - r * 0.8f + i * (r * 0.22f)
         drawLine(edge.copy(alpha = 0.7f), Offset(sx, rodC.y - r * 0.35f),

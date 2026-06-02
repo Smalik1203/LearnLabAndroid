@@ -1,6 +1,8 @@
 package com.learnlab.engines
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,8 +34,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +76,8 @@ data class ReagentConfig(
     val negativeColor: Color,
     val positiveBadge: String,
     val negativeBadge: String,
+    val reagentDropColor: Color = Color(0xFFD97706), // iodine amber by default
+    val isFatPaperTest: Boolean = false,
 )
 
 private enum class Phase { Predict, Reacting, Revealed }
@@ -236,6 +246,17 @@ private fun FocusCard(
     onNext: () -> Unit,
 ) {
     val t = LL.tokens
+
+    val liquidColor by animateColorAsState(
+        when {
+            state.phase == Phase.Predict -> Color(0xFFF5F3EF)
+            food.positive -> reagent.positiveColor
+            else -> reagent.negativeColor
+        },
+        animationSpec = tween(800),
+        label = "liquid-color",
+    )
+
     LaunchedEffect(food.id, state.phase) {
         if (state.phase == Phase.Reacting) {
             delay(1100)
@@ -265,7 +286,27 @@ private fun FocusCard(
                 LLText(food.name, color = t.ink50, size = 18.sp, weight = FontWeight.SemiBold)
             }
         }
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(12.dp))
+
+        // ── Illustration ──────────────────────────────────────────────
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(130.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(t.surface2)
+                .border(1.dp, t.line, RoundedCornerShape(10.dp)),
+        ) {
+            Canvas(Modifier.fillMaxSize()) {
+                if (reagent.isFatPaperTest) {
+                    drawFatPaperIllustration(reagent.positiveColor, state.phase, food.positive)
+                } else {
+                    drawTestTubeIllustration(liquidColor, state.phase, reagent.reagentDropColor)
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+
         when (state.phase) {
             Phase.Predict -> {
                 LLText(
@@ -447,5 +488,150 @@ private fun Pill(label: String, positive: Boolean) {
     ) {
         LLText(label.uppercase(), color = fg, size = 10.sp,
             weight = FontWeight.Bold, letterSpacing = 1.4.sp)
+    }
+}
+
+// ──────────────────────── lab illustrations ────────────────────────
+
+private fun DrawScope.drawTestTubeIllustration(
+    liquidColor: Color,
+    phase: Phase,
+    dropColor: Color,
+) {
+    val w = size.width
+    val h = size.height
+
+    // Tube geometry — centered
+    val tubeW = w * 0.13f
+    val radius = tubeW / 2f
+    val cx = w * 0.50f
+    val tL = cx - radius
+    val tR = cx + radius
+    val tubeTop = h * 0.26f
+    val bodyBottom = h * 0.84f
+    val tubeTip = bodyBottom + radius
+    // k for bezier quarter-circle approximation
+    val k = radius * 0.5523f
+
+    // Liquid fill (lower ~58% of tube body)
+    val fillTop = tubeTop + (bodyBottom - tubeTop) * 0.42f
+    val liquidPath = Path().apply {
+        moveTo(tL, fillTop)
+        lineTo(tR, fillTop)
+        lineTo(tR, bodyBottom)
+        cubicTo(tR, bodyBottom + k, cx + k, tubeTip, cx, tubeTip)
+        cubicTo(cx - k, tubeTip, tL, bodyBottom + k, tL, bodyBottom)
+        close()
+    }
+    drawPath(liquidPath, liquidColor)
+
+    // Tube outline (open top, curved bottom)
+    val tubePath = Path().apply {
+        moveTo(tL, tubeTop)
+        lineTo(tL, bodyBottom)
+        cubicTo(tL, bodyBottom + k, cx - k, tubeTip, cx, tubeTip)
+        cubicTo(cx + k, tubeTip, tR, bodyBottom + k, tR, bodyBottom)
+        lineTo(tR, tubeTop)
+    }
+    drawPath(tubePath, Color(0xFF64748B), style = Stroke(2f, cap = StrokeCap.Round))
+
+    // Glass inner highlight strip
+    drawRect(
+        Color(0xFFEFF6FF).copy(alpha = 0.38f),
+        topLeft = Offset(tL + 2f, fillTop + 2f),
+        size = Size(tubeW * 0.22f, (bodyBottom - fillTop) * 0.9f),
+    )
+
+    // Graduation marks on left wall
+    for (i in 1..3) {
+        val gY = tubeTop + (bodyBottom - tubeTop) * (i * 0.23f)
+        drawLine(Color(0xFF94A3B8), Offset(tL, gY), Offset(tL + tubeW * 0.26f, gY), 1.5f)
+    }
+
+    // Dropper rubber bulb (always visible above tube)
+    val bulbTop = h * 0.03f
+    val bulbH = h * 0.15f
+    val bulbBottom = bulbTop + bulbH
+    drawOval(
+        dropColor.copy(alpha = 0.82f),
+        topLeft = Offset(cx - tubeW * 0.55f, bulbTop),
+        size = Size(tubeW * 1.10f, bulbH),
+    )
+    // Glass needle from bulb to near tube mouth
+    val needleBottom = tubeTop - h * 0.03f
+    drawLine(Color(0xFF64748B), Offset(cx, bulbBottom), Offset(cx, needleBottom), strokeWidth = 2.5f)
+
+    // Reagent drop at needle tip (when reagent applied)
+    if (phase != Phase.Predict) {
+        val dropPath = Path().apply {
+            moveTo(cx, needleBottom)
+            cubicTo(cx + 5f, needleBottom + 5f, cx + 6f, needleBottom + 11f, cx, needleBottom + 15f)
+            cubicTo(cx - 6f, needleBottom + 11f, cx - 5f, needleBottom + 5f, cx, needleBottom)
+        }
+        drawPath(dropPath, dropColor)
+    }
+
+    // Reaction bubbles (Reacting phase only)
+    if (phase == Phase.Reacting) {
+        listOf(
+            Offset(cx - tubeW * 0.20f, h * 0.68f),
+            Offset(cx + tubeW * 0.12f, h * 0.75f),
+            Offset(cx - tubeW * 0.08f, h * 0.81f),
+        ).forEach { b ->
+            drawCircle(Color.White.copy(alpha = 0.60f), 5f, b)
+            drawCircle(Color(0xFF94A3B8).copy(alpha = 0.55f), 5f, b, style = Stroke(1f))
+        }
+    }
+}
+
+private fun DrawScope.drawFatPaperIllustration(
+    spotColor: Color,
+    phase: Phase,
+    foodIsPositive: Boolean,
+) {
+    val w = size.width
+    val h = size.height
+
+    // Paper sheet centered in canvas
+    val pL = w * 0.28f
+    val pT = h * 0.09f
+    val pW = w * 0.44f
+    val pH = h * 0.83f
+
+    // Paper background
+    drawRect(Color(0xFFF9F7F3), topLeft = Offset(pL, pT), size = Size(pW, pH))
+    // Faint ruled lines
+    for (i in 1..7) {
+        drawLine(
+            Color(0xFFE5E5E5),
+            Offset(pL + 8f, pT + pH * (i / 8f)),
+            Offset(pL + pW - 8f, pT + pH * (i / 8f)),
+            strokeWidth = 0.8f,
+        )
+    }
+    // Paper border
+    drawRect(Color(0xFFD1D5DB), topLeft = Offset(pL, pT), size = Size(pW, pH), style = Stroke(1.5f))
+
+    // Grease / dry spot (only after reagent applied)
+    if (phase != Phase.Predict) {
+        val spotCx = w * 0.50f
+        val spotCy = h * 0.50f
+        val spotR = pW * 0.30f
+        if (foodIsPositive) {
+            // Translucent oily patch
+            drawCircle(spotColor.copy(alpha = 0.48f), spotR, Offset(spotCx, spotCy))
+            drawCircle(spotColor.copy(alpha = 0.22f), spotR * 0.55f, Offset(spotCx, spotCy))
+            // Light-through highlight on revealed phase
+            if (phase == Phase.Revealed) {
+                drawCircle(
+                    Color.White.copy(alpha = 0.32f),
+                    spotR * 0.36f,
+                    Offset(spotCx - spotR * 0.22f, spotCy - spotR * 0.22f),
+                )
+            }
+        } else {
+            // Dry water mark — barely visible
+            drawCircle(Color(0xFFE5E7EB).copy(alpha = 0.38f), pW * 0.18f, Offset(spotCx, spotCy))
+        }
     }
 }

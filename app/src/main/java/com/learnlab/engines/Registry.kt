@@ -49,6 +49,10 @@ val experimentRegistry: Map<String, ExperimentComposable> = mapOf(
     "cell-explorer"     to { _, c -> com.learnlab.experiments.CellExplorer(c) },
     "soil-suspension"   to { _, c -> com.learnlab.experiments.SoilSuspension(c) },
     "microbe-guide"     to { _, c -> com.learnlab.experiments.MicrobeGuide(c) },
+    "curd-formation"    to { _, c -> com.learnlab.experiments.CurdFormation(c) },
+
+    // Chapter 7 — Grade 8 Health: Ultimate Treasure
+    "health-habits"     to { _, c -> com.learnlab.experiments.HealthHabits(c) },
 
     // Still placeholders (later turns)
     "leaf-venation"   to { e, _ -> ComingSoonExperiment(e) },
