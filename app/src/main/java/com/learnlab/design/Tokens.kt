@@ -43,14 +43,15 @@ data class LearnLabTokens(
     val accent50: Color,
     val accent700: Color,
 
-    // Status (kept constant — they're already chosen for contrast on both bgs)
-    val rose50: Color = Color(0xFFFFF1F2),
+    // Status — 50 and 700 are theme-aware so dark mode gets vivid fills + bright text
+    val rose50: Color,
+    val rose700: Color,
+    val amber50: Color,
+    val amber700: Color,
+    // Constants — same contrast on both light and dark surfaces
     val rose300: Color = Color(0xFFFDA4AF),
     val rose600: Color = Color(0xFFE11D48),
-    val rose700: Color = Color(0xFFBE123C),
-    val amber50: Color = Color(0xFFFFFBEB),
     val amber400: Color = Color(0xFFFBBF24),
-    val amber700: Color = Color(0xFFB45309),
 )
 
 val LightTokens = LearnLabTokens(
@@ -67,8 +68,12 @@ val LightTokens = LearnLabTokens(
     ink400   = Color(0xFF52525B),   // zinc-600
     ink500   = Color(0xFF71717A),   // zinc-500
     ink600   = Color(0xFFA1A1AA),   // zinc-400
-    accent50 = Color(0xFFECFDF5),   // emerald-50 (kept — matches accent palette)
+    accent50 = Color(0xFFD1FAE5),   // emerald-100 — clearly tinted against white surface
     accent700= Color(0xFF047857),   // emerald-700
+    amber50  = Color(0xFFFEF3C7),   // amber-100 — clearly tinted against white surface
+    amber700 = Color(0xFFB45309),   // amber-700
+    rose50   = Color(0xFFFFE4E6),   // rose-100 — clearly tinted against white surface
+    rose700  = Color(0xFFBE123C),   // rose-700
 )
 
 val DarkTokens = LearnLabTokens(
@@ -89,8 +94,12 @@ val DarkTokens = LearnLabTokens(
     accent400  = Color(0xFF34D399),   // emerald-400
     accent500  = Color(0xFF10B981),   // emerald-500
     accent600  = Color(0xFF059669),   // emerald-600
-    accent50   = Color(0xFF0E2A20),   // dim emerald tint over zinc surface
-    accent700  = Color(0xFF34D399),   // emerald-400 (for text on accent50)
+    accent50   = Color(0xFF064E3B),   // emerald-900 — saturated dark fill on zinc surface
+    accent700  = Color(0xFF34D399),   // emerald-400 — bright text on accent50
+    amber50    = Color(0xFF78350F),   // amber-800 — saturated burnt-amber dark fill
+    amber700   = Color(0xFFFCD34D),   // amber-300 — bright amber text on amber50
+    rose50     = Color(0xFF881337),   // rose-800 — saturated rose dark fill
+    rose700    = Color(0xFFFDA4AF),   // rose-300 — bright rose text on rose50
 )
 
 val LocalTokens = compositionLocalOf { LightTokens }

@@ -152,13 +152,11 @@ private fun ChapterCard(
                     .fillMaxWidth()
                     .clickable(enabled = !chapter.comingSoon) { onToggle() }
                     .background(
-                        if (!chapter.comingSoon) Brush.horizontalGradient(
-                            listOf(
-                                t.accent400.copy(alpha = 0.22f),
-                                t.accent400.copy(alpha = 0.08f),
-                                Color.Transparent,
-                            )
-                        ) else Brush.horizontalGradient(listOf(Color.Transparent, Color.Transparent))
+                        when {
+                            chapter.comingSoon -> Color.Transparent
+                            t.isDark           -> t.accent400.copy(alpha = 0.30f)
+                            else               -> t.accent400.copy(alpha = 0.20f)
+                        }
                     )
                     .padding(horizontal = 20.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,

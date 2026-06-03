@@ -181,7 +181,7 @@ private fun SubjectCard(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(accentColor.copy(alpha = 0.18f), Color.Transparent)))
+                .background(Brush.verticalGradient(listOf(accentColor.copy(alpha = 0.22f), accentColor.copy(alpha = 0.06f))))
                 .padding(horizontal = 20.dp, vertical = 20.dp),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
