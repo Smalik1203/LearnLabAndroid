@@ -10,10 +10,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.learnlab.content.AllExperiments
+import com.learnlab.content.Chapters
+import com.learnlab.content.findExperiment
 import com.learnlab.store.AppState
 import com.learnlab.ui.chapter.ChapterScreen
 import com.learnlab.ui.curriculum.CurriculumScreen
+import com.learnlab.ui.grade.GradeSelectScreen
 import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.lesson.LessonScreen
 
@@ -30,19 +32,35 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
         composable(Routes.HOME) {
             HomeScreen(
                 state = state,
-                onScienceClick = { navController.navigate(Routes.curriculum(6)) },
+                onScienceClick = { navController.navigate(Routes.gradeSelect("science")) },
+            )
+        }
+
+        composable(
+            route = Routes.GRADE_SELECT,
+            arguments = listOf(navArgument("subject") { type = NavType.StringType }),
+        ) { backStack ->
+            val subject = backStack.arguments?.getString("subject") ?: "science"
+            GradeSelectScreen(
+                state = state,
+                subject = subject,
+                onGradeSelected = { grade -> navController.navigate(Routes.curriculum(grade)) },
+                onBack = { navController.popBackStack() },
             )
         }
 
         composable(
             route = Routes.CURRICULUM,
             arguments = listOf(navArgument("grade") { type = NavType.IntType }),
-        ) {
+        ) { backStack ->
+            val grade = backStack.arguments?.getInt("grade") ?: 6
             CurriculumScreen(
                 state = state,
+                grade = grade,
                 onExperimentSelected = { id -> navController.navigate(Routes.lesson(id)) },
                 onChapterSelected = { chapterId -> navController.navigate(Routes.chapter(chapterId)) },
                 onBack = { navController.popBackStack() },
+                onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
             )
         }
 
@@ -64,13 +82,17 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
             arguments = listOf(navArgument("experimentId") { type = NavType.StringType }),
         ) { backStack ->
             val experimentId = backStack.arguments?.getString("experimentId") ?: return@composable
-            val ids = AllExperiments.map { it.id }
+            val chapter = findExperiment(experimentId)?.let { exp ->
+                Chapters.firstOrNull { it.id == exp.chapterId }
+            }
+            val ids = chapter?.experiments?.map { it.id } ?: emptyList()
             val idx = ids.indexOf(experimentId)
 
             LessonScreen(
                 state        = state,
                 experimentId = experimentId,
                 onBack       = { navController.popBackStack() },
+                onHome       = { navController.popBackStack(Routes.HOME, inclusive = false) },
                 onPrev       = if (idx > 0) {
                     {
                         navController.navigate(Routes.lesson(ids[idx - 1])) {

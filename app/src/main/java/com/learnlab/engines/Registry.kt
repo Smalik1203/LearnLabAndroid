@@ -41,6 +41,21 @@ val experimentRegistry: Map<String, ExperimentComposable> = mapOf(
     "simple-pendulum"   to { _, c -> com.learnlab.experiments.SimplePendulum(c) },
     "convex-lens"       to { _, c -> com.learnlab.experiments.ConvexLens(c) },
     "em-induction"      to { _, c -> com.learnlab.experiments.EMInduction(c) },
+    "oersted-experiment" to { _, c -> com.learnlab.experiments.OerstedExperiment(c) },
+    "electromagnet"     to { _, c -> com.learnlab.experiments.Electromagnet(c) },
+
+    // Chapter 5 — Grade 8 magnetism + motor
+    "magnetic-motor"    to { _, c -> com.learnlab.experiments.MotorFunctioning(c) },
+
+    // Chapter 6 — Cell biology / the invisible living world
+    "cell-explorer"     to { _, c -> com.learnlab.experiments.CellExplorer(c) },
+    "soil-suspension"   to { _, c -> com.learnlab.experiments.SoilSuspension(c) },
+    "microbe-guide"     to { _, c -> com.learnlab.experiments.MicrobeGuide(c) },
+    "curd-formation"    to { _, c -> com.learnlab.experiments.CurdFormation(c) },
+
+    // Chapter 7 — Grade 8 Health: Ultimate Treasure
+    "health-habits"            to { _, c -> com.learnlab.experiments.HealthHabits(c) },
+    "diseases-classify-spread" to { _, c -> com.learnlab.experiments.DiseaseClassifier(c) },
 
     // Still placeholders (later turns)
     "leaf-venation"   to { e, _ -> ComingSoonExperiment(e) },

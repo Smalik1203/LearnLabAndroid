@@ -17,6 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
@@ -49,6 +50,7 @@ fun LessonScreen(
     state: AppState,
     experimentId: String,
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onPrev: (() -> Unit)?,
     onNext: (() -> Unit)?,
 ) {
@@ -79,9 +81,10 @@ fun LessonScreen(
     Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
         TopBar(
             state = state,
-            title = experiment.title,
+            title = "Back",
             showBack = true,
             onBack = onBack,
+            onHomeClick = onHome,
         )
 
         // Stage header
@@ -89,25 +92,19 @@ fun LessonScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.surface)
-                .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+                .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(modifier = Modifier.weight(1f).padding(end = Spacing.md)) {
-                LLText(
-                    experiment.outcome,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    size = 13.sp,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                LLText(
-                    experiment.source,
-                    color = MaterialTheme.colorScheme.outline,
-                    size = 11.sp,
-                    weight = FontWeight.Normal,
-                )
-            }
+            LLText(
+                experiment.title,
+                color = t.ink50,
+                size = 24.sp,
+                weight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).padding(end = 12.dp),
+            )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ProgressBar(value = progress, modifier = Modifier.width(120.dp))
                 Spacer(Modifier.width(Spacing.md))

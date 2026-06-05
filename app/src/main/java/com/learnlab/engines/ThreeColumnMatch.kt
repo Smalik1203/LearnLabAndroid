@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,8 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -151,6 +153,7 @@ fun ThreeColumnMatch(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             MatchColumn(
+                step = 1,
                 title = columnTitles.first,
                 rows = rows,
                 tileFor = { it.a },
@@ -161,6 +164,7 @@ fun ThreeColumnMatch(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
             MatchColumn(
+                step = 2,
                 title = columnTitles.second,
                 rows = rows,
                 tileFor = { it.b },
@@ -171,6 +175,7 @@ fun ThreeColumnMatch(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
             MatchColumn(
+                step = 3,
                 title = columnTitles.third,
                 rows = rows,
                 tileFor = { it.c },
@@ -236,6 +241,7 @@ fun ThreeColumnMatch(
 
 @Composable
 private fun MatchColumn(
+    step: Int,
     title: String,
     rows: List<MatchRow>,
     tileFor: (MatchRow) -> MatchTile,
@@ -254,8 +260,22 @@ private fun MatchColumn(
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        LLText(title.uppercase(), color = t.ink500, size = 10.sp,
-            weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(t.accent500),
+                contentAlignment = Alignment.Center,
+            ) {
+                LLText("$step", color = Color.White, size = 11.sp, weight = FontWeight.Bold)
+            }
+            LLText(title.uppercase(), color = t.ink500, size = 10.sp,
+                weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+        }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(rows, key = { it.id }) { row ->
                 MatchTileButton(
@@ -304,7 +324,6 @@ private fun MatchTileButton(
             .clip(RoundedCornerShape(10.dp))
             .background(bg)
             .border(1.dp, borderColor, RoundedCornerShape(10.dp))
-            .alpha(if (dim) 0.55f else 1f)
             .clickable(enabled = !done) { onClick() }
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
