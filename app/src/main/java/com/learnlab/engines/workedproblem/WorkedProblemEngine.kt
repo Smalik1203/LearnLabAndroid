@@ -1,10 +1,5 @@
 package com.learnlab.engines.workedproblem
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,19 +43,25 @@ import com.learnlab.design.SecondaryButton
 /**
  * Renders a JSON-driven worked-problem walkthrough.
  *
- * Layout (landscape, tablet):
- *   ┌─────────────────────────────────────────────┐
- *   │   diagram (left ~55%)  │  problem card      │
- *   │                        │  given / find      │
- *   │                        │  (right ~45%)      │
- *   │                                             │
- *   │   step strip (prompt + reveal) full width   │
- *   │   ‹ Prev   • • ○ ○ ○ ○   Next ›  · Reset    │
- *   └─────────────────────────────────────────────┘
+ * Layout (landscape, tablet) — two columns:
+ *   ┌─────────────────────┬───────────────────────┐
+ *   │                     │  STEP N OF M          │
+ *   │    DIAGRAM          │  prompt               │
+ *   │    (top of left,    │  reveal / answer      │
+ *   │     weighted)       │                       │
+ *   │                     │  (when last step is   │
+ *   │                     │   revealed, this pane │
+ *   ├─────────────────────┤   swaps to the final  │
+ *   │  PROBLEM            │   answer card)        │
+ *   │  GIVEN  /  FIND     │                       │
+ *   │  (bottom of left)   │  ─────────────────    │
+ *   │                     │  ‹ Prev  • • ○ ○ ○ ○  │
+ *   │                     │  Next ›  · Reset      │
+ *   └─────────────────────┴───────────────────────┘
  *
  * Pedagogy: teacher reads the prompt, asks the class to attempt on paper,
  * taps "Reveal step ▶" to validate. Then "Next ›" advances. After the last
- * step is revealed, the final answer card slides up below the strip.
+ * step is revealed, the right column swaps to the final answer card.
  *
  * State is kept internal for now — there's no parent observer. If/when this
  * engine needs progress tracking or persistence, lift `currentStep` and
@@ -88,18 +89,20 @@ fun WorkedProblemEngine(
         revealed.mapNotNull { idx -> config.steps.getOrNull(idx)?.annotation }.toSet()
     }
 
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
-
-        // ── Top: diagram (left) + problem card (right) ────────────────
-        Row(
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+    Row(
+        modifier = modifier.fillMaxSize().padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        // ── Left column: diagram on top, problem below ────────────────
+        Column(
+            modifier = Modifier.weight(0.55f).fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Diagram pane
             Box(
                 modifier = Modifier
-                    .weight(0.55f)
-                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .weight(0.58f)
                     .clip(RoundedCornerShape(16.dp))
                     .background(t.surface2)
                     .border(1.dp, t.line, RoundedCornerShape(16.dp)),
@@ -121,106 +124,107 @@ fun WorkedProblemEngine(
                 }
             }
 
-            // Problem card
+            // Problem card (under the diagram)
             Card(
-                modifier = Modifier.weight(0.45f).fillMaxHeight(),
+                modifier = Modifier.fillMaxWidth().weight(0.42f),
                 padding = 20.dp,
             ) {
                 ProblemCardContent(config)
             }
         }
 
-        Spacer(Modifier.height(12.dp))
-
-        // ── Step strip ────────────────────────────────────────────────
-        StepStrip(
-            step = config.steps[currentStep],
-            stepIndex = currentStep,
-            totalSteps = config.steps.size,
-            revealed = isCurrentRevealed,
-            onReveal = { if (currentStep !in revealed) revealed.add(currentStep) },
-        )
-
-        // ── Final answer card (after last step revealed) ──────────────
-        AnimatedVisibility(
-            visible = showFinalAnswer,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
+        // ── Right column: step content + nav bar at bottom ────────────
+        Column(
+            modifier = Modifier.weight(0.45f).fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column {
-                Spacer(Modifier.height(12.dp))
-                FinalAnswerCard(
-                    answer = config.finalAnswer,
-                    bonus = config.bonus,
-                    bonusShown = showBonus,
-                    onToggleBonus = { showBonus = !showBonus },
-                )
-            }
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        // ── Bottom nav bar ────────────────────────────────────────────
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            // Left: Prev
-            SecondaryButton(
-                label = "‹ Prev",
-                onClick = {
-                    if (currentStep > 0) currentStep--
-                },
-                enabled = currentStep > 0,
-            )
-
-            // Center: step dots
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                config.steps.indices.forEach { i ->
-                    val isCurrent = i == currentStep
-                    val isDone = i in revealed
-                    val color = when {
-                        isCurrent -> t.accent500
-                        isDone -> t.accent300
-                        else -> t.surface3
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(if (isCurrent) 12.dp else 8.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .clickable { currentStep = i },
+            // Step strip OR final answer card. Once last step is revealed
+            // the answer takes over the same slot — feels like the
+            // walkthrough has "arrived" at the answer rather than sliding
+            // it in alongside the strip.
+            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                if (showFinalAnswer) {
+                    FinalAnswerCard(
+                        answer = config.finalAnswer,
+                        bonus = config.bonus,
+                        bonusShown = showBonus,
+                        onToggleBonus = { showBonus = !showBonus },
+                    )
+                } else {
+                    StepStrip(
+                        step = config.steps[currentStep],
+                        stepIndex = currentStep,
+                        totalSteps = config.steps.size,
+                        revealed = isCurrentRevealed,
+                        onReveal = { if (currentStep !in revealed) revealed.add(currentStep) },
                     )
                 }
             }
 
-            // Right: Next + Reset + (optional) Back
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                GhostButton(
-                    label = "Reset",
-                    onClick = {
-                        currentStep = 0
-                        revealed.clear()
-                        showBonus = false
-                    },
-                )
-                if (onBack != null) {
-                    GhostButton(label = "← Back to Lab", onClick = onBack)
+            // Nav row at the bottom of the right column. Dots are
+            // compact and sit between Prev and Next; Reset / Back stack
+            // on a second compact row to keep the main controls big.
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    SecondaryButton(
+                        label = "‹ Prev",
+                        onClick = { if (currentStep > 0) currentStep-- },
+                        enabled = currentStep > 0,
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        config.steps.indices.forEach { i ->
+                            val isCurrent = i == currentStep
+                            val isDone = i in revealed
+                            val color = when {
+                                isCurrent -> t.accent500
+                                isDone -> t.accent300
+                                else -> t.surface3
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(if (isCurrent) 10.dp else 7.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .clickable { currentStep = i },
+                            )
+                        }
+                    }
+
+                    PrimaryButton(
+                        label = "Next ›",
+                        onClick = {
+                            if (currentStep < config.steps.lastIndex) currentStep++
+                        },
+                        enabled = currentStep < config.steps.lastIndex && isCurrentRevealed,
+                    )
                 }
-                PrimaryButton(
-                    label = "Next ›",
-                    onClick = {
-                        if (currentStep < config.steps.lastIndex) currentStep++
-                    },
-                    enabled = currentStep < config.steps.lastIndex && isCurrentRevealed,
-                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (onBack != null) {
+                        GhostButton(label = "← Back to Lab", onClick = onBack)
+                        Spacer(Modifier.width(8.dp))
+                    }
+                    GhostButton(
+                        label = "Reset",
+                        onClick = {
+                            currentStep = 0
+                            revealed.clear()
+                            showBonus = false
+                        },
+                    )
+                }
             }
         }
     }
