@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -20,9 +21,11 @@ import com.learnlab.design.LearnLabTheme
 import com.learnlab.design.LocalTokens
 import com.learnlab.design.DarkTokens
 import com.learnlab.design.LightTokens
+import com.learnlab.data.sync.SupabaseSmokeTest
 import com.learnlab.store.AppState
 import com.learnlab.ui.navigation.LearnLabNavGraph
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.CompositionLocalProvider
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +37,10 @@ class MainActivity : ComponentActivity() {
         insets.hide(WindowInsetsCompat.Type.systemBars())
         insets.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        // Smoke-test the Supabase wiring on launch. Logs to logcat under
+        // tag "SupabaseSmokeTest" — remove once real sync is in.
+        lifecycleScope.launch { SupabaseSmokeTest.ping() }
 
         setContent { LearnLabApp() }
     }

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Required for Supabase sync (slide overrides, image storage).
+         The app stays usable offline; the network is only used for
+         background push/pull of authoring changes. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:label="LearnLab"
         android:icon="@mipmap/ic_launcher"

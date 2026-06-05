@@ -11,19 +11,44 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
 
-/** Loads "figures/<path>" from APK assets. Returns null silently if missing. */
+/**
+ * Resolves an image path to an ImageBitmap, supporting three forms:
+ *  - "https://…"          remote (e.g. Supabase Storage URLs from the editor)
+ *  - "file://…" or "/…"   absolute local file path
+ *  - anything else        treated as "figures/<path>" inside APK assets
+ *
+ * Returns null silently if the image can't be loaded. The renderer falls
+ * back to a placeholder so a broken asset doesn't break the slide.
+ */
 @Composable
 fun loadFigureBitmap(path: String?): ImageBitmap? {
     if (path.isNullOrBlank()) return null
     val ctx = LocalContext.current
     var bmp by remember(path) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(path) {
-        bmp = try {
-            ctx.assets.open("figures/$path").use { stream ->
-                BitmapFactory.decodeStream(stream)?.asImageBitmap()
-            }
-        } catch (_: Throwable) { null }
+        bmp = withContext(Dispatchers.IO) {
+            try {
+                when {
+                    path.startsWith("http://") || path.startsWith("https://") -> {
+                        URL(path).openStream().use { BitmapFactory.decodeStream(it)?.asImageBitmap() }
+                    }
+                    path.startsWith("file://") -> {
+                        val real = path.removePrefix("file://")
+                        java.io.FileInputStream(real).use { BitmapFactory.decodeStream(it)?.asImageBitmap() }
+                    }
+                    path.startsWith("/") -> {
+                        java.io.FileInputStream(path).use { BitmapFactory.decodeStream(it)?.asImageBitmap() }
+                    }
+                    else -> {
+                        ctx.assets.open("figures/$path").use { BitmapFactory.decodeStream(it)?.asImageBitmap() }
+                    }
+                }
+            } catch (_: Throwable) { null }
+        }
     }
     return bmp
 }

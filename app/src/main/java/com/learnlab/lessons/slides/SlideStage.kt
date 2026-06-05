@@ -10,6 +10,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,9 +30,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Redo
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,6 +57,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,12 +84,41 @@ fun SlideStage(
     cast: Map<String, Character>,
     onBack: () -> Unit,
     onOpenActivity: (String) -> Unit,
+    isDark: Boolean = false,
+    onToggleTheme: () -> Unit = {},
+    isEditing: Boolean = false,
+    onToggleEdit: () -> Unit = {},
+    /** Called when edit mode starts on an auto-layout slide; parent should
+     *  build a SlideOverride from the slide and store it locally. */
+    onRequestSynthesizeOverride: (Slide) -> Unit = {},
+    /** Called whenever an element on a FreeForm slide is moved/resized/etc.
+     *  Parent updates its localOverrides map; persistence is step 9. */
+    onOverrideEdited: (slideId: String, override: com.learnlab.content.chapter.SlideOverride) -> Unit = { _, _ -> },
+    /** Called when a gesture (drag/resize/rotate) ends; parent records this
+     *  as one undo step. */
+    onOverrideCommitted: (slideId: String, override: com.learnlab.content.chapter.SlideOverride) -> Unit = { _, _ -> },
+    /** Undo/redo plumbing — parent owns the history stack. */
+    canUndo: Boolean = false,
+    canRedo: Boolean = false,
+    onUndo: () -> Unit = {},
+    onRedo: () -> Unit = {},
 ) {
-    val t = LL.tokens
     var index by remember(chapter.id) { mutableIntStateOf(0) }
     var outlineOpen by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    // When edit mode is on AND the visible slide has no override, ask the
+    // parent to synthesize one from the auto-layout. Re-runs when the user
+    // pages to a fresh slide while still editing.
+    LaunchedEffect(isEditing, index, slides.size) {
+        if (isEditing && index in slides.indices) {
+            val slide = slides[index]
+            if (slide.layout != SlideLayout.FreeForm) {
+                onRequestSynthesizeOverride(slide)
+            }
+        }
+    }
 
     fun goNext() { if (index < slides.lastIndex) index++ }
     fun goPrev() { if (index > 0) index-- }
@@ -89,7 +126,6 @@ fun SlideStage(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.bg)
             .focusRequester(focusRequester)
             .focusTarget()
             .onKeyEvent { e ->
@@ -110,9 +146,39 @@ fun SlideStage(
                 total = slides.size,
                 onBack = onBack,
                 onOutline = { outlineOpen = !outlineOpen },
+                isDark = isDark,
+                onToggleTheme = onToggleTheme,
+                isEditing = isEditing,
+                onToggleEdit = onToggleEdit,
+                canUndo = canUndo,
+                canRedo = canRedo,
+                onUndo = onUndo,
+                onRedo = onRedo,
             )
-            // Slide area
-            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            // Slide area — horizontal swipe pages when not editing.
+            val swipeThresholdPx = with(LocalDensity.current) { 80.dp.toPx() }
+            var dragAccum by remember { mutableStateOf(0f) }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .then(
+                        if (!isEditing) Modifier.pointerInput(slides.size) {
+                            detectHorizontalDragGestures(
+                                onDragStart = { dragAccum = 0f },
+                                onDragEnd = {
+                                    when {
+                                        dragAccum <= -swipeThresholdPx -> goNext()
+                                        dragAccum >= swipeThresholdPx -> goPrev()
+                                    }
+                                    dragAccum = 0f
+                                },
+                                onDragCancel = { dragAccum = 0f },
+                                onHorizontalDrag = { _, delta -> dragAccum += delta },
+                            )
+                        } else Modifier,
+                    ),
+            ) {
                 AnimatedContent(
                     targetState = index,
                     label = "slide",
@@ -127,14 +193,16 @@ fun SlideStage(
                         chapter = chapter,
                         cast = cast,
                         onOpenActivity = onOpenActivity,
+                        isEditing = isEditing,
+                        onOverrideEdited = onOverrideEdited,
+                        onOverrideCommitted = onOverrideCommitted,
                     )
                 }
             }
             BottomStrip(
+                chapter = chapter,
                 slides = slides,
                 index = index,
-                onPrev = { goPrev() },
-                onNext = { goNext() },
                 onJump = { index = it },
             )
         }
@@ -160,6 +228,14 @@ private fun TopStrip(
     total: Int,
     onBack: () -> Unit,
     onOutline: () -> Unit,
+    isDark: Boolean,
+    onToggleTheme: () -> Unit,
+    isEditing: Boolean,
+    onToggleEdit: () -> Unit,
+    canUndo: Boolean,
+    canRedo: Boolean,
+    onUndo: () -> Unit,
+    onRedo: () -> Unit,
 ) {
     val t = LL.tokens
     Row(
@@ -198,23 +274,68 @@ private fun TopStrip(
         ) {
             LLText("${index + 1} / $total", color = t.ink400, size = 12.sp, weight = FontWeight.SemiBold)
         }
+        if (isEditing) {
+            Spacer(Modifier.width(Spacing.sm))
+            IconBtn(
+                icon = Icons.AutoMirrored.Filled.Undo,
+                label = "Undo",
+                onClick = onUndo,
+                enabled = canUndo,
+            )
+            Spacer(Modifier.width(Spacing.sm))
+            IconBtn(
+                icon = Icons.AutoMirrored.Filled.Redo,
+                label = "Redo",
+                onClick = onRedo,
+                enabled = canRedo,
+            )
+        }
+        Spacer(Modifier.width(Spacing.sm))
+        IconBtn(
+            icon = if (isEditing) Icons.Filled.Done else Icons.Filled.Edit,
+            label = if (isEditing) "Done editing" else "Edit slide",
+            onClick = onToggleEdit,
+            highlighted = isEditing,
+        )
+        Spacer(Modifier.width(Spacing.sm))
+        IconBtn(
+            icon = if (isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+            label = if (isDark) "Switch to light mode" else "Switch to dark mode",
+            onClick = onToggleTheme,
+        )
         Spacer(Modifier.width(Spacing.sm))
         IconBtn(icon = Icons.Filled.GridView, label = "Outline", onClick = onOutline)
     }
 }
 
 @Composable
-private fun IconBtn(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit) {
+private fun IconBtn(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    highlighted: Boolean = false,
+    enabled: Boolean = true,
+) {
     val t = LL.tokens
+    val bg = when {
+        !enabled -> t.surface2.copy(alpha = 0.4f)
+        highlighted -> t.accent500
+        else -> t.surface2
+    }
+    val tint = when {
+        !enabled -> t.ink500
+        highlighted -> t.surface
+        else -> t.ink200
+    }
     Box(
         modifier = Modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(t.surface2)
-            .clickable { onClick() },
+            .background(bg)
+            .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = label, tint = t.ink200, modifier = Modifier.size(IconSize.md))
+        Icon(icon, contentDescription = label, tint = tint, modifier = Modifier.size(IconSize.md))
     }
 }
 
@@ -222,40 +343,29 @@ private fun IconBtn(icon: androidx.compose.ui.graphics.vector.ImageVector, label
 
 @Composable
 private fun BottomStrip(
+    chapter: Chapter,
     slides: List<Slide>,
     index: Int,
-    onPrev: () -> Unit,
-    onNext: () -> Unit,
     onJump: (Int) -> Unit,
 ) {
     val t = LL.tokens
     val railState = rememberLazyListState()
     LaunchedEffect(index) {
-        val target = (index - 2).coerceAtLeast(0)
+        val target = (index - 3).coerceAtLeast(0)
         railState.animateScrollToItem(target)
     }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(72.dp)
-            .background(t.surface)
-            .border(1.dp, t.line, RoundedCornerShape(0.dp))
+            .height(44.dp)
             .padding(horizontal = Spacing.lg),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Prev
-        BigArrow(
-            icon = Icons.AutoMirrored.Filled.ArrowBack,
-            label = "Previous",
-            enabled = index > 0,
-            onClick = onPrev,
-        )
-        Spacer(Modifier.width(Spacing.md))
-        // Thumbnail rail
+        // Pagination dot rail — takes most of the width
         LazyRow(
             state = railState,
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             items(slides.size) { i ->
@@ -263,40 +373,27 @@ private fun BottomStrip(
             }
         }
         Spacer(Modifier.width(Spacing.md))
-        BigArrow(
-            icon = Icons.AutoMirrored.Filled.ArrowForward,
-            label = "Next",
-            enabled = index < slides.lastIndex,
-            onClick = onNext,
-            primary = true,
+        // Centre label
+        LLText(
+            "CH ${chapter.chapter.number} - ${chapter.chapter.title}",
+            color = t.ink400,
+            size = 13.sp,
+            weight = FontWeight.SemiBold,
+            maxLines = 1,
         )
-    }
-}
-
-@Composable
-private fun BigArrow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    primary: Boolean = false,
-) {
-    val t = LL.tokens
-    val bg = when {
-        !enabled -> t.surface2.copy(alpha = 0.5f)
-        primary -> t.accent500
-        else -> t.surface2
-    }
-    val fg = if (!enabled) t.ink500 else if (primary) t.surface else t.ink50
-    Box(
-        modifier = Modifier
-            .size(width = 56.dp, height = 48.dp)
-            .clip(RoundedCornerShape(Radius.md))
-            .background(bg)
-            .clickable(enabled = enabled, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(icon, contentDescription = label, tint = fg, modifier = Modifier.size(IconSize.lg))
+        Spacer(Modifier.width(Spacing.md))
+        // Right counter pill
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(Radius.pill))
+                .background(t.surface2)
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+        ) {
+            LLText(
+                "${index + 1}/${slides.size}",
+                color = t.ink400, size = 12.sp, weight = FontWeight.SemiBold,
+            )
+        }
     }
 }
 

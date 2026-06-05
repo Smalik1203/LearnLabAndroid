@@ -99,7 +99,7 @@ fun HeroParagraph(
             verticalArrangement = Arrangement.Center,
         ) {
             // First sentence as a hero line
-            HeroLine(text = stripTokens(firstSentence), accent = accent)
+            HeroLine(text = stripTokens(firstSentence))
             if (restOfBody.isNotBlank()) {
                 Spacer(Modifier.height(24.dp))
                 LLText(
@@ -126,42 +126,17 @@ fun HeroParagraph(
 }
 
 @Composable
-private fun HeroLine(text: String, accent: Color) {
+private fun HeroLine(text: String) {
     val t = LL.tokens
-    val first = text.firstOrNull()
-    val rest = if (first != null) text.drop(1) else ""
-    if (first == null) return
-
-    Row(verticalAlignment = Alignment.Top) {
-        // Drop-cap
-        Box(
-            modifier = Modifier
-                .padding(top = 4.dp, end = 16.dp)
-                .clip(RoundedCornerShape(Radius.md))
-                .background(Brush.verticalGradient(listOf(accent.copy(alpha = 0.22f), accent.copy(alpha = 0.08f))))
-                .border(2.dp, accent.copy(alpha = 0.55f), RoundedCornerShape(Radius.md))
-                .padding(horizontal = 14.dp, vertical = 4.dp),
-        ) {
-            androidx.compose.material3.Text(
-                text = first.uppercase(),
-                color = accent,
-                fontSize = 72.sp,
-                lineHeight = 80.sp,
-                fontWeight = FontWeight.ExtraBold,
-                fontFamily = LearnLabFonts.Display,
-            )
-        }
-        // Rest of the first sentence — wraps naturally next to the drop-cap
-        androidx.compose.material3.Text(
-            text = rest,
-            color = t.ink50,
-            fontSize = 30.sp,
-            lineHeight = 44.sp,
-            fontWeight = FontWeight.SemiBold,
-            fontFamily = LearnLabFonts.Display,
-            modifier = Modifier.padding(top = 12.dp),
-        )
-    }
+    if (text.isBlank()) return
+    androidx.compose.material3.Text(
+        text = text,
+        color = t.ink50,
+        fontSize = 32.sp,
+        lineHeight = 46.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontFamily = LearnLabFonts.Display,
+    )
 }
 
 @Composable
