@@ -1,9 +1,11 @@
 package com.learnlab.engines.workedproblem
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -53,17 +55,33 @@ fun ProjectileDiagram(
     modifier: Modifier = Modifier,
 ) {
     val t = LL.tokens
-    val ink = t.ink200
     val muted = t.ink500
-    val accent = t.accent500
+    val accent = t.accent500       // brand emerald — used for the launch context
     val accentSoft = t.accent300
-    val launchVector = t.accent400
-    val componentColor = t.ink400
+    val launchVector = t.accent400 // initial u vector — neutral brand color
+    val horizontalColor = t.motionHorizontal // u_x, range, T (horizontal outcomes)
+    val verticalColor   = t.motionVertical   // u_y, max height, apex
     val measurer = rememberTextMeasurer()
 
     // Visual constants
     val angleDeg = 30f
     val angleRad = angleDeg * (kotlin.math.PI.toFloat() / 180f)
+
+    // Animated reveal of the velocity decomposition. When "components"
+    // first becomes active, both arrows grow from the launch point.
+    // Sequential timing — u_y arrives first (the more pedagogically
+    // important component for max-height work), then u_x.
+    val componentsActive = "components" in annotations
+    val uyProgress by animateFloatAsState(
+        targetValue = if (componentsActive) 1f else 0f,
+        animationSpec = tween(durationMillis = 500),
+        label = "uyProgress",
+    )
+    val uxProgress by animateFloatAsState(
+        targetValue = if (componentsActive) 1f else 0f,
+        animationSpec = tween(durationMillis = 500, delayMillis = 300),
+        label = "uxProgress",
+    )
 
     Box(modifier = modifier) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -96,12 +114,12 @@ fun ProjectileDiagram(
 
             // ── apex ──
             if ("apex" in annotations) {
-                drawCircle(color = accent, radius = 5.dp.toPx(), center = apex)
+                drawCircle(color = verticalColor, radius = 5.dp.toPx(), center = apex)
                 drawLabel(
                     measurer = measurer,
                     text = "apex",
                     topLeft = Offset(apex.x + 8.dp.toPx(), apex.y - 18.dp.toPx()),
-                    color = accent,
+                    color = verticalColor,
                 )
             }
 
@@ -110,29 +128,29 @@ fun ProjectileDiagram(
                 drawDottedHorizontal(
                     from = Offset(launchX, apexY),
                     to = Offset(apex.x, apexY),
-                    color = accent,
+                    color = verticalColor,
                 )
                 drawLabel(
                     measurer = measurer,
                     text = "H = 5 m",
                     topLeft = Offset(launchX - 4.dp.toPx(), apexY - 20.dp.toPx()),
-                    color = accent,
+                    color = verticalColor,
                     bold = true,
                 )
             }
 
             // ── timeOfFlight ──
             if ("timeOfFlight" in annotations) {
-                // Small "x" marker at landing + label
+                // Small "x" marker at landing + label — horizontal outcome
                 val s = 5.dp.toPx()
                 drawLine(
-                    color = accent,
+                    color = horizontalColor,
                     start = Offset(landing.x - s, landing.y - s),
                     end = Offset(landing.x + s, landing.y + s),
                     strokeWidth = 2.dp.toPx(),
                 )
                 drawLine(
-                    color = accent,
+                    color = horizontalColor,
                     start = Offset(landing.x - s, landing.y + s),
                     end = Offset(landing.x + s, landing.y - s),
                     strokeWidth = 2.dp.toPx(),
@@ -141,29 +159,29 @@ fun ProjectileDiagram(
                     measurer = measurer,
                     text = "T = 2 s",
                     topLeft = Offset(landing.x - 22.dp.toPx(), landing.y + 6.dp.toPx()),
-                    color = accent,
+                    color = horizontalColor,
                     bold = true,
                 )
             }
 
-            // ── range (ground bracket + "R ≈ 34.6 m") ──
+            // ── range (ground bracket + "R ≈ 34.6 m") — horizontal outcome ──
             if ("range" in annotations) {
                 val bracketY = groundY + 16.dp.toPx()
                 val tick = 6.dp.toPx()
                 drawLine(
-                    color = accent,
+                    color = horizontalColor,
                     start = Offset(launchX, bracketY),
                     end = Offset(landingX, bracketY),
                     strokeWidth = 1.5.dp.toPx(),
                 )
                 drawLine(
-                    color = accent,
+                    color = horizontalColor,
                     start = Offset(launchX, bracketY - tick),
                     end = Offset(launchX, bracketY + tick),
                     strokeWidth = 1.5.dp.toPx(),
                 )
                 drawLine(
-                    color = accent,
+                    color = horizontalColor,
                     start = Offset(landingX, bracketY - tick),
                     end = Offset(landingX, bracketY + tick),
                     strokeWidth = 1.5.dp.toPx(),
@@ -173,7 +191,7 @@ fun ProjectileDiagram(
                     text = "R ≈ 34.6 m",
                     topLeft = Offset((launchX + landingX) / 2f - 36.dp.toPx(),
                                      bracketY + 6.dp.toPx()),
-                    color = accent,
+                    color = horizontalColor,
                     bold = true,
                 )
             }
@@ -214,36 +232,53 @@ fun ProjectileDiagram(
             )
 
             // ── components (drawn last so they sit over the launch vector) ──
-            if ("components" in annotations) {
-                val compLen = 55.dp.toPx()
-                // u_x — horizontal
-                val uxEnd = Offset(launchX + compLen, groundY)
-                drawArrow(
-                    start = launch, end = uxEnd,
-                    color = componentColor,
-                    strokeWidth = 2.dp.toPx(),
-                    headSize = 9.dp.toPx(),
-                )
-                drawLabel(
-                    measurer = measurer,
-                    text = "u_x = 17.3",
-                    topLeft = Offset(launchX + 4.dp.toPx(), groundY + 4.dp.toPx()),
-                    color = componentColor,
-                )
-                // u_y — vertical
-                val uyEnd = Offset(launchX, groundY - compLen)
+            //
+            // Animated reveal: each arrow grows from the launch point with
+            // its own progress (uy then ux). Labels fade in proportionally
+            // so they don't appear before the arrow has reached its tip.
+            val compLen = 55.dp.toPx()
+
+            // u_y — vertical (blue) — appears first
+            if (uyProgress > 0f) {
+                val uyEnd = Offset(launchX, groundY - compLen * uyProgress)
                 drawArrow(
                     start = launch, end = uyEnd,
-                    color = componentColor,
+                    color = verticalColor,
                     strokeWidth = 2.dp.toPx(),
-                    headSize = 9.dp.toPx(),
+                    headSize = 9.dp.toPx() * uyProgress.coerceAtLeast(0.4f),
                 )
-                drawLabel(
-                    measurer = measurer,
-                    text = "u_y = 10",
-                    topLeft = Offset(launchX - 60.dp.toPx(), groundY - compLen - 8.dp.toPx()),
-                    color = componentColor,
+                if (uyProgress > 0.5f) {
+                    drawLabel(
+                        measurer = measurer,
+                        text = "u_y = 10",
+                        topLeft = Offset(
+                            launchX - 60.dp.toPx(),
+                            groundY - compLen - 8.dp.toPx(),
+                        ),
+                        color = verticalColor.copy(alpha = (uyProgress - 0.5f) * 2f),
+                        bold = true,
+                    )
+                }
+            }
+
+            // u_x — horizontal (lime) — appears second, slightly delayed
+            if (uxProgress > 0f) {
+                val uxEnd = Offset(launchX + compLen * uxProgress, groundY)
+                drawArrow(
+                    start = launch, end = uxEnd,
+                    color = horizontalColor,
+                    strokeWidth = 2.dp.toPx(),
+                    headSize = 9.dp.toPx() * uxProgress.coerceAtLeast(0.4f),
                 )
+                if (uxProgress > 0.5f) {
+                    drawLabel(
+                        measurer = measurer,
+                        text = "u_x = 17.3",
+                        topLeft = Offset(launchX + 4.dp.toPx(), groundY + 4.dp.toPx()),
+                        color = horizontalColor.copy(alpha = (uxProgress - 0.5f) * 2f),
+                        bold = true,
+                    )
+                }
             }
         }
     }

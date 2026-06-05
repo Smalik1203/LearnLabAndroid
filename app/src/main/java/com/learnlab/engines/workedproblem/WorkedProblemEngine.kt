@@ -84,25 +84,49 @@ fun WorkedProblemEngine(
     val showFinalAnswer = isLastStep && isCurrentRevealed
 
     // Which annotations should be live on the diagram right now =
-    // every step ≤ currentStep that has been revealed.
-    val activeAnnotations: Set<String> = remember(currentStep, revealed.size) {
-        revealed.mapNotNull { idx -> config.steps.getOrNull(idx)?.annotation }.toSet()
+    // every step ≤ currentStep that has been revealed. Once the final
+    // answer is shown, all annotations come on — the diagram becomes
+    // the consolidated visual summary.
+    val activeAnnotations: Set<String> = remember(currentStep, revealed.size, showFinalAnswer) {
+        if (showFinalAnswer) {
+            config.steps.mapNotNull { it.annotation }.toSet()
+        } else {
+            revealed.mapNotNull { idx -> config.steps.getOrNull(idx)?.annotation }.toSet()
+        }
+    }
+
+    // Which "find" symbols have been resolved. Wired from step annotations:
+    //   timeOfFlight → T,   maxHeight → H,   range → R
+    // Steps without one of those annotations don't tick anything.
+    val foundSymbols: Set<String> = remember(activeAnnotations) {
+        buildSet {
+            if ("timeOfFlight" in activeAnnotations) add("T")
+            if ("maxHeight" in activeAnnotations) add("H")
+            if ("range" in activeAnnotations) add("R")
+        }
     }
 
     Row(
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // ── Left column: diagram on top, problem below ────────────────
+        // ── Left column: thin givens strip on top, large diagram below ─
         Column(
-            modifier = Modifier.weight(0.55f).fillMaxHeight(),
+            modifier = Modifier.weight(0.65f).fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Diagram pane
+            GivensStrip(
+                given = config.given,
+                find = config.find,
+                foundSymbols = foundSymbols,
+            )
+
+            // Diagram pane — now occupies the rest of the left column,
+            // visually dominant as requested.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.58f)
+                    .weight(1f)
                     .clip(RoundedCornerShape(16.dp))
                     .background(t.surface2)
                     .border(1.dp, t.line, RoundedCornerShape(16.dp)),
@@ -123,19 +147,11 @@ fun WorkedProblemEngine(
                     }
                 }
             }
-
-            // Problem card (under the diagram)
-            Card(
-                modifier = Modifier.fillMaxWidth().weight(0.42f),
-                padding = 20.dp,
-            ) {
-                ProblemCardContent(config)
-            }
         }
 
         // ── Right column: step content + nav bar at bottom ────────────
         Column(
-            modifier = Modifier.weight(0.45f).fillMaxHeight(),
+            modifier = Modifier.weight(0.35f).fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Step strip OR final answer card. Once last step is revealed
@@ -230,72 +246,118 @@ fun WorkedProblemEngine(
     }
 }
 
+/**
+ * Compact strip above the diagram. Shows the given quantities on the
+ * left and the "Find" symbols on the right as small pills that tick
+ * off (accent fill + ✓) once the corresponding step has been revealed.
+ *
+ * Replaces the old verbose Problem card. The problem statement itself
+ * is communicated by the diagram + the step prompts; repeating it as
+ * prose duplicates information.
+ */
 @Composable
-private fun ProblemCardContent(config: WorkedProblemConfig) {
+private fun GivensStrip(
+    given: List<Quantity>,
+    find: List<Quantity>,
+    foundSymbols: Set<String>,
+) {
     val t = LL.tokens
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-        contentPadding = PaddingValues(0.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(t.surface)
+            .border(1.dp, t.line, RoundedCornerShape(12.dp))
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        item { SectionLabel("PROBLEM") }
-        item {
-            LLText(
-                config.problem,
-                color = t.ink50,
-                size = 14.sp,
-                lineHeight = 20.sp,
-            )
-        }
-
-        if (config.given.isNotEmpty()) {
-            item { SectionLabel("GIVEN") }
-            items(config.given) { q ->
-                QuantityRow(sym = q.sym, valueOrLabel = q.value ?: q.label.orEmpty())
+        // Given quantities — separated by a thin middle dot
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            given.forEachIndexed { i, q ->
+                if (i > 0) {
+                    LLText("·", color = t.ink600, size = 13.sp)
+                }
+                GivenItem(sym = q.sym, value = q.value.orEmpty())
             }
         }
 
-        if (config.find.isNotEmpty()) {
-            item { SectionLabel("FIND") }
-            items(config.find) { q ->
-                QuantityRow(sym = q.sym, valueOrLabel = q.label ?: q.value.orEmpty())
+        // Find pills
+        if (find.isNotEmpty()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                LLText(
+                    "FIND",
+                    color = t.ink500,
+                    size = 10.sp,
+                    weight = FontWeight.SemiBold,
+                    letterSpacing = 1.6.sp,
+                )
+                find.forEach { q ->
+                    FindPill(sym = q.sym, found = q.sym in foundSymbols)
+                }
             }
         }
     }
 }
 
+/** A single "sym = value" item in the givens strip, color-coded. */
 @Composable
-private fun SectionLabel(text: String) {
+private fun GivenItem(sym: String, value: String) {
     val t = LL.tokens
-    Column {
-        LLText(
-            text,
-            color = t.accent500,
-            size = 11.sp,
-            weight = FontWeight.SemiBold,
-            letterSpacing = 1.6.sp,
-        )
-        Spacer(Modifier.height(6.dp))
-        Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
-    }
-}
-
-@Composable
-private fun QuantityRow(sym: String, valueOrLabel: String) {
-    val t = LL.tokens
+    // Gravity gets the gravity color so it visually connects to its
+    // role in equations. Other givens stay neutral — they are inputs,
+    // not motion components.
+    val symColor = if (sym == "g") t.motionGravity else t.ink50
+    val valueColor = if (sym == "g") t.motionGravity else t.ink200
     Row(verticalAlignment = Alignment.CenterVertically) {
         LLText(
             sym,
-            color = t.ink50,
-            size = 14.sp,
+            color = symColor,
+            size = 13.sp,
             weight = FontWeight.SemiBold,
             fontFamily = FontFamily.Monospace,
-            modifier = Modifier.width(56.dp),
         )
         LLText(
-            "= $valueOrLabel".takeIf { valueOrLabel.contains(Regex("[0-9]")) } ?: valueOrLabel,
-            color = t.ink400,
+            " = $value",
+            color = valueColor,
             size = 13.sp,
+            fontFamily = FontFamily.Monospace,
         )
+    }
+}
+
+/** A pill for a "find" symbol — ticks green with ✓ when resolved. */
+@Composable
+private fun FindPill(sym: String, found: Boolean) {
+    val t = LL.tokens
+    val bg = if (found) t.accent50 else t.surface2
+    val fg = if (found) t.accent700 else t.ink500
+    val border = if (found) t.accent500 else t.line
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(bg)
+            .border(1.dp, border, RoundedCornerShape(999.dp))
+            .padding(horizontal = 10.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LLText(
+            sym,
+            color = fg,
+            size = 12.sp,
+            weight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+        )
+        if (found) {
+            Spacer(Modifier.width(4.dp))
+            LLText("✓", color = fg, size = 11.sp, weight = FontWeight.Bold)
+        }
     }
 }
 
@@ -339,6 +401,10 @@ private fun StepStrip(
                 lineHeight = 22.sp,
             )
 
+            step.teacherNote?.let { note ->
+                TeacherNoteStrip(note)
+            }
+
             if (revealed) {
                 Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -369,6 +435,68 @@ private fun StepStrip(
             answers = step.whyAnswers,
             onDismiss = { showWhy = false },
         )
+    }
+}
+
+/**
+ * Muted strip under the prompt that surfaces teacher-only cues — a
+ * suggested question to throw at the class, and/or a common mistake
+ * to call out. Visually distinct from student-facing text so the
+ * teacher can read it without it being mistaken for content the
+ * class should follow.
+ *
+ * Both fields are optional. If both are present they stack.
+ */
+@Composable
+private fun TeacherNoteStrip(note: TeacherNote) {
+    val t = LL.tokens
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(t.surface2)
+            .border(1.dp, t.line, RoundedCornerShape(10.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        note.ask?.let { ask ->
+            Row(verticalAlignment = Alignment.Top) {
+                LLText(
+                    "ASK",
+                    color = t.accent700,
+                    size = 9.sp,
+                    weight = FontWeight.Bold,
+                    letterSpacing = 1.4.sp,
+                    modifier = Modifier.width(44.dp).padding(top = 2.dp),
+                )
+                LLText(
+                    ask,
+                    color = t.ink200,
+                    size = 13.sp,
+                    lineHeight = 18.sp,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+        note.mistake?.let { mistake ->
+            Row(verticalAlignment = Alignment.Top) {
+                LLText(
+                    "WATCH",
+                    color = t.amber700,
+                    size = 9.sp,
+                    weight = FontWeight.Bold,
+                    letterSpacing = 1.4.sp,
+                    modifier = Modifier.width(44.dp).padding(top = 2.dp),
+                )
+                LLText(
+                    mistake,
+                    color = t.ink200,
+                    size = 13.sp,
+                    lineHeight = 18.sp,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
     }
 }
 

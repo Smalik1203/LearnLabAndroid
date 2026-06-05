@@ -76,6 +76,31 @@ data class Step(
      * include this field render exactly as before.
      */
     val whyAnswers: List<WhyAnswer> = emptyList(),
+    /**
+     * Optional cue for the teacher running the lesson — a suggested
+     * question to ask the class before revealing the step, and/or a
+     * common mistake to call out. Renders as a muted strip below the
+     * prompt, visually distinct from student-facing text.
+     *
+     * Null = no teacher strip shown.
+     */
+    val teacherNote: TeacherNote? = null,
+)
+
+/**
+ * Cues for the teacher, not the student. Both fields optional.
+ *
+ * `ask`     — a question to throw at the class before revealing the step
+ *             ("What is the vertical velocity at the top?"). Helps shift
+ *             the lesson from passive-watch to predict-then-reveal.
+ * `mistake` — a common student error to address ("Many students use
+ *             20 m/s as the upward speed by mistake"). Inoculates the
+ *             class against the bug before it happens.
+ */
+@Serializable
+data class TeacherNote(
+    val ask: String? = null,
+    val mistake: String? = null,
 )
 
 /**

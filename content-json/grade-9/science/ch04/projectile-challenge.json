@@ -19,6 +19,10 @@
         "u_y = u · sin θ = 20 × sin 30° = 10 m/s"
       ],
       "annotation": "components",
+      "teacherNote": {
+        "ask": "Before revealing — what part of 20 m/s goes upward? Half? All of it? Less than half?",
+        "mistake": "Students often plug the full 20 m/s in as the vertical speed and get H = 20 m. Only u_y = 10 m/s lifts the ball; the rest moves it forward."
+      },
       "whyAnswers": [
         {
           "question": "Why do we need sin and cos at all?",
@@ -53,14 +57,20 @@
         "At apex:   0 = u_y − g · t_top",
         "t_top = u_y / g = 10 / 10 = 1 s"
       ],
-      "annotation": "apex"
+      "annotation": "apex",
+      "teacherNote": {
+        "ask": "Hold the animation here — what is the ball's vertical velocity at this exact instant?"
+      }
     },
     {
       "prompt": "By symmetry, the projectile takes the same time to come back down. So time of flight T = 2 · t_top.",
       "reveal": [
         "T = 2 × t_top = 2 × 1 = 2 s"
       ],
-      "annotation": "timeOfFlight"
+      "annotation": "timeOfFlight",
+      "teacherNote": {
+        "ask": "Why is the time going up the same as the time coming down? What would change if there were air resistance?"
+      }
     },
     {
       "prompt": "Use v² = u² − 2·g·H at the highest point (where v = 0) to find the maximum height H.",
@@ -68,7 +78,10 @@
         "0 = u_y² − 2 · g · H",
         "H = u_y² / (2g) = 10² / (2 × 10) = 100 / 20 = 5 m"
       ],
-      "annotation": "maxHeight"
+      "annotation": "maxHeight",
+      "teacherNote": {
+        "mistake": "Watch for u² vs u_y² — only the vertical part lifts the ball. Using u = 20 here gives 20 m, not 5 m."
+      }
     },
     {
       "prompt": "The horizontal range is simply the horizontal speed times the total flight time. R = u_x · T.",

@@ -52,6 +52,16 @@ data class LearnLabTokens(
     val rose300: Color = Color(0xFFFDA4AF),
     val rose600: Color = Color(0xFFE11D48),
     val amber400: Color = Color(0xFFFBBF24),
+
+    // Motion-semantic colors — used by physics engines to give the same
+    // concept the same color across diagram, equation, and explanation.
+    // Same value on both themes; chosen for readability on dark surfaces.
+    //   horizontal motion = green   (forward / range)
+    //   vertical motion   = blue    (up-down / height)
+    //   gravity           = orange  (the force acting)
+    val motionHorizontal: Color = Color(0xFF84CC16), // lime-500 — distinct from brand emerald
+    val motionVertical: Color   = Color(0xFF60A5FA), // blue-400
+    val motionGravity: Color    = Color(0xFFFB923C), // orange-400
 )
 
 val LightTokens = LearnLabTokens(
