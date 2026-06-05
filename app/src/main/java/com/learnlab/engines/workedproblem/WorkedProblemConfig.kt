@@ -67,4 +67,26 @@ data class Step(
      * Null means "no diagram change for this step".
      */
     val annotation: String? = null,
+    /**
+     * Common student follow-up questions for this step ("but why?").
+     * Surfaced via a small `?` chip in the step strip; tapping opens
+     * a modal that lets the teacher expand each one.
+     *
+     * Empty = no chip shown. Backward-compatible: configs that don't
+     * include this field render exactly as before.
+     */
+    val whyAnswers: List<WhyAnswer> = emptyList(),
+)
+
+/**
+ * One "but why?" question and its answer for a step.
+ *
+ * Keep questions short (student-voice, conversational) and answers
+ * concise enough to read aloud from a tablet to a class. Maths
+ * notation: ASCII / Unicode, same convention as `reveal`.
+ */
+@Serializable
+data class WhyAnswer(
+    val question: String,
+    val answer: String,
 )

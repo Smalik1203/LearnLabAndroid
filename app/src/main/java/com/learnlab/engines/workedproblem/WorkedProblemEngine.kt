@@ -304,15 +304,29 @@ private fun StepStrip(
     onReveal: () -> Unit,
 ) {
     val t = LL.tokens
+    var showWhy by remember(stepIndex) { mutableStateOf(false) }
+
     Card(modifier = Modifier.fillMaxWidth(), padding = 16.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            LLText(
-                "STEP ${stepIndex + 1} OF $totalSteps",
-                color = t.accent500,
-                size = 10.sp,
-                weight = FontWeight.SemiBold,
-                letterSpacing = 1.8.sp,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                LLText(
+                    "STEP ${stepIndex + 1} OF $totalSteps",
+                    color = t.accent500,
+                    size = 10.sp,
+                    weight = FontWeight.SemiBold,
+                    letterSpacing = 1.8.sp,
+                )
+                if (step.whyAnswers.isNotEmpty()) {
+                    WhyChip(
+                        count = step.whyAnswers.size,
+                        onClick = { showWhy = true },
+                    )
+                }
+            }
             LLText(
                 step.prompt,
                 color = t.ink50,
@@ -342,6 +356,186 @@ private fun StepStrip(
                     PrimaryButton(label = "Reveal step  ▶", onClick = onReveal)
                 }
             }
+        }
+    }
+
+    if (showWhy) {
+        WhyDialog(
+            stepLabel = "STEP ${stepIndex + 1}",
+            answers = step.whyAnswers,
+            onDismiss = { showWhy = false },
+        )
+    }
+}
+
+/**
+ * Small "But why?" chip. Lives at the right end of the STEP label row.
+ * Only shown when the step has at least one whyAnswer.
+ */
+@Composable
+private fun WhyChip(count: Int, onClick: () -> Unit) {
+    val t = LL.tokens
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(t.accent50)
+            .border(1.dp, t.accent300, RoundedCornerShape(999.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LLText(
+            "?  But why",
+            color = t.accent700,
+            size = 11.sp,
+            weight = FontWeight.SemiBold,
+        )
+        if (count > 1) {
+            Spacer(Modifier.width(6.dp))
+            Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .clip(CircleShape)
+                    .background(t.accent500),
+                contentAlignment = Alignment.Center,
+            ) {
+                LLText(
+                    "$count",
+                    color = androidx.compose.ui.graphics.Color.White,
+                    size = 9.sp,
+                    weight = FontWeight.Bold,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Modal dialog showing the list of "But why?" follow-up questions for
+ * the current step. Each question expands inline to reveal its answer.
+ * Multiple questions can be open at once — teacher might want to compare.
+ *
+ * Designed to read well on a projector: large type, generous spacing,
+ * one clear "Close" button. The background is dimmed (default Dialog
+ * scrim) so the dialog visually sits on top without fully erasing the
+ * step strip / diagram context behind.
+ */
+@Composable
+private fun WhyDialog(
+    stepLabel: String,
+    answers: List<WhyAnswer>,
+    onDismiss: () -> Unit,
+) {
+    val t = LL.tokens
+    val openQuestions = remember { mutableStateListOf<Int>() }
+
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onDismiss,
+        properties = androidx.compose.ui.window.DialogProperties(
+            usePlatformDefaultWidth = false,
+        ),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.75f)
+                .clip(RoundedCornerShape(20.dp))
+                .background(t.surface)
+                .border(1.dp, t.lineStrong, RoundedCornerShape(20.dp))
+                .padding(28.dp),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column {
+                        LLText(
+                            "$stepLabel  ·  BUT WHY?",
+                            color = t.accent500,
+                            size = 11.sp,
+                            weight = FontWeight.SemiBold,
+                            letterSpacing = 1.8.sp,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        LLText(
+                            "Common follow-ups students ask",
+                            color = t.ink400,
+                            size = 13.sp,
+                        )
+                    }
+                    GhostButton(label = "Close ✕", onClick = onDismiss)
+                }
+
+                Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+
+                // Q&A list — scrollable in case it's long
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(vertical = 4.dp),
+                ) {
+                    items(answers.size) { i ->
+                        val qa = answers[i]
+                        val isOpen = i in openQuestions
+                        WhyEntry(
+                            qa = qa,
+                            isOpen = isOpen,
+                            onToggle = {
+                                if (isOpen) openQuestions.remove(i)
+                                else openQuestions.add(i)
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WhyEntry(
+    qa: WhyAnswer,
+    isOpen: Boolean,
+    onToggle: () -> Unit,
+) {
+    val t = LL.tokens
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(t.surface2)
+            .clickable(onClick = onToggle)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(if (isOpen) 10.dp else 0.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
+        ) {
+            LLText(
+                qa.question,
+                color = t.ink50,
+                size = 15.sp,
+                weight = FontWeight.SemiBold,
+                lineHeight = 21.sp,
+                modifier = Modifier.weight(1f).padding(end = 12.dp),
+            )
+            LLText(
+                if (isOpen) "−" else "+",
+                color = t.accent500,
+                size = 20.sp,
+                weight = FontWeight.Bold,
+            )
+        }
+        if (isOpen) {
+            LLText(
+                qa.answer,
+                color = t.ink200,
+                size = 14.sp,
+                lineHeight = 21.sp,
+            )
         }
     }
 }

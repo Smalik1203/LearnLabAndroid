@@ -18,7 +18,25 @@
         "u_x = u · cos θ = 20 × cos 30° = 17.32 m/s",
         "u_y = u · sin θ = 20 × sin 30° = 10 m/s"
       ],
-      "annotation": "components"
+      "annotation": "components",
+      "whyAnswers": [
+        {
+          "question": "Why do we need sin and cos at all?",
+          "answer": "Because the ball is not moving straight up — it is moving up AND forward at the same time. The angle (30°) is the only piece of information telling us how the 20 m/s is split between the two. Sin and cos are the geometric tools that perform that split for any right triangle. Without them, we cannot get H or R unless someone hands us the components directly."
+        },
+        {
+          "question": "Can we avoid them for this specific question?",
+          "answer": "Only by remembering common values like sin 30° = 1/2 and cos 30° = √3/2. Then you can say 'at 30°, half the speed goes upward', giving u_y = 20 × 1/2 = 10 m/s without a calculator. But that is still using the result of sine — just from memory. There is no way to skip the split itself."
+        },
+        {
+          "question": "Why can't I just use the full 20 m/s as the upward speed?",
+          "answer": "Because only a part of the velocity points upward. If you plug 20 m/s into H = u_y²/(2g), you get H = 400/20 = 20 m. But the real height is 5 m. The other 17.3 m/s is being spent moving forward, not gaining height. The ball doesn't get the benefit of its full speed in any single direction — it has to share."
+        },
+        {
+          "question": "Why specifically sin and cos — why not some other tool?",
+          "answer": "Forget physics for a moment. Imagine a ladder leaning against a wall, 20 m long, making 30° with the floor. People worked out thousands of years ago that for any right triangle: cos θ = (horizontal side) / hypotenuse, sin θ = (vertical side) / hypotenuse. That is literally the definition of sin and cos — they were invented for this exact question. Your velocity arrow is just the ladder. Sin and cos are not extra physics — they are geometry that physics borrows."
+        }
+      ]
     },
     {
       "prompt": "The horizontal motion has no acceleration. The vertical motion accelerates downward at g. Sketch the trajectory.",
