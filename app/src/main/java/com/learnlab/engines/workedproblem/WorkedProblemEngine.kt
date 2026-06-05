@@ -1,0 +1,404 @@
+package com.learnlab.engines.workedproblem
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.learnlab.design.Card
+import com.learnlab.design.GhostButton
+import com.learnlab.design.LL
+import com.learnlab.design.LLText
+import com.learnlab.design.PrimaryButton
+import com.learnlab.design.SecondaryButton
+
+/**
+ * Renders a JSON-driven worked-problem walkthrough.
+ *
+ * Layout (landscape, tablet):
+ *   ┌─────────────────────────────────────────────┐
+ *   │   diagram (left ~55%)  │  problem card      │
+ *   │                        │  given / find      │
+ *   │                        │  (right ~45%)      │
+ *   │                                             │
+ *   │   step strip (prompt + reveal) full width   │
+ *   │   ‹ Prev   • • ○ ○ ○ ○   Next ›  · Reset    │
+ *   └─────────────────────────────────────────────┘
+ *
+ * Pedagogy: teacher reads the prompt, asks the class to attempt on paper,
+ * taps "Reveal step ▶" to validate. Then "Next ›" advances. After the last
+ * step is revealed, the final answer card slides up below the strip.
+ *
+ * State is kept internal for now — there's no parent observer. If/when this
+ * engine needs progress tracking or persistence, lift `currentStep` and
+ * `revealed` into a hoisted `ActivityState` per CLAUDE.md §4.
+ */
+@Composable
+fun WorkedProblemEngine(
+    config: WorkedProblemConfig,
+    modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
+) {
+    val t = LL.tokens
+
+    var currentStep by remember { mutableStateOf(0) }
+    val revealed = remember { mutableStateListOf<Int>() }
+    var showBonus by remember { mutableStateOf(false) }
+
+    val isCurrentRevealed = currentStep in revealed
+    val isLastStep = currentStep == config.steps.lastIndex
+    val showFinalAnswer = isLastStep && isCurrentRevealed
+
+    // Which annotations should be live on the diagram right now =
+    // every step ≤ currentStep that has been revealed.
+    val activeAnnotations: Set<String> = remember(currentStep, revealed.size) {
+        revealed.mapNotNull { idx -> config.steps.getOrNull(idx)?.annotation }.toSet()
+    }
+
+    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+
+        // ── Top: diagram (left) + problem card (right) ────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            // Diagram pane
+            Box(
+                modifier = Modifier
+                    .weight(0.55f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(t.surface2)
+                    .border(1.dp, t.line, RoundedCornerShape(16.dp)),
+            ) {
+                when (config.diagram) {
+                    "projectile-launch" -> ProjectileDiagram(
+                        annotations = activeAnnotations,
+                        modifier = Modifier.fillMaxSize().padding(20.dp),
+                    )
+                    else -> Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        LLText(
+                            "Diagram \"${config.diagram}\" not implemented",
+                            color = t.ink500, size = 13.sp,
+                        )
+                    }
+                }
+            }
+
+            // Problem card
+            Card(
+                modifier = Modifier.weight(0.45f).fillMaxHeight(),
+                padding = 20.dp,
+            ) {
+                ProblemCardContent(config)
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ── Step strip ────────────────────────────────────────────────
+        StepStrip(
+            step = config.steps[currentStep],
+            stepIndex = currentStep,
+            totalSteps = config.steps.size,
+            revealed = isCurrentRevealed,
+            onReveal = { if (currentStep !in revealed) revealed.add(currentStep) },
+        )
+
+        // ── Final answer card (after last step revealed) ──────────────
+        AnimatedVisibility(
+            visible = showFinalAnswer,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically(),
+        ) {
+            Column {
+                Spacer(Modifier.height(12.dp))
+                FinalAnswerCard(
+                    answer = config.finalAnswer,
+                    bonus = config.bonus,
+                    bonusShown = showBonus,
+                    onToggleBonus = { showBonus = !showBonus },
+                )
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ── Bottom nav bar ────────────────────────────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Left: Prev
+            SecondaryButton(
+                label = "‹ Prev",
+                onClick = {
+                    if (currentStep > 0) currentStep--
+                },
+                enabled = currentStep > 0,
+            )
+
+            // Center: step dots
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                config.steps.indices.forEach { i ->
+                    val isCurrent = i == currentStep
+                    val isDone = i in revealed
+                    val color = when {
+                        isCurrent -> t.accent500
+                        isDone -> t.accent300
+                        else -> t.surface3
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(if (isCurrent) 12.dp else 8.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .clickable { currentStep = i },
+                    )
+                }
+            }
+
+            // Right: Next + Reset + (optional) Back
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                GhostButton(
+                    label = "Reset",
+                    onClick = {
+                        currentStep = 0
+                        revealed.clear()
+                        showBonus = false
+                    },
+                )
+                if (onBack != null) {
+                    GhostButton(label = "← Back to Lab", onClick = onBack)
+                }
+                PrimaryButton(
+                    label = "Next ›",
+                    onClick = {
+                        if (currentStep < config.steps.lastIndex) currentStep++
+                    },
+                    enabled = currentStep < config.steps.lastIndex && isCurrentRevealed,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProblemCardContent(config: WorkedProblemConfig) {
+    val t = LL.tokens
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(0.dp),
+    ) {
+        item { SectionLabel("PROBLEM") }
+        item {
+            LLText(
+                config.problem,
+                color = t.ink50,
+                size = 14.sp,
+                lineHeight = 20.sp,
+            )
+        }
+
+        if (config.given.isNotEmpty()) {
+            item { SectionLabel("GIVEN") }
+            items(config.given) { q ->
+                QuantityRow(sym = q.sym, valueOrLabel = q.value ?: q.label.orEmpty())
+            }
+        }
+
+        if (config.find.isNotEmpty()) {
+            item { SectionLabel("FIND") }
+            items(config.find) { q ->
+                QuantityRow(sym = q.sym, valueOrLabel = q.label ?: q.value.orEmpty())
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionLabel(text: String) {
+    val t = LL.tokens
+    Column {
+        LLText(
+            text,
+            color = t.accent500,
+            size = 11.sp,
+            weight = FontWeight.SemiBold,
+            letterSpacing = 1.6.sp,
+        )
+        Spacer(Modifier.height(6.dp))
+        Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+    }
+}
+
+@Composable
+private fun QuantityRow(sym: String, valueOrLabel: String) {
+    val t = LL.tokens
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        LLText(
+            sym,
+            color = t.ink50,
+            size = 14.sp,
+            weight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.width(56.dp),
+        )
+        LLText(
+            "= $valueOrLabel".takeIf { valueOrLabel.contains(Regex("[0-9]")) } ?: valueOrLabel,
+            color = t.ink400,
+            size = 13.sp,
+        )
+    }
+}
+
+@Composable
+private fun StepStrip(
+    step: Step,
+    stepIndex: Int,
+    totalSteps: Int,
+    revealed: Boolean,
+    onReveal: () -> Unit,
+) {
+    val t = LL.tokens
+    Card(modifier = Modifier.fillMaxWidth(), padding = 16.dp) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LLText(
+                "STEP ${stepIndex + 1} OF $totalSteps",
+                color = t.accent500,
+                size = 10.sp,
+                weight = FontWeight.SemiBold,
+                letterSpacing = 1.8.sp,
+            )
+            LLText(
+                step.prompt,
+                color = t.ink50,
+                size = 16.sp,
+                weight = FontWeight.SemiBold,
+                lineHeight = 22.sp,
+            )
+
+            if (revealed) {
+                Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    step.reveal.forEach { line ->
+                        LLText(
+                            line,
+                            color = t.ink200,
+                            size = 14.sp,
+                            fontFamily = FontFamily.Monospace,
+                            lineHeight = 20.sp,
+                        )
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    PrimaryButton(label = "Reveal step  ▶", onClick = onReveal)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FinalAnswerCard(
+    answer: String,
+    bonus: String?,
+    bonusShown: Boolean,
+    onToggleBonus: () -> Unit,
+) {
+    val t = LL.tokens
+    Card(modifier = Modifier.fillMaxWidth(), padding = 16.dp) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LLText(
+                "ANSWER",
+                color = t.accent700,
+                size = 10.sp,
+                weight = FontWeight.SemiBold,
+                letterSpacing = 1.8.sp,
+            )
+            LLText(
+                answer,
+                color = t.ink50,
+                size = 18.sp,
+                weight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+            )
+
+            if (bonus != null) {
+                Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LLText(
+                        if (bonusShown) "BONUS FORMULA" else "Show bonus formula",
+                        color = t.accent500,
+                        size = 12.sp,
+                        weight = FontWeight.SemiBold,
+                    )
+                    GhostButton(
+                        label = if (bonusShown) "Hide" else "Show",
+                        onClick = onToggleBonus,
+                    )
+                }
+                if (bonusShown) {
+                    LLText(
+                        bonus,
+                        color = t.ink200,
+                        size = 13.sp,
+                        fontFamily = FontFamily.Monospace,
+                        lineHeight = 19.sp,
+                    )
+                }
+            }
+        }
+    }
+}

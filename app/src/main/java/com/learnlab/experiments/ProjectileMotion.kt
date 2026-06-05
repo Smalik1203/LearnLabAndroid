@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +51,9 @@ import com.learnlab.design.LLText
 import com.learnlab.design.MetricChip
 import com.learnlab.design.PrimaryButton
 import com.learnlab.design.SecondaryButton
+import com.learnlab.engines.workedproblem.WorkedProblemEngine
+import com.learnlab.engines.workedproblem.WorkedProblemLoader
+import com.learnlab.engines.workedproblem.WorkedProblemPaths
 import com.learnlab.store.ExperimentControls
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -92,6 +96,25 @@ private data class GravityPreset2(val label: String, val g: Float)
 @Composable
 fun ProjectileMotion(controls: ExperimentControls) {
     val t = LL.tokens
+    val context = LocalContext.current
+
+    // Bridge-content sub-flow: when true, the lab is hidden and the
+    // WorkedProblemEngine renders a JEE-style worked example instead.
+    // Loaded lazily on first open and cached by WorkedProblemLoader.
+    var showChallenge by remember { mutableStateOf(false) }
+    if (showChallenge) {
+        val challenge = remember {
+            WorkedProblemLoader.load(
+                context,
+                WorkedProblemPaths.G9_SCI_CH04_PROJECTILE_CHALLENGE,
+            )
+        }
+        WorkedProblemEngine(
+            config = challenge,
+            onBack = { showChallenge = false },
+        )
+        return
+    }
 
     var v0 by remember { mutableStateOf(30f) }       // m/s
     var angleDeg by remember { mutableStateOf(45f) } // °
@@ -196,6 +219,7 @@ fun ProjectileMotion(controls: ExperimentControls) {
                 }
                 Row(verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    ChallengeChip(onClick = { showChallenge = true })
                     ToggleChip("Velocity", showVectors) { showVectors = !showVectors }
                     ToggleChip("Grid", showGrid) { showGrid = !showGrid }
                 }
@@ -690,4 +714,29 @@ private fun ToggleChip(label: String, on: Boolean, onToggle: () -> Unit) {
             .clickable { onToggle() }
             .padding(horizontal = 10.dp, vertical = 5.dp),
     ) { LLText(label, color = fg, size = 11.sp, weight = FontWeight.SemiBold) }
+}
+
+/**
+ * Bridge-content entry point: filled accent pill that opens the
+ * WorkedProblemEngine with a JEE-style projectile problem. Visually
+ * distinct from the ToggleChips so it reads as an action, not a state.
+ */
+@Composable
+private fun ChallengeChip(onClick: () -> Unit) {
+    val t = LL.tokens
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(t.accent500)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 5.dp),
+    ) {
+        LLText(
+            "Challenge  ›",
+            color = Color.White,
+            size = 11.sp,
+            weight = FontWeight.SemiBold,
+            letterSpacing = 0.5.sp,
+        )
+    }
 }

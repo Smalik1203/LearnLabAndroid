@@ -1,0 +1,66 @@
+{
+  "problem": "A projectile is launched at 20 m/s at 30° above horizontal from ground level. Take g = 10 m/s². Find (a) the time of flight, (b) the maximum height reached, and (c) the horizontal range.",
+  "given": [
+    { "sym": "u",  "value": "20 m/s" },
+    { "sym": "θ",  "value": "30°" },
+    { "sym": "g",  "value": "10 m/s²" }
+  ],
+  "find": [
+    { "sym": "T",  "label": "time of flight" },
+    { "sym": "H",  "label": "max height" },
+    { "sym": "R",  "label": "horizontal range" }
+  ],
+  "diagram": "projectile-launch",
+  "steps": [
+    {
+      "prompt": "Decompose the launch velocity into horizontal and vertical components.",
+      "reveal": [
+        "u_x = u · cos θ = 20 × cos 30° = 17.32 m/s",
+        "u_y = u · sin θ = 20 × sin 30° = 10 m/s"
+      ],
+      "annotation": "components"
+    },
+    {
+      "prompt": "The horizontal motion has no acceleration. The vertical motion accelerates downward at g. Sketch the trajectory.",
+      "reveal": [
+        "Horizontal: a_x = 0   →   u_x stays at 17.32 m/s.",
+        "Vertical:   a_y = −g  →   slows on the way up, speeds on the way down.",
+        "Path is a symmetric parabola."
+      ],
+      "annotation": "trajectory"
+    },
+    {
+      "prompt": "At the highest point the vertical velocity is zero. Use v = u + a·t to find the time to reach the top.",
+      "reveal": [
+        "At apex:   0 = u_y − g · t_top",
+        "t_top = u_y / g = 10 / 10 = 1 s"
+      ],
+      "annotation": "apex"
+    },
+    {
+      "prompt": "By symmetry, the projectile takes the same time to come back down. So time of flight T = 2 · t_top.",
+      "reveal": [
+        "T = 2 × t_top = 2 × 1 = 2 s"
+      ],
+      "annotation": "timeOfFlight"
+    },
+    {
+      "prompt": "Use v² = u² − 2·g·H at the highest point (where v = 0) to find the maximum height H.",
+      "reveal": [
+        "0 = u_y² − 2 · g · H",
+        "H = u_y² / (2g) = 10² / (2 × 10) = 100 / 20 = 5 m"
+      ],
+      "annotation": "maxHeight"
+    },
+    {
+      "prompt": "The horizontal range is simply the horizontal speed times the total flight time. R = u_x · T.",
+      "reveal": [
+        "R = u_x · T = 17.32 × 2 = 34.64 m",
+        "R ≈ 34.6 m"
+      ],
+      "annotation": "range"
+    }
+  ],
+  "finalAnswer": "T = 2 s    H = 5 m    R ≈ 34.6 m",
+  "bonus": "Shortcut formula:  R = u² · sin(2θ) / g  =  (20)² · sin 60° / 10  =  400 × 0.866 / 10  ≈  34.64 m"
+}
