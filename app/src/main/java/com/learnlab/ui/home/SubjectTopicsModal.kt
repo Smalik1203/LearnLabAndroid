@@ -54,7 +54,8 @@ fun SubjectTopicsModal(
 ) {
     val t = LL.tokens
     val available = remember(subject) { gradesFor(subject).toSet() }
-    var grade by remember(subject) { mutableIntStateOf(available.minOrNull() ?: -1) }
+    // Nothing pre-selected — the user must pick a grade first (topics stay disabled until then).
+    var grade by remember(subject) { mutableIntStateOf(-1) }
     val topics = remember(subject, grade) { if (grade >= 0) topicsFor(subject, grade) else emptyList() }
 
     Dialog(onDismissRequest = onDismiss) {
