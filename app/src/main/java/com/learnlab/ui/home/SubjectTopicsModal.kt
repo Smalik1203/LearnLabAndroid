@@ -1,5 +1,6 @@
 package com.learnlab.ui.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,11 +72,10 @@ fun SubjectTopicsModal(
                 verticalAlignment = Alignment.Top,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(subject.color.copy(alpha = 0.85f)),
+                    Image(
+                        painter = painterResource(subject.iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.size(36.dp),
                     )
                     Spacer(Modifier.width(10.dp))
                     LLText(subject.displayName, color = t.ink50, size = 24.sp, weight = FontWeight.Bold)

@@ -1,6 +1,7 @@
 package com.learnlab.content
 
 import androidx.compose.ui.graphics.Color
+import com.learnlab.android.R
 import com.learnlab.design.SubjectBiology
 import com.learnlab.design.SubjectChemistry
 import com.learnlab.design.SubjectMath
@@ -17,26 +18,31 @@ enum class Subject(
     val displayName: String,
     val description: String,
     val color: Color,
+    val iconRes: Int,
 ) {
     PHYSICS(
         "Physics",
         "Explore motion, forces, waves, and the fundamental laws that govern our universe.",
         SubjectPhysics,
+        R.drawable.subject_physics,
     ),
     CHEMISTRY(
         "Chemistry",
         "Discover reactions, molecules, and the building blocks of matter through virtual labs.",
         SubjectChemistry,
+        R.drawable.subject_chemistry,
     ),
     MATHEMATICS(
         "Mathematics",
         "Visualize patterns, geometry, and abstract concepts through interactive demonstrations.",
         SubjectMath,
+        R.drawable.subject_mathematics,
     ),
     BIOLOGY(
         "Biology",
         "Experience life processes, ecosystems, and the wonders of living organisms.",
         SubjectBiology,
+        R.drawable.subject_biology,
     ),
 }
 
