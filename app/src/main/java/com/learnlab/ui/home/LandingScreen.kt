@@ -5,25 +5,20 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Biotech
 import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,11 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.design.LL
@@ -46,46 +42,54 @@ import com.learnlab.design.SubjectBiology
 import com.learnlab.design.SubjectChemistry
 import com.learnlab.design.SubjectMath
 import com.learnlab.design.SubjectPhysics
+import com.learnlab.shell.PageChrome
 import com.learnlab.store.AppState
 
-/**
- * Landing hero — mirrors the web Home page: a gradient headline + subtitle + CTA
- * on the left, floating subject icons on the right.
- */
+/** Landing hero — mirrors the web Home: centered gradient headline, subtitle,
+ *  glowing teal→green CTA, ambient floating science icons, footer. */
 @Composable
 fun LandingScreen(state: AppState, onBegin: () -> Unit) {
     val t = LL.tokens
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.linearGradient(listOf(t.bg, t.bgDeep))),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 64.dp, vertical = 48.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            // Left — copy + CTA
-            Column(modifier = Modifier.weight(1f)) {
+    PageChrome(state = state, onLogo = {}, showFooter = true) {
+        Box(Modifier.fillMaxSize()) {
+            // Ambient floating icons scattered across the canvas.
+            FloatingIcon(Icons.Filled.Hub, SubjectPhysics, Alignment.TopStart, 0, 64.dp, 0.30f)
+            FloatingIcon(Icons.Filled.Science, SubjectChemistry, Alignment.TopEnd, 1, 70.dp, 0.30f)
+            FloatingIcon(Icons.Filled.Calculate, SubjectMath, Alignment.CenterStart, 2, 80.dp, 0.22f)
+            FloatingIcon(Icons.Filled.Biotech, SubjectBiology, Alignment.BottomEnd, 3, 76.dp, 0.30f)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Text(
-                    text = "Learn Through\nExperiments",
+                    text = "Learn Through",
                     style = MaterialTheme.typography.displayLarge.copy(
                         brush = Brush.linearGradient(
-                            listOf(SubjectPhysics, SubjectChemistry, SubjectMath),
+                            listOf(SubjectPhysics, SubjectChemistry, Color(0xFF60A5FA), SubjectMath),
                         ),
                     ),
                     fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
                 )
-                Spacer(Modifier.height(20.dp))
+                Text(
+                    text = "Experiments",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = t.ink50,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(22.dp))
                 LLText(
-                    "Discover the beauty of science through interactive, hands-on virtual labs — built for the classroom.",
+                    "Discover the beauty of science through hands-on experiments.\nBuild intuition first, understand concepts later.",
                     color = t.ink200,
                     size = 18.sp,
                     lineHeight = 28.sp,
-                    modifier = Modifier.fillMaxWidth(0.85f),
+                    align = TextAlign.Center,
                 )
-                Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(34.dp))
                 PrimaryButton(
                     label = "Begin learning",
                     onClick = onBegin,
@@ -99,32 +103,25 @@ fun LandingScreen(state: AppState, onBegin: () -> Unit) {
                     },
                 )
             }
-
-            // Right — floating subject icons
-            Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                FloatingIcon(Icons.Filled.Science, SubjectPhysics, Alignment.TopCenter, 0, 110.dp)
-                FloatingIcon(Icons.Filled.Calculate, SubjectMath, Alignment.CenterStart, 1, 92.dp)
-                FloatingIcon(Icons.Filled.Biotech, SubjectChemistry, Alignment.Center, 2, 104.dp)
-                FloatingIcon(Icons.Filled.Public, SubjectBiology, Alignment.BottomEnd, 3, 96.dp)
-            }
         }
     }
 }
 
 @Composable
-private fun androidx.compose.foundation.layout.BoxScope.FloatingIcon(
+private fun BoxScope.FloatingIcon(
     icon: ImageVector,
     color: Color,
     alignment: Alignment,
     phase: Int,
-    size: androidx.compose.ui.unit.Dp,
+    size: Dp,
+    alpha: Float,
 ) {
     val transition = rememberInfiniteTransition(label = "float")
     val dy by transition.animateFloat(
-        initialValue = -10f,
-        targetValue = 10f,
+        initialValue = -8f,
+        targetValue = 8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 3000 + phase * 400),
+            animation = tween(durationMillis = 3200 + phase * 500),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "dy",
@@ -132,16 +129,13 @@ private fun androidx.compose.foundation.layout.BoxScope.FloatingIcon(
     Box(
         modifier = Modifier
             .align(alignment)
+            .padding(64.dp)
             .offset(y = dy.dp)
-            .size(size)
-            .clip(RoundedCornerShape(28.dp))
-            .background(
-                Brush.verticalGradient(
-                    listOf(color.copy(alpha = 0.22f), color.copy(alpha = 0.06f)),
-                ),
-            ),
+            .size(size),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(size * 0.42f))
+        Icon(icon, contentDescription = null, tint = color.copy(alpha = alpha), modifier = Modifier.size(size))
     }
 }
+
+private typealias BoxScope = androidx.compose.foundation.layout.BoxScope

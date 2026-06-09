@@ -53,7 +53,7 @@ fun PrimaryButton(
 
     Box(
         modifier = modifier
-            .then(if (enabled) Modifier.shadow(14.dp, RoundedCornerShape(999.dp), spotColor = SubjectPhysics, ambientColor = SubjectPhysics) else Modifier)
+            .then(if (enabled) Modifier.shadow(18.dp, RoundedCornerShape(999.dp), spotColor = CtaTeal, ambientColor = CtaTeal) else Modifier)
             .clip(RoundedCornerShape(999.dp))
             .background(bgBrush)
             .clickable(enabled = enabled, onClick = onClick)

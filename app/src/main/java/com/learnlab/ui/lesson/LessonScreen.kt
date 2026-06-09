@@ -1,6 +1,8 @@
 package com.learnlab.ui.lesson
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
+import com.learnlab.content.subjectOf
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
@@ -74,12 +82,10 @@ fun LessonScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
-        TopBar(
+        ExperimentNav(
             state = state,
-            title = "Back",
-            showBack = true,
+            subject = subjectOf(experimentId),
             onBack = onBack,
-            onHomeClick = onHome,
         )
 
         // Stage header
@@ -126,6 +132,68 @@ fun LessonScreen(
                 Component(experiment, controls)
             } else {
                 ComingSoon(source = experiment.source)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExperimentNav(
+    state: AppState,
+    subject: com.learnlab.content.Subject?,
+    onBack: () -> Unit,
+) {
+    val t = LL.tokens
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(t.bg)
+            .padding(horizontal = 28.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            LLText("LearnLab", color = t.ink50, size = 18.sp, weight = FontWeight.Bold)
+            Spacer(Modifier.width(16.dp))
+            Box(Modifier.size(width = 1.dp, height = 22.dp).background(t.line))
+            Spacer(Modifier.width(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onBack)
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back to Lab",
+                    tint = t.ink200,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (subject != null) {
+                com.learnlab.design.SubjectTag(subject.displayName, subject.color)
+            }
+            Spacer(Modifier.width(12.dp))
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(t.surface2)
+                    .border(1.dp, t.line, androidx.compose.foundation.shape.CircleShape)
+                    .clickable { state.toggleTheme() },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                    contentDescription = "Toggle theme",
+                    tint = t.ink400,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
     }

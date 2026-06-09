@@ -129,15 +129,18 @@ fun gradHeadline(): Brush = Brush.linearGradient(
     colors = listOf(SubjectPhysics, SubjectChemistry, SubjectMath),
 )
 
-// CTA buttons & brand: physics → chemistry (cyan → lime).
+// CTA buttons & active tab: teal → green, matching the web "Begin learning" pill.
+val CtaTeal = Color(0xFF22D3EE)
+val CtaGreen = Color(0xFF34D399)
+
 @Composable
 fun gradCta(): Brush = Brush.linearGradient(
-    colors = listOf(SubjectPhysics, SubjectChemistry),
+    colors = listOf(CtaTeal, CtaGreen),
 )
 
 @Composable
 fun gradLogo(): Brush = Brush.linearGradient(
-    colors = listOf(SubjectPhysics, SubjectChemistry),
+    colors = listOf(CtaTeal, CtaGreen),
 )
 
 // Progress / level indicators use the unified experiment accent (blue).

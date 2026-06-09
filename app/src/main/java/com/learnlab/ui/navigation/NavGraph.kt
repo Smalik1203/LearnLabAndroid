@@ -4,19 +4,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.learnlab.content.Chapters
 import com.learnlab.content.findExperiment
-import com.learnlab.shell.Sidebar
 import com.learnlab.store.AppState
 import com.learnlab.ui.curriculum.CurriculumScreen
 import com.learnlab.ui.grade.GradeSelectScreen
@@ -27,53 +22,35 @@ import com.learnlab.ui.reader.ChapterReaderScreen
 
 @Composable
 fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val current = backStackEntry?.destination?.route
-    // Hero + immersive lesson screens are full-bleed (no sidebar), matching the web.
-    val showSidebar = current != null && current != Routes.LANDING && current != Routes.LESSON
-
-    Row(modifier = Modifier) {
-        if (showSidebar) {
-            Sidebar(
+    NavHost(
+        navController    = navController,
+        startDestination = Routes.LANDING,
+        enterTransition  = { slideInHorizontally { it } + fadeIn() },
+        exitTransition   = { slideOutHorizontally { -it / 3 } + fadeOut() },
+        popEnterTransition  = { slideInHorizontally { -it / 3 } + fadeIn() },
+        popExitTransition   = { slideOutHorizontally { it } + fadeOut() },
+    ) {
+        composable(Routes.LANDING) {
+            LandingScreen(
                 state = state,
-                current = current,
-                onNavigate = { route ->
-                    navController.navigate(route) {
+                onBegin = { navController.navigate(Routes.HOME) },
+            )
+        }
+
+        composable(Routes.HOME) {
+            HomeScreen(
+                state = state,
+                onOpenExperiment = { id -> navController.navigate(Routes.lesson(id)) },
+                onLogo = {
+                    navController.navigate(Routes.LANDING) {
+                        popUpTo(Routes.LANDING) { inclusive = true }
                         launchSingleTop = true
-                        if (route == Routes.LANDING) {
-                            popUpTo(Routes.LANDING) { inclusive = true }
-                        } else {
-                            popUpTo(Routes.HOME) { inclusive = false }
-                        }
                     }
                 },
             )
         }
 
-        NavHost(
-            navController    = navController,
-            startDestination = Routes.LANDING,
-            modifier         = Modifier.weight(1f),
-            enterTransition  = { slideInHorizontally { it } + fadeIn() },
-            exitTransition   = { slideOutHorizontally { -it / 3 } + fadeOut() },
-            popEnterTransition  = { slideInHorizontally { -it / 3 } + fadeIn() },
-            popExitTransition   = { slideOutHorizontally { it } + fadeOut() },
-        ) {
-            composable(Routes.LANDING) {
-                LandingScreen(
-                    state = state,
-                    onBegin = { navController.navigate(Routes.HOME) },
-                )
-            }
-
-            composable(Routes.HOME) {
-                HomeScreen(
-                    state = state,
-                    onScienceClick = { navController.navigate(Routes.gradeSelect("science")) },
-                )
-            }
-
-            composable(
+        composable(
                 route = Routes.GRADE_SELECT,
                 arguments = listOf(navArgument("subject") { type = NavType.StringType }),
             ) { backStack ->
@@ -147,6 +124,5 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                     } else null,
                 )
             }
-        }
     }
 }
