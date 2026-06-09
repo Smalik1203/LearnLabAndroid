@@ -1,5 +1,7 @@
 package com.learnlab.design
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -28,8 +30,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 
 /**
  * Primitives mirror the LearnLab web components: pill CTA with cyan→lime gradient,
@@ -207,9 +211,10 @@ fun PillTabBar(
 ) {
     val t = LL.tokens
     val n = tabs.size.coerceAtLeast(1)
+    // Fluid, decelerating glide — matches the web's cubic-bezier(0.33,1,0.68,1), no overshoot.
     val target by animateFloatAsState(
         targetValue = selected.toFloat(),
-        animationSpec = tween(durationMillis = 350),
+        animationSpec = tween(durationMillis = 400, easing = CubicBezierEasing(0.33f, 1f, 0.68f, 1f)),
         label = "pillTab",
     )
     BoxWithConstraints(
@@ -221,10 +226,11 @@ fun PillTabBar(
             .padding(4.dp),
     ) {
         val cellW = maxWidth / n
-        // sliding indicator: one cell wide, offset to the selected tab.
+        // Sliding indicator, one cell wide. Offset via the layout-phase lambda so the
+        // animation doesn't recompose PillTabBar each frame.
         Box(
             modifier = Modifier
-                .offset(x = cellW * target)
+                .offset { IntOffset((cellW.toPx() * target).roundToInt(), 0) }
                 .width(cellW)
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(999.dp))
@@ -242,13 +248,18 @@ fun PillTabBar(
                         .clickable(enabled = on) { onSelect(i) },
                     contentAlignment = Alignment.Center,
                 ) {
-                    LLText(
-                        label,
-                        color = when {
+                    val labelColor by animateColorAsState(
+                        targetValue = when {
                             isSel -> Color(0xFF0A0A0F)
                             !on -> t.ink600
                             else -> t.ink400
                         },
+                        animationSpec = tween(durationMillis = 280),
+                        label = "tabLabel",
+                    )
+                    LLText(
+                        label,
+                        color = labelColor,
                         size = 13.sp,
                         weight = FontWeight.SemiBold,
                     )

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,7 @@ import com.learnlab.content.Subject
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PillTabBar
+import com.learnlab.design.interactiveCard
 import com.learnlab.shell.PageChrome
 import com.learnlab.store.AppState
 
@@ -124,13 +127,12 @@ private fun SubjectCard(
     onClick: () -> Unit,
 ) {
     val t = LL.tokens
+    val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .height(300.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(t.surface)
-            .border(1.dp, t.line, RoundedCornerShape(24.dp))
-            .clickable(onClick = onClick),
+            .interactiveCard(interaction, glowColor = subject.color, shape = RoundedCornerShape(24.dp))
+            .clickable(interactionSource = interaction, indication = null, role = Role.Button, onClick = onClick),
     ) {
         // faint subject glow behind the icon
         Box(
@@ -205,17 +207,27 @@ private fun TutorialsList(modifier: Modifier = Modifier) {
         TUTORIALS.forEachIndexed { i, item ->
             item(key = item.title) {
                 val isOpen = expanded == i
+                val rowInteraction = remember { MutableInteractionSource() }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(t.surface)
-                        .border(1.dp, t.line, RoundedCornerShape(14.dp)),
+                        .interactiveCard(
+                            rowInteraction,
+                            glowColor = com.learnlab.design.SubjectChemistry,
+                            shape = RoundedCornerShape(14.dp),
+                            hoverScale = 1.01f,
+                            pressScale = 0.995f,
+                        ),
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { expanded = if (isOpen) -1 else i }
+                            .clickable(
+                                interactionSource = rowInteraction,
+                                indication = null,
+                                role = Role.Button,
+                                onClickLabel = if (isOpen) "Collapse" else "Expand",
+                            ) { expanded = if (isOpen) -1 else i }
                             .padding(horizontal = 18.dp, vertical = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
