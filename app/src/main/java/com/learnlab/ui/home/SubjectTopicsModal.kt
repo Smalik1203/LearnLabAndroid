@@ -53,8 +53,8 @@ fun SubjectTopicsModal(
     onTopic: (String) -> Unit,
 ) {
     val t = LL.tokens
-    val grades = remember(subject) { gradesFor(subject) }
-    var grade by remember(subject) { mutableIntStateOf(grades.firstOrNull() ?: -1) }
+    val available = remember(subject) { gradesFor(subject).toSet() }
+    var grade by remember(subject) { mutableIntStateOf(available.minOrNull() ?: -1) }
     val topics = remember(subject, grade) { if (grade >= 0) topicsFor(subject, grade) else emptyList() }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -96,16 +96,11 @@ fun SubjectTopicsModal(
             Spacer(Modifier.height(24.dp))
             LLText("Grade", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
-            if (grades.isEmpty()) {
-                Dropdown(label = "Coming soon", enabled = false, items = emptyList<String>(), onSelect = {})
-            } else {
-                Dropdown(
-                    label = if (grade >= 0) "Grade $grade" else "Select the Grade",
-                    enabled = true,
-                    items = grades.map { "Grade $it" },
-                    onSelect = { idx -> grade = grades[idx] },
-                )
-            }
+            GradeDropdown(
+                selected = grade,
+                available = available,
+                onSelect = { grade = it },
+            )
 
             Spacer(Modifier.height(20.dp))
             LLText("Topics", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
@@ -118,6 +113,69 @@ fun SubjectTopicsModal(
             )
 
             Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+/**
+ * Grade picker that always lists 1–10; grades without any experiment for this
+ * subject are shown but disabled ("Coming soon") so they can't be selected.
+ */
+@Composable
+private fun GradeDropdown(
+    selected: Int,
+    available: Set<Int>,
+    onSelect: (Int) -> Unit,
+) {
+    val t = LL.tokens
+    var open by remember { mutableStateOf(false) }
+    val enabled = available.isNotEmpty()
+    Box {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(t.surface2)
+                .border(1.dp, t.line, RoundedCornerShape(12.dp))
+                .clickable(enabled = enabled) { open = true }
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            LLText(
+                if (selected >= 0) "Grade $selected" else "Select the Grade",
+                color = if (enabled) t.ink50 else t.ink500,
+                size = 15.sp,
+                weight = FontWeight.Medium,
+            )
+            Icon(Icons.Filled.ExpandMore, contentDescription = null, tint = t.ink400, modifier = Modifier.size(20.dp))
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            (1..10).forEach { g ->
+                val on = g in available
+                DropdownMenuItem(
+                    enabled = on,
+                    onClick = { open = false; onSelect(g) },
+                    text = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            LLText(
+                                "Grade $g",
+                                color = if (on) t.ink50 else t.ink600,
+                                size = 15.sp,
+                                weight = if (g == selected) FontWeight.SemiBold else FontWeight.Normal,
+                            )
+                            if (!on) {
+                                Spacer(Modifier.width(16.dp))
+                                LLText("Coming soon", color = t.ink600, size = 11.sp)
+                            }
+                        }
+                    },
+                )
+            }
         }
     }
 }
