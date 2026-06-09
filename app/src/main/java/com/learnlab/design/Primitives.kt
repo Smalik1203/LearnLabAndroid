@@ -211,28 +211,29 @@ fun PillTabBar(
 ) {
     val t = LL.tokens
     val n = tabs.size.coerceAtLeast(1)
-    // Fluid, decelerating glide — matches the web's cubic-bezier(0.33,1,0.68,1), no overshoot.
+    // Ease-in-out glide (symmetric cubic-bezier(0.42, 0, 0.58, 1)).
     val target by animateFloatAsState(
         targetValue = selected.toFloat(),
-        animationSpec = tween(durationMillis = 400, easing = CubicBezierEasing(0.33f, 1f, 0.68f, 1f)),
+        animationSpec = tween(durationMillis = 400, easing = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)),
         label = "pillTab",
     )
+    // No clip on the track, so the active pill's glow can bleed outside the bar.
     BoxWithConstraints(
         modifier = modifier
             .height(46.dp)
-            .clip(RoundedCornerShape(999.dp))
-            .background(t.surface2)
+            .background(t.surface2, RoundedCornerShape(999.dp))
             .border(1.dp, t.line, RoundedCornerShape(999.dp))
             .padding(4.dp),
     ) {
         val cellW = maxWidth / n
-        // Sliding indicator, one cell wide. Offset via the layout-phase lambda so the
-        // animation doesn't recompose PillTabBar each frame.
+        // Sliding indicator, one cell wide, with a soft teal→green glow. Offset via the
+        // layout-phase lambda so the animation doesn't recompose PillTabBar each frame.
         Box(
             modifier = Modifier
                 .offset { IntOffset((cellW.toPx() * target).roundToInt(), 0) }
                 .width(cellW)
                 .fillMaxHeight()
+                .shadow(22.dp, RoundedCornerShape(999.dp), clip = false, spotColor = CtaGreen, ambientColor = CtaTeal)
                 .clip(RoundedCornerShape(999.dp))
                 .background(gradCta()),
         )
