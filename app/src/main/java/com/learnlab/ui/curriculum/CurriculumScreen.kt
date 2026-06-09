@@ -52,6 +52,7 @@ import com.learnlab.store.AppState
 fun CurriculumScreen(
     state: AppState,
     grade: Int,
+    onChapterSelected: (String) -> Unit,
     onExperimentSelected: (String) -> Unit,
     onBack: () -> Unit,
     onHome: () -> Unit,
@@ -67,7 +68,7 @@ fun CurriculumScreen(
             restore = { it.toMutableStateList() },
         ),
     ) { mutableListOf<String>().toMutableStateList() }
-
+ 
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,7 +81,7 @@ fun CurriculumScreen(
             onBack = onBack,
             onHomeClick = onHome,
         )
-
+ 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,7 +103,7 @@ fun CurriculumScreen(
                 )
             }
         }
-
+ 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 40.dp, vertical = 8.dp),
@@ -117,6 +118,7 @@ fun CurriculumScreen(
                             if (chapter.id in expandedIds) expandedIds.remove(chapter.id)
                             else expandedIds.add(chapter.id)
                         },
+                        onChapterSelected = onChapterSelected,
                         onExperimentSelected = onExperimentSelected,
                     )
                 }
@@ -125,12 +127,13 @@ fun CurriculumScreen(
         }
     }
 }
-
+ 
 @Composable
 private fun ChapterCard(
     chapter: Chapter,
     isExpanded: Boolean,
     onToggle: () -> Unit,
+    onChapterSelected: (String) -> Unit,
     onExperimentSelected: (String) -> Unit,
 ) {
     val t = LL.tokens
@@ -139,7 +142,7 @@ private fun ChapterCard(
         if (isExpanded) t.accent500.copy(alpha = 0.5f) else t.lineStrong,
         label = "chapterBorder",
     )
-
+ 
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = if (chapter.comingSoon) t.surface.copy(alpha = 0.55f) else t.surface,
@@ -150,7 +153,13 @@ private fun ChapterCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(enabled = !chapter.comingSoon) { onToggle() }
+                    .clickable(enabled = !chapter.comingSoon) {
+                        if (chapter.blocks.isNotEmpty()) {
+                            onChapterSelected(chapter.id)
+                        } else {
+                            onToggle()
+                        }
+                    }
                     .background(
                         when {
                             chapter.comingSoon -> Color.Transparent

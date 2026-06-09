@@ -26,6 +26,34 @@ val Chapters: List<Chapter> = listOf(
                 ),
             ),
         ),
+        blocks = listOf(
+            ChapterBlock.Heading("1.1 The Method of Science", level = 1),
+            ChapterBlock.Paragraph("Science is not just a collection of facts. It is a way of thinking, observing, and understanding the world around us. Have you ever wondered how scientists make discoveries?"),
+            ChapterBlock.Sidebar(
+                type = ChapterBlock.SidebarType.CURIOUS_STUDENT,
+                title = "Curious Student",
+                content = "Why does the moon change its shape? How do plants know which way is up? Why does a pen write on paper but not on glass?"
+            ),
+            ChapterBlock.Paragraph("To find answers, scientists follow a systematic path. This path is called the **scientific method**. It starts with a simple observation of a mystery in our daily lives."),
+            ChapterBlock.Heading("Step 1: Make Observations", level = 2),
+            ChapterBlock.Paragraph("An **observation** is noticing something using your senses. For example, you might notice that a pen has stopped writing. This is a mystery waiting to be solved!"),
+            ChapterBlock.Paragraph("Let us investigate the mystery using our scientific method detective workbench below."),
+            ChapterBlock.ActivityRef("scientific-method-detective"),
+            ChapterBlock.Sidebar(
+                type = ChapterBlock.SidebarType.THINK_LIKE_A_SCIENTIST,
+                title = "Think Like a Scientist",
+                content = "When you inspect a faulty pen, look closely at the tip and the refill. What clues can you find? Is the ink empty, or is the tip dried up?"
+            ),
+            ChapterBlock.Heading("Step 2: Form a Hypothesis", level = 2),
+            ChapterBlock.Paragraph("A **hypothesis** is an educated guess or a possible explanation for your observation. In the pen experiment, you might guess that 'the ink in the tip has dried up' or 'the refill is cracked and leaking'."),
+            ChapterBlock.Heading("Step 3: Test and Analyse", level = 2),
+            ChapterBlock.Paragraph("You perform an experiment to test your hypothesis. If your guess is correct, the pen will write again! If it fails, you learn from it, revise your hypothesis, and try another solution."),
+            ChapterBlock.Figure(
+                label = "Figure 1.1",
+                caption = "The cycle of observation, hypothesis, testing, and analysis.",
+                illustrationId = "scientific_method_cycle"
+            )
+        )
     ),
     Chapter(
         id = "ch02",

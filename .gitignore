@@ -10,6 +10,10 @@ local.properties
 .DS_Store
 captures/
 
+# Local tooling
+.claude/
+.kotlin/
+
 # Keystores
 *.jks
 *.keystore

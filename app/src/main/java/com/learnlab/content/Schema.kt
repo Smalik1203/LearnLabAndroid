@@ -22,4 +22,30 @@ data class Chapter(
     val experiments: List<Experiment>,
     val grade: Int = 6,
     val comingSoon: Boolean = false,
+    val blocks: List<ChapterBlock> = emptyList(),
 )
+
+sealed interface ChapterBlock {
+    data class Heading(val text: String, val level: Int) : ChapterBlock
+    data class Paragraph(val text: String) : ChapterBlock
+    data class ActivityRef(val experimentId: String) : ChapterBlock
+    
+    enum class SidebarType {
+        CURIOUS_STUDENT,
+        THINK_LIKE_A_SCIENTIST,
+        BE_A_SCIENTIST,
+        STEP_FURTHER
+    }
+    
+    data class Sidebar(
+        val type: SidebarType,
+        val title: String,
+        val content: String
+    ) : ChapterBlock
+    
+    data class Figure(
+        val label: String,
+        val caption: String,
+        val illustrationId: String? = null
+    ) : ChapterBlock
+}

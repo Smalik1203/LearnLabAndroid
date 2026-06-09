@@ -17,6 +17,7 @@ import com.learnlab.ui.curriculum.CurriculumScreen
 import com.learnlab.ui.grade.GradeSelectScreen
 import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.lesson.LessonScreen
+import com.learnlab.ui.reader.ChapterReaderScreen
 
 @Composable
 fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
@@ -56,6 +57,21 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
             CurriculumScreen(
                 state = state,
                 grade = grade,
+                onChapterSelected = { id -> navController.navigate(Routes.chapterReader(id)) },
+                onExperimentSelected = { id -> navController.navigate(Routes.lesson(id)) },
+                onBack = { navController.popBackStack() },
+                onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
+            )
+        }
+
+        composable(
+            route = Routes.CHAPTER_READER,
+            arguments = listOf(navArgument("chapterId") { type = NavType.StringType }),
+        ) { backStack ->
+            val chapterId = backStack.arguments?.getString("chapterId") ?: return@composable
+            ChapterReaderScreen(
+                state = state,
+                chapterId = chapterId,
                 onExperimentSelected = { id -> navController.navigate(Routes.lesson(id)) },
                 onBack = { navController.popBackStack() },
                 onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
