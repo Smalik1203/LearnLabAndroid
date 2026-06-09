@@ -3,6 +3,7 @@ package com.learnlab.ui.curriculum
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -146,7 +147,9 @@ private fun ChapterCard(
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = if (chapter.comingSoon) t.surface.copy(alpha = 0.55f) else t.surface,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, borderColor, RoundedCornerShape(20.dp)),
     ) {
         Column {
             // Chapter header row — green gradient L→R for active chapters

@@ -107,10 +107,10 @@ fun LLSlider(
                 steps = steps,
                 enabled = enabled,
                 colors = SliderDefaults.colors(
-                    thumbColor = t.accent600,
-                    activeTrackColor = t.accent500,
+                    thumbColor = ExperimentAccent,
+                    activeTrackColor = ExperimentAccent,
                     inactiveTrackColor = t.surface3,
-                    activeTickColor = t.accent700,
+                    activeTickColor = ExperimentAccent,
                     inactiveTickColor = t.ink500.copy(alpha = 0.5f),
                 ),
             )

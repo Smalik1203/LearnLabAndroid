@@ -1,19 +1,25 @@
 package com.learnlab.design
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Material3 buttons are aggressively opinionated. These tiny primitives
- * mirror the React components exactly: same paddings, same colors, same
- * border-radius, same disabled treatment.
+ * Primitives mirror the LearnLab web components: pill CTA with cyan→lime gradient,
+ * glassmorphism cards, subject chips, the Labs/Tutorials pill tab bar, and the
+ * 3-step level stepper. Shared by all screens and experiments.
  */
 
 @Composable
@@ -42,25 +48,22 @@ fun PrimaryButton(
 ) {
     val t = LL.tokens
     val bgBrush: Brush = if (enabled) gradCta() else Brush.linearGradient(listOf(t.surface3, t.surface3))
-    val textColor = if (enabled) Color.White else t.ink500
+    // Web CTA uses dark text (--bg-primary) on the bright gradient.
+    val textColor = if (enabled) Color(0xFF0A0A0F) else t.ink500
 
     Box(
         modifier = modifier
+            .then(if (enabled) Modifier.shadow(14.dp, RoundedCornerShape(999.dp), spotColor = SubjectPhysics, ambientColor = SubjectPhysics) else Modifier)
             .clip(RoundedCornerShape(999.dp))
             .background(bgBrush)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 11.dp),
+            .padding(horizontal = 24.dp, vertical = 13.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (leading != null) { leading(); Box(Modifier.width(6.dp)) }
-            LLText(
-                label,
-                color = textColor,
-                size = 14.sp,
-                weight = FontWeight.SemiBold,
-            )
-            if (trailing != null) { Box(Modifier.width(6.dp)); trailing() }
+            if (leading != null) { leading(); Box(Modifier.width(8.dp)) }
+            LLText(label, color = textColor, size = 15.sp, weight = FontWeight.SemiBold)
+            if (trailing != null) { Box(Modifier.width(8.dp)); trailing() }
         }
     }
 }
@@ -78,21 +81,20 @@ fun SecondaryButton(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(999.dp))
-            .background(t.surface)
             .border(1.dp, t.lineStrong, RoundedCornerShape(999.dp))
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 9.dp),
+            .padding(horizontal = 20.dp, vertical = 11.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (leading != null) { leading(); Box(Modifier.width(6.dp)) }
+            if (leading != null) { leading(); Box(Modifier.width(8.dp)) }
             LLText(
                 label,
-                color = if (enabled) t.ink200 else t.ink600,
-                size = 14.sp,
+                color = if (enabled) t.ink50 else t.ink600,
+                size = 15.sp,
                 weight = FontWeight.SemiBold,
             )
-            if (trailing != null) { Box(Modifier.width(6.dp)); trailing() }
+            if (trailing != null) { Box(Modifier.width(8.dp)); trailing() }
         }
     }
 }
@@ -106,17 +108,18 @@ fun GhostButton(
     val t = LL.tokens
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(t.surface2)
-            .border(1.dp, t.lineStrong, RoundedCornerShape(8.dp))
+            .border(1.dp, t.line, RoundedCornerShape(10.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 7.dp),
+            .padding(horizontal = 14.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        LLText(label, color = t.ink200, size = 13.sp, weight = FontWeight.Medium)
+        LLText(label, color = t.ink200, size = 13.sp, weight = FontWeight.SemiBold)
     }
 }
 
+/** Glassmorphism card: card-overlay fill, subtle border, lg radius, soft shadow. */
 @Composable
 fun Card(
     modifier: Modifier = Modifier,
@@ -124,14 +127,14 @@ fun Card(
     content: @Composable () -> Unit,
 ) {
     val t = LL.tokens
-    Surface(
-        modifier = modifier.shadow(8.dp, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
-        color = t.surface,
-        tonalElevation = 2.dp,
-    ) {
-        Box(modifier = Modifier.padding(padding)) { content() }
-    }
+    Box(
+        modifier = modifier
+            .shadow(10.dp, RoundedCornerShape(20.dp), clip = false)
+            .clip(RoundedCornerShape(20.dp))
+            .background(t.surface)
+            .border(1.dp, t.line, RoundedCornerShape(20.dp))
+            .padding(padding),
+    ) { content() }
 }
 
 @Composable
@@ -139,7 +142,7 @@ fun ChapterBadge(number: Int) {
     val t = LL.tokens
     LLText(
         "CHAPTER $number",
-        color = t.ink500,
+        color = t.ink400,
         size = 10.sp,
         weight = FontWeight.SemiBold,
         letterSpacing = 1.8.sp,
@@ -154,7 +157,7 @@ fun NumberPip(n: Int) {
             .size(24.dp)
             .clip(CircleShape)
             .background(t.accent50)
-            .border(1.dp, t.accent300, CircleShape),
+            .border(1.dp, t.accent500, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         LLText("$n", color = t.accent700, size = 11.sp, weight = FontWeight.Bold)
@@ -168,7 +171,7 @@ fun ProgressBar(value: Float, modifier: Modifier = Modifier) {
         modifier = modifier
             .height(6.dp)
             .clip(RoundedCornerShape(999.dp))
-            .background(t.surface3),
+            .background(t.surface2),
     ) {
         Box(
             modifier = Modifier
@@ -177,5 +180,120 @@ fun ProgressBar(value: Float, modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(999.dp))
                 .background(gradProgress()),
         )
+    }
+}
+
+/** Subject-colored uppercase pill chip (web `.subject-tag` / `.concept-tag`). */
+@Composable
+fun SubjectTag(label: String, color: Color, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(color.copy(alpha = 0.15f))
+            .padding(horizontal = 12.dp, vertical = 5.dp),
+    ) {
+        LLText(label.uppercase(), color = color, size = 11.sp, weight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
+    }
+}
+
+/** Web pill tab bar with a sliding gradient indicator behind the active tab. */
+@Composable
+fun PillTabBar(
+    tabs: List<String>,
+    selected: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    enabledTabs: List<Boolean> = tabs.map { true },
+) {
+    val t = LL.tokens
+    val n = tabs.size.coerceAtLeast(1)
+    val target by animateFloatAsState(
+        targetValue = selected.toFloat(),
+        animationSpec = tween(durationMillis = 350),
+        label = "pillTab",
+    )
+    BoxWithConstraints(
+        modifier = modifier
+            .height(46.dp)
+            .clip(RoundedCornerShape(999.dp))
+            .background(t.surface2)
+            .border(1.dp, t.line, RoundedCornerShape(999.dp))
+            .padding(4.dp),
+    ) {
+        val cellW = maxWidth / n
+        // sliding indicator: one cell wide, offset to the selected tab.
+        Box(
+            modifier = Modifier
+                .offset(x = cellW * target)
+                .width(cellW)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(999.dp))
+                .background(gradCta()),
+        )
+        Row(Modifier.fillMaxSize()) {
+            tabs.forEachIndexed { i, label ->
+                val on = enabledTabs.getOrElse(i) { true }
+                val isSel = i == selected
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(999.dp))
+                        .clickable(enabled = on) { onSelect(i) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    LLText(
+                        label,
+                        color = when {
+                            isSel -> Color(0xFF0A0A0F)
+                            !on -> t.ink600
+                            else -> t.ink400
+                        },
+                        size = 13.sp,
+                        weight = FontWeight.SemiBold,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Web experiment "level" progress: numbered circles joined by connectors. */
+@Composable
+fun LevelStepper(
+    total: Int,
+    current: Int,
+    modifier: Modifier = Modifier,
+) {
+    val t = LL.tokens
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        for (i in 0 until total) {
+            val active = i <= current
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .then(
+                        if (active) Modifier.background(gradProgress())
+                        else Modifier.background(t.surface2).border(2.dp, t.line, CircleShape),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                LLText(
+                    "${i + 1}",
+                    color = if (active) Color.White else t.ink400,
+                    size = 14.sp,
+                    weight = FontWeight.Bold,
+                )
+            }
+            if (i < total - 1) {
+                Box(
+                    Modifier
+                        .width(28.dp)
+                        .height(2.dp)
+                        .background(if (i < current) gradProgress() else Brush.linearGradient(listOf(t.line, t.line))),
+                )
+            }
+        }
     }
 }

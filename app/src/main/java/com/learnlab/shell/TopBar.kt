@@ -86,7 +86,7 @@ fun TopBar(
                     Icon(
                         imageVector = Icons.Outlined.Science,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = Color(0xFF0A0A0F),
                         modifier = Modifier.size(18.dp),
                     )
                 }

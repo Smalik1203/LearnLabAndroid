@@ -41,3 +41,18 @@ val OnSurfaceLow    = Color(0xFF7A9CC0)
 val SuccessGreen    = Color(0xFF00E676)
 val WarningYellow   = Color(0xFFFFD600)
 val ErrorRed        = CoralBright
+
+// ── LearnLab web palette (src/styles/styles.css) ──────────────────────────────
+// Neon subject accents (dark-first). These are the canonical hues used by the web.
+val SubjectPhysics    = Color(0xFF00D4FF) // cyan
+val SubjectChemistry  = Color(0xFF00FF88) // lime
+val SubjectMath       = Color(0xFFA855F7) // purple
+val SubjectBiology    = Color(0xFFFF6B6B) // coral
+// Unified accent used across all experiment chrome on the web.
+val ExperimentAccent  = Color(0xFF318CE7) // bright blue
+
+// Light-mode muted subject accents.
+val SubjectPhysicsLt   = Color(0xFF0099CC)
+val SubjectChemistryLt = Color(0xFF00994D)
+val SubjectMathLt      = Color(0xFF7C3AED)
+val SubjectBiologyLt   = Color(0xFFDC2626)

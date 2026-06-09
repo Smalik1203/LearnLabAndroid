@@ -54,52 +54,58 @@ data class LearnLabTokens(
     val amber400: Color = Color(0xFFFBBF24),
 )
 
+// Light mode mirrors `[data-theme="light"]` in the web's styles.css.
 val LightTokens = LearnLabTokens(
     isDark   = false,
-    bg       = Color(0xFFFAFAFA),   // zinc-50
-    bgDeep   = Color(0xFFFFFFFF),   // white
-    surface  = Color(0xFFFFFFFF),   // white
-    surface2 = Color(0xFFF4F4F5),   // zinc-100
-    surface3 = Color(0xFFE4E4E7),   // zinc-200
-    line     = Color(0xFFE4E4E7),   // zinc-200
-    lineStrong = Color(0xFFD4D4D8), // zinc-300
-    ink50    = Color(0xFF18181B),   // zinc-900
-    ink200   = Color(0xFF27272A),   // zinc-800
-    ink400   = Color(0xFF52525B),   // zinc-600
-    ink500   = Color(0xFF71717A),   // zinc-500
-    ink600   = Color(0xFFA1A1AA),   // zinc-400
-    accent50 = Color(0xFFD1FAE5),   // emerald-100 — clearly tinted against white surface
-    accent700= Color(0xFF047857),   // emerald-700
-    amber50  = Color(0xFFFEF3C7),   // amber-100 — clearly tinted against white surface
-    amber700 = Color(0xFFB45309),   // amber-700
-    rose50   = Color(0xFFFFE4E6),   // rose-100 — clearly tinted against white surface
-    rose700  = Color(0xFFBE123C),   // rose-700
+    bg       = Color(0xFFF8F9FA),   // --bg-primary
+    bgDeep   = Color(0xFFEEF0F3),   // --bg-darker
+    surface  = Color(0xFFFFFFFF),   // --bg-secondary
+    surface2 = Color(0xFFF1F2F4),   // card / hover
+    surface3 = Color(0xFFE4E6EA),
+    line     = Color(0x14000000),   // --border-subtle  rgba(0,0,0,0.08)
+    lineStrong = Color(0x26000000), // --border-glow    rgba(0,0,0,0.15)
+    ink50    = Color(0xFF1A1A2E),   // --text-primary
+    ink200   = Color(0xFF4A4A6A),   // --text-secondary
+    ink400   = Color(0xFF8888A8),   // --text-muted
+    ink500   = Color(0xFF9A9AB5),
+    ink600   = Color(0xFFB5B5C8),
+    accent300 = Color(0xFF66E5FF),
+    accent400 = Color(0xFF33C7EE),
+    accent500 = Color(0xFF0099CC),  // muted physics cyan (light)
+    accent600 = Color(0xFF0077A3),
+    accent50  = Color(0xFFD6F4FF),  // light cyan tint behind accent700 text
+    accent700 = Color(0xFF0077A3),
+    amber50  = Color(0xFFFEF3C7),
+    amber700 = Color(0xFFB45309),
+    rose50   = Color(0xFFFFE4E6),
+    rose700  = Color(0xFFBE123C),
 )
 
+// Dark mode (default) mirrors `:root` in the web's styles.css — near-black + neon.
 val DarkTokens = LearnLabTokens(
     isDark     = true,
-    bg         = Color(0xFF18181B),   // zinc-900
-    bgDeep     = Color(0xFF09090B),   // zinc-950
-    surface    = Color(0xFF27272A),   // zinc-800
-    surface2   = Color(0xFF3F3F46),   // zinc-700
-    surface3   = Color(0xFF52525B),   // zinc-600
-    line       = Color(0xFF3F3F46),   // zinc-700
-    lineStrong = Color(0xFF52525B),   // zinc-600
-    ink50      = Color(0xFFFAFAFA),   // zinc-50
-    ink200     = Color(0xFFE4E4E7),   // zinc-200
-    ink400     = Color(0xFFA1A1AA),   // zinc-400
-    ink500     = Color(0xFF71717A),   // zinc-500
-    ink600     = Color(0xFF52525B),   // zinc-600
-    accent300  = Color(0xFF6EE7B7),   // emerald-300
-    accent400  = Color(0xFF34D399),   // emerald-400
-    accent500  = Color(0xFF10B981),   // emerald-500
-    accent600  = Color(0xFF059669),   // emerald-600
-    accent50   = Color(0xFF064E3B),   // emerald-900 — saturated dark fill on zinc surface
-    accent700  = Color(0xFF34D399),   // emerald-400 — bright text on accent50
-    amber50    = Color(0xFF78350F),   // amber-800 — saturated burnt-amber dark fill
-    amber700   = Color(0xFFFCD34D),   // amber-300 — bright amber text on amber50
-    rose50     = Color(0xFF881337),   // rose-800 — saturated rose dark fill
-    rose700    = Color(0xFFFDA4AF),   // rose-300 — bright rose text on rose50
+    bg         = Color(0xFF0A0A0F),   // --bg-primary
+    bgDeep     = Color(0xFF050508),   // --bg-darker
+    surface    = Color(0xFF12121A),   // --bg-secondary / --bg-card-solid
+    surface2   = Color(0xFF1A1A24),   // card hover
+    surface3   = Color(0xFF24242F),
+    line       = Color(0x14FFFFFF),   // --border-subtle  rgba(255,255,255,0.08)
+    lineStrong = Color(0x26FFFFFF),   // --border-glow    rgba(255,255,255,0.15)
+    ink50      = Color(0xFFFFFFFF),   // --text-primary
+    ink200     = Color(0xBFFFFFFF),   // --text-secondary rgba(255,255,255,0.75)
+    ink400     = Color(0x73FFFFFF),   // --text-muted     rgba(255,255,255,0.45)
+    ink500     = Color(0x59FFFFFF),
+    ink600     = Color(0x40FFFFFF),
+    accent300  = Color(0xFF66E5FF),   // light cyan
+    accent400  = Color(0xFF33DBFF),
+    accent500  = Color(0xFF00D4FF),   // --physics (primary interactive)
+    accent600  = Color(0xFF00A9CC),
+    accent50   = Color(0x3300D4FF),   // translucent cyan fill on dark surface
+    accent700  = Color(0xFF00D4FF),   // bright cyan text on accent50
+    amber50    = Color(0x33FBBF24),
+    amber700   = Color(0xFFFBBF24),
+    rose50     = Color(0x33FF6B6B),
+    rose700    = Color(0xFFFF6B6B),
 )
 
 val LocalTokens = compositionLocalOf { LightTokens }
@@ -116,28 +122,29 @@ fun ProvideTokens(isDark: Boolean, content: @Composable () -> Unit) {
     }
 }
 
-// Reusable gradients
+// Reusable gradients — mirror the web's gradient-text / CTA / progress treatments.
+// Hero/headline text: physics → chemistry → mathematics (cyan → lime → purple).
 @Composable
 fun gradHeadline(): Brush = Brush.linearGradient(
-    colors = listOf(CyanBright, NavyLight, Color(0xFF7C3AED)),
+    colors = listOf(SubjectPhysics, SubjectChemistry, SubjectMath),
 )
 
+// CTA buttons & brand: physics → chemistry (cyan → lime).
 @Composable
-fun gradCta(): Brush {
-    val t = LL.tokens
-    return Brush.linearGradient(listOf(t.accent500, t.accent400, t.accent300))
-}
+fun gradCta(): Brush = Brush.linearGradient(
+    colors = listOf(SubjectPhysics, SubjectChemistry),
+)
 
 @Composable
 fun gradLogo(): Brush = Brush.linearGradient(
-    colors = listOf(NavyMid, CyanBright),
+    colors = listOf(SubjectPhysics, SubjectChemistry),
 )
 
+// Progress / level indicators use the unified experiment accent (blue).
 @Composable
-fun gradProgress(): Brush {
-    val t = LL.tokens
-    return Brush.horizontalGradient(listOf(t.accent500, t.accent400))
-}
+fun gradProgress(): Brush = Brush.horizontalGradient(
+    colors = listOf(ExperimentAccent, Color(0xFF5BA8F0)),
+)
 
 // Common spacings
 object Spacing {

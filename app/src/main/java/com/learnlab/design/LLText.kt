@@ -32,6 +32,7 @@ fun LLText(
         text = text,
         modifier = modifier,
         color = color,
+        fontFamily = Inter,
         fontSize = size,
         fontWeight = weight,
         lineHeight = if (lineHeight == TextUnit.Unspecified) size * 1.4f else lineHeight,

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.learnlab.content.Chapters
 import com.learnlab.content.ChapterBlock
 import com.learnlab.content.findExperiment
+import com.learnlab.design.ExperimentAccent
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
@@ -246,7 +247,10 @@ private fun ChapterBlockItem(
                         Spacer(Modifier.width(20.dp))
                         Button(
                             onClick = { onExperimentSelected(experiment.id) },
-                            colors = ButtonDefaults.buttonColors(containerColor = t.accent500),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = ExperimentAccent,
+                                contentColor = Color.White,
+                            ),
                             shape = RoundedCornerShape(10.dp),
                             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
                         ) {
