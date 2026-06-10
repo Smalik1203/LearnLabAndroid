@@ -147,30 +147,36 @@ fun LLSlider(
                     thumbColor = ExperimentAccent,
                     activeTrackColor = ExperimentAccent,
                     inactiveTrackColor = t.surface3,
-                    activeTickColor = ExperimentAccent,
-                    inactiveTickColor = t.ink500.copy(alpha = 0.5f),
+                    // No per-step tick dots — they read as microscopic noise. Snapping
+                    // (the `steps` param) is preserved; the value readout shows the exact value.
+                    activeTickColor = Color.Transparent,
+                    inactiveTickColor = Color.Transparent,
                 ),
                 thumb = {
+                    // Root clipped to a circle so any press/hover state-layer stays round
+                    // (no square box around the dragger).
                     Box(
-                        modifier = Modifier.size(28.dp),
+                        modifier = Modifier.size(28.dp).clip(CircleShape),
                         contentAlignment = Alignment.Center,
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(glowSize)
                                 .graphicsLayer { alpha = glowAlpha }
+                                .clip(CircleShape)
                                 .background(
                                     Brush.radialGradient(
                                         listOf(ExperimentAccent.copy(alpha = 0.6f), Color.Transparent),
                                     ),
-                                    CircleShape,
                                 ),
                         )
+                        // Light dragger with a teal ring — crisp on the dark track.
                         Box(
                             modifier = Modifier
                                 .size(thumbSize)
                                 .clip(CircleShape)
-                                .background(if (enabled) ExperimentAccent else t.surface3),
+                                .background(if (enabled) Color(0xFFE8EBF0) else t.surface3)
+                                .border(2.dp, if (enabled) ExperimentAccent else t.lineStrong, CircleShape),
                         )
                     }
                 },

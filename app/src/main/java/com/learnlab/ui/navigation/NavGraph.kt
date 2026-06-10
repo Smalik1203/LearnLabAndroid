@@ -106,8 +106,20 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                 LessonScreen(
                     state        = state,
                     experimentId = experimentId,
-                    onBack       = { navController.popBackStack() },
-                    onHome       = { navController.popBackStack(Routes.HOME, inclusive = false) },
+                    // "Back to Lab" → the learn hub (never the landing/home page).
+                    onBack       = {
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.HOME) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    },
+                    // Home icon → the landing/home page.
+                    onHome       = {
+                        navController.navigate(Routes.LANDING) {
+                            popUpTo(Routes.LANDING) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
                     onPrev       = if (idx > 0) {
                         {
                             navController.navigate(Routes.lesson(ids[idx - 1])) {

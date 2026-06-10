@@ -63,7 +63,7 @@ fun PrimaryButton(
             .clip(RoundedCornerShape(999.dp))
             .background(bgBrush)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 13.dp),
+            .padding(horizontal = 22.dp, vertical = 11.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -105,6 +105,7 @@ fun SecondaryButton(
     }
 }
 
+/** Tertiary action — a subtle filled pill, same shape/height as Primary/Secondary. */
 @Composable
 fun GhostButton(
     label: String,
@@ -114,14 +115,14 @@ fun GhostButton(
     val t = LL.tokens
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(999.dp))
             .background(t.surface2)
-            .border(1.dp, t.line, RoundedCornerShape(10.dp))
+            .border(1.dp, t.line, RoundedCornerShape(999.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 18.dp, vertical = 11.dp),
         contentAlignment = Alignment.Center,
     ) {
-        LLText(label, color = t.ink200, size = 13.sp, weight = FontWeight.SemiBold)
+        LLText(label, color = t.ink200, size = 15.sp, weight = FontWeight.SemiBold)
     }
 }
 
