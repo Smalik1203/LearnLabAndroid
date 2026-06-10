@@ -42,7 +42,7 @@ fun InstructionBanner(steps: List<String>) {
             .fillMaxWidth()
             .background(t.surface)
             .border(1.dp, t.line, RoundedCornerShape(0.dp))
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         LLText(

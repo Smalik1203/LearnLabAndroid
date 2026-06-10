@@ -34,7 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
@@ -83,44 +88,32 @@ fun LessonScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
+        // One compact top bar: Back to Lab + title + progress + home + theme.
         ExperimentNav(
             state = state,
+            title = experiment.title,
+            progress = progress,
             onBack = onBack,
             onHome = onHome,
         )
 
-        // Stage header: title + progress bar (progress stays at the top)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(t.surface)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            LLText(
-                experiment.title,
-                color = t.ink50,
-                size = 20.sp,
-                weight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f).padding(end = 12.dp),
-            )
-            ProgressBar(value = progress, modifier = Modifier.width(160.dp))
-        }
-
         InstructionBanner(steps = experiment.steps)
 
+        // Fit-to-window: lay the experiment out at a generous design height and uniformly
+        // scale it down to the available height (top-left anchored) so its fixed cards never
+        // clip or scroll.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(t.bg),
+                .background(t.bg)
+                .clipToBounds(),
         ) {
             val Component = experimentRegistry[experiment.id]
             if (Component != null) {
-                Component(experiment, controls)
+                FitToWindow(designHeight = 820.dp, modifier = Modifier.fillMaxSize()) {
+                    Component(experiment, controls)
+                }
             } else {
                 ComingSoon(source = experiment.source)
             }
@@ -132,7 +125,7 @@ fun LessonScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.surface)
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End,
         ) {
@@ -154,6 +147,8 @@ fun LessonScreen(
 @Composable
 private fun ExperimentNav(
     state: AppState,
+    title: String,
+    progress: Float,
     onBack: () -> Unit,
     onHome: () -> Unit,
 ) {
@@ -161,31 +156,48 @@ private fun ExperimentNav(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(t.bg)
-            .padding(horizontal = 28.dp, vertical = 12.dp),
+            .background(t.surface)
+            .border(width = 1.dp, color = t.line, shape = RoundedCornerShape(0.dp))
+            .padding(horizontal = 24.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        // Left — Back to Lab
+        // Left — Back to Lab + title
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .clickable(onClick = onBack)
-                .padding(horizontal = 6.dp, vertical = 4.dp),
+            modifier = Modifier.weight(1f),
         ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back to Lab",
-                tint = t.ink200,
-                modifier = Modifier.size(18.dp),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onBack)
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back to Lab",
+                    tint = t.ink200,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
+            }
+            Spacer(Modifier.width(20.dp))
+            LLText(
+                title,
+                color = t.ink50,
+                size = 18.sp,
+                weight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
             )
-            Spacer(Modifier.width(8.dp))
-            LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
         }
 
-        // Right — home + theme toggle
+        // Right — progress + home + theme toggle
         Row(verticalAlignment = Alignment.CenterVertically) {
+            ProgressBar(value = progress, modifier = Modifier.width(140.dp))
+            Spacer(Modifier.width(16.dp))
             CircleIconButton(Icons.Filled.Home, "Home", onHome)
             Spacer(Modifier.width(10.dp))
             CircleIconButton(
@@ -213,6 +225,37 @@ private fun CircleIconButton(
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = desc, tint = t.ink400, modifier = Modifier.size(16.dp))
+    }
+}
+
+/**
+ * Lays [content] out at [designHeight] (so its internal fixed-height cards get full room),
+ * then uniformly scales it down — anchored top-left — to exactly fit the available height.
+ * Width is measured at availW/scale so it fills after scaling. Guarantees the experiment fits
+ * in one window with no clipping and no scrolling. Pointer input is routed through the layer
+ * transform, so drags/taps still land correctly.
+ */
+@Composable
+private fun FitToWindow(
+    designHeight: Dp,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Layout(content = content, modifier = modifier) { measurables, constraints ->
+        val availW = constraints.maxWidth
+        val availH = if (constraints.hasBoundedHeight) constraints.maxHeight else designHeight.roundToPx()
+        val designPx = designHeight.roundToPx()
+        val scale = if (availH >= designPx) 1f else availH.toFloat() / designPx.toFloat()
+        val contentH = if (scale >= 1f) availH else designPx
+        val contentW = (availW / scale).toInt()
+        val placeable = measurables.first().measure(Constraints.fixed(contentW, contentH))
+        layout(availW, availH) {
+            placeable.placeWithLayer(0, 0) {
+                scaleX = scale
+                scaleY = scale
+                transformOrigin = TransformOrigin(0f, 0f)
+            }
+        }
     }
 }
 
