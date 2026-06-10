@@ -49,7 +49,7 @@ val SubjectChemistry  = Color(0xFF00FF88) // lime
 val SubjectMath       = Color(0xFFA855F7) // purple
 val SubjectBiology    = Color(0xFFFF6B6B) // coral
 // Unified accent used across all experiment chrome on the web.
-val ExperimentAccent  = Color(0xFF318CE7) // bright blue
+val ExperimentAccent  = Color(0xFF14B8A6) // teal-green (sliders, progress, run button)
 
 // Light-mode muted subject accents.
 val SubjectPhysicsLt   = Color(0xFF0099CC)

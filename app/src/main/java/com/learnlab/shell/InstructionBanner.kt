@@ -46,9 +46,10 @@ fun InstructionBanner(steps: List<String>) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         LLText(
-            "Procedure",
-            color = t.ink50, size = 18.sp,
-            weight = FontWeight.Bold,
+            "PROCEDURE",
+            color = t.ink400, size = 12.sp,
+            weight = FontWeight.SemiBold,
+            letterSpacing = 1.2.sp,
         )
         Box(Modifier.width(14.dp))
         Row(

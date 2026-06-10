@@ -8,16 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
-import com.learnlab.content.subjectOf
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
@@ -84,11 +85,11 @@ fun LessonScreen(
     Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
         ExperimentNav(
             state = state,
-            subject = subjectOf(experimentId),
             onBack = onBack,
+            onHome = onHome,
         )
 
-        // Stage header
+        // Stage header: title + progress bar (progress stays at the top)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,23 +101,13 @@ fun LessonScreen(
             LLText(
                 experiment.title,
                 color = t.ink50,
-                size = 24.sp,
+                size = 20.sp,
                 weight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f).padding(end = 12.dp),
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ProgressBar(value = progress, modifier = Modifier.width(120.dp))
-                Spacer(Modifier.width(10.dp))
-                SecondaryButton(label = "‹", onClick = { onPrev?.invoke() }, enabled = onPrev != null)
-                Spacer(Modifier.width(6.dp))
-                if (progress >= 1f && onNext != null) {
-                    PrimaryButton(label = "Next ›", onClick = { onNext.invoke() })
-                } else {
-                    SecondaryButton(label = "Next ›", onClick = { onNext?.invoke() }, enabled = onNext != null)
-                }
-            }
+            ProgressBar(value = progress, modifier = Modifier.width(160.dp))
         }
 
         InstructionBanner(steps = experiment.steps)
@@ -124,7 +115,7 @@ fun LessonScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
+                .weight(1f)
                 .background(t.bg),
         ) {
             val Component = experimentRegistry[experiment.id]
@@ -134,14 +125,37 @@ fun LessonScreen(
                 ComingSoon(source = experiment.source)
             }
         }
+
+        // Bottom staging bar: Previous (outline) + Next (teal-green), bottom-right.
+        Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(t.surface)
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+        ) {
+            SecondaryButton(
+                label = "‹ Previous",
+                onClick = { onPrev?.invoke() },
+                enabled = onPrev != null,
+            )
+            Spacer(Modifier.width(10.dp))
+            PrimaryButton(
+                label = "Next ›",
+                onClick = { onNext?.invoke() },
+                enabled = onNext != null,
+            )
+        }
     }
 }
 
 @Composable
 private fun ExperimentNav(
     state: AppState,
-    subject: com.learnlab.content.Subject?,
     onBack: () -> Unit,
+    onHome: () -> Unit,
 ) {
     val t = LL.tokens
     Row(
@@ -152,50 +166,53 @@ private fun ExperimentNav(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            LLText("LearnLab", color = t.ink50, size = 18.sp, weight = FontWeight.Bold)
-            Spacer(Modifier.width(16.dp))
-            Box(Modifier.size(width = 1.dp, height = 22.dp).background(t.line))
-            Spacer(Modifier.width(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable(onClick = onBack)
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back to Lab",
-                    tint = t.ink200,
-                    modifier = Modifier.size(18.dp),
-                )
-                Spacer(Modifier.width(8.dp))
-                LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
-            }
+        // Left — Back to Lab
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(onClick = onBack)
+                .padding(horizontal = 6.dp, vertical = 4.dp),
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back to Lab",
+                tint = t.ink200,
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+            LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
         }
+
+        // Right — home + theme toggle
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (subject != null) {
-                com.learnlab.design.SubjectTag(subject.displayName, subject.color)
-            }
-            Spacer(Modifier.width(12.dp))
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(androidx.compose.foundation.shape.CircleShape)
-                    .background(t.surface2)
-                    .border(1.dp, t.line, androidx.compose.foundation.shape.CircleShape)
-                    .clickable { state.toggleTheme() },
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                    contentDescription = "Toggle theme",
-                    tint = t.ink400,
-                    modifier = Modifier.size(16.dp),
-                )
-            }
+            CircleIconButton(Icons.Filled.Home, "Home", onHome)
+            Spacer(Modifier.width(10.dp))
+            CircleIconButton(
+                if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                "Toggle theme",
+            ) { state.toggleTheme() }
         }
+    }
+}
+
+@Composable
+private fun CircleIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    desc: String,
+    onClick: () -> Unit,
+) {
+    val t = LL.tokens
+    Box(
+        modifier = Modifier
+            .size(36.dp)
+            .clip(CircleShape)
+            .background(t.surface2)
+            .border(1.dp, t.line, CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(icon, contentDescription = desc, tint = t.ink400, modifier = Modifier.size(16.dp))
     }
 }
 

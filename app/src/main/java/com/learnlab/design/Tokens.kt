@@ -69,12 +69,12 @@ val LightTokens = LearnLabTokens(
     ink400   = Color(0xFF8888A8),   // --text-muted
     ink500   = Color(0xFF9A9AB5),
     ink600   = Color(0xFFB5B5C8),
-    accent300 = Color(0xFF66E5FF),
-    accent400 = Color(0xFF33C7EE),
-    accent500 = Color(0xFF0099CC),  // muted physics cyan (light)
-    accent600 = Color(0xFF0077A3),
-    accent50  = Color(0xFFD6F4FF),  // light cyan tint behind accent700 text
-    accent700 = Color(0xFF0077A3),
+    accent300 = Color(0xFF2DD4BF),
+    accent400 = Color(0xFF14B8A6),
+    accent500 = Color(0xFF0D9488),  // muted teal-green (light)
+    accent600 = Color(0xFF0F766E),
+    accent50  = Color(0xFFCCFBF1),  // light teal tint behind accent700 text
+    accent700 = Color(0xFF0F766E),
     amber50  = Color(0xFFFEF3C7),
     amber700 = Color(0xFFB45309),
     rose50   = Color(0xFFFFE4E6),
@@ -96,12 +96,12 @@ val DarkTokens = LearnLabTokens(
     ink400     = Color(0x73FFFFFF),   // --text-muted     rgba(255,255,255,0.45)
     ink500     = Color(0x59FFFFFF),
     ink600     = Color(0x40FFFFFF),
-    accent300  = Color(0xFF66E5FF),   // light cyan
-    accent400  = Color(0xFF33DBFF),
-    accent500  = Color(0xFF00D4FF),   // --physics (primary interactive)
-    accent600  = Color(0xFF00A9CC),
-    accent50   = Color(0x3300D4FF),   // translucent cyan fill on dark surface
-    accent700  = Color(0xFF00D4FF),   // bright cyan text on accent50
+    accent300  = Color(0xFF5EEAD4),   // light teal
+    accent400  = Color(0xFF2DD4BF),
+    accent500  = Color(0xFF2DD4BF),   // teal-green (primary interactive)
+    accent600  = Color(0xFF0D9488),   // darker teal for white-text fills
+    accent50   = Color(0x332DD4BF),   // translucent teal fill on dark surface
+    accent700  = Color(0xFF5EEAD4),   // bright teal text on accent50
     amber50    = Color(0x33FBBF24),
     amber700   = Color(0xFFFBBF24),
     rose50     = Color(0x33FF6B6B),
@@ -146,7 +146,7 @@ fun gradLogo(): Brush = Brush.linearGradient(
 // Progress / level indicators use the unified experiment accent (blue).
 @Composable
 fun gradProgress(): Brush = Brush.horizontalGradient(
-    colors = listOf(ExperimentAccent, Color(0xFF5BA8F0)),
+    colors = listOf(ExperimentAccent, Color(0xFF34D399)),
 )
 
 // Common spacings
