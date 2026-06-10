@@ -211,10 +211,13 @@ fun PillTabBar(
 ) {
     val t = LL.tokens
     val n = tabs.size.coerceAtLeast(1)
-    // Ease-in-out glide (symmetric cubic-bezier(0.42, 0, 0.58, 1)).
+    // Cleaner, near-uniform teal→green pill (drops the cyan-blue end) + single-tone glow.
+    val pillStart = Color(0xFF2DD4BF)
+    val pillEnd = Color(0xFF34D399)
+    // Smoother, slightly longer ease-in-out glide (symmetric cubic-bezier(0.42, 0, 0.58, 1)).
     val target by animateFloatAsState(
         targetValue = selected.toFloat(),
-        animationSpec = tween(durationMillis = 400, easing = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)),
+        animationSpec = tween(durationMillis = 480, easing = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)),
         label = "pillTab",
     )
     // No clip on the track, so the active pill's glow can bleed outside the bar.
@@ -233,9 +236,9 @@ fun PillTabBar(
                 .offset { IntOffset((cellW.toPx() * target).roundToInt(), 0) }
                 .width(cellW)
                 .fillMaxHeight()
-                .shadow(22.dp, RoundedCornerShape(999.dp), clip = false, spotColor = CtaGreen, ambientColor = CtaTeal)
+                .shadow(14.dp, RoundedCornerShape(999.dp), clip = false, spotColor = pillStart, ambientColor = pillStart)
                 .clip(RoundedCornerShape(999.dp))
-                .background(gradCta()),
+                .background(Brush.horizontalGradient(listOf(pillStart, pillEnd))),
         )
         Row(Modifier.fillMaxSize()) {
             tabs.forEachIndexed { i, label ->
@@ -255,7 +258,7 @@ fun PillTabBar(
                             !on -> t.ink600
                             else -> t.ink400
                         },
-                        animationSpec = tween(durationMillis = 280),
+                        animationSpec = tween(durationMillis = 420),
                         label = "tabLabel",
                     )
                     LLText(
