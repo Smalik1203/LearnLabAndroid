@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import com.learnlab.content.Subject
 import com.learnlab.content.gradesFor
 import com.learnlab.content.topicsFor
+import com.learnlab.design.Card
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 
@@ -51,6 +52,7 @@ fun SubjectTopicsModal(
     subject: Subject,
     onDismiss: () -> Unit,
     onTopic: (String) -> Unit,
+    onBrowseAll: () -> Unit,
 ) {
     val t = LL.tokens
     val available = remember(subject) { gradesFor(subject).toSet() }
@@ -59,14 +61,10 @@ fun SubjectTopicsModal(
     val topics = remember(subject, grade) { if (grade >= 0) topicsFor(subject, grade) else emptyList() }
 
     Dialog(onDismissRequest = onDismiss) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(t.surface)
-                .border(1.dp, t.line, RoundedCornerShape(20.dp))
-                .padding(28.dp),
-        ) {
+        // Reuse the shared Card frame so the picker matches every other surface
+        // (same radius, border, fill, and soft elevation).
+        Card(modifier = Modifier.fillMaxWidth(), padding = 28.dp) {
+          Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -113,7 +111,23 @@ fun SubjectTopicsModal(
                 onSelect = { idx -> onTopic(topics[idx].id) },
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+            Spacer(Modifier.height(12.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onBrowseAll)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                LLText(
+                    "Browse all grades & chapters →",
+                    color = t.accent600, size = 14.sp, weight = FontWeight.SemiBold,
+                )
+            }
+          }
         }
     }
 }

@@ -47,7 +47,6 @@ import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PillTabBar
 import com.learnlab.design.interactiveCard
-import com.learnlab.shell.PageChrome
 import com.learnlab.store.AppState
 
 @Composable
@@ -55,12 +54,19 @@ fun HomeScreen(
     state: AppState,
     onOpenExperiment: (String) -> Unit,
     onLogo: () -> Unit,
+    onViewAllHistory: () -> Unit,
+    onBrowse: (Subject) -> Unit,
 ) {
     val t = LL.tokens
     var tab by remember { mutableIntStateOf(0) }
     var modalSubject by remember { mutableStateOf<Subject?>(null) }
 
-    PageChrome(state = state, onLogo = onLogo) {
+    ChromeScaffold(
+        state = state,
+        onLogo = onLogo,
+        onOpenExperiment = onOpenExperiment,
+        onViewAllHistory = onViewAllHistory,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -109,6 +115,7 @@ fun HomeScreen(
             subject = subj,
             onDismiss = { modalSubject = null },
             onTopic = { id -> modalSubject = null; onOpenExperiment(id) },
+            onBrowseAll = { modalSubject = null; onBrowse(subj) },
         )
     }
 }

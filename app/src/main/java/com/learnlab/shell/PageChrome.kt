@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Icon
@@ -49,6 +48,10 @@ fun PageChrome(
     showFooter: Boolean = false,
     onContact: () -> Unit = {},
     onHelp: () -> Unit = {},
+    onSearch: () -> Unit = {},
+    onHistory: () -> Unit = {},
+    onLogin: () -> Unit = {},
+    onSignUp: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val t = LL.tokens
@@ -92,25 +95,17 @@ fun PageChrome(
             },
     ) {
         Column(Modifier.fillMaxSize()) {
-            TopNav(onLogo = onLogo)
+            TopNav(
+                onLogo = onLogo,
+                onSearch = onSearch,
+                onHistory = onHistory,
+                onLogin = onLogin,
+                onSignUp = onSignUp,
+            )
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 content()
             }
             if (showFooter) Footer(onContact = onContact, onHelp = onHelp)
-        }
-
-        // Right-edge history FAB (visual placeholder)
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 6.dp)
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(t.surface)
-                .border(1.dp, t.line, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.AutoMirrored.Filled.ListAlt, contentDescription = "History", tint = t.ink400, modifier = Modifier.size(18.dp))
         }
 
         // Bottom-right theme toggle FAB

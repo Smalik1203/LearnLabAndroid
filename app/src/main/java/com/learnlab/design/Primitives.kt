@@ -63,12 +63,12 @@ fun PrimaryButton(
             .clip(RoundedCornerShape(999.dp))
             .background(bgBrush)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 22.dp, vertical = 11.dp),
+            .padding(horizontal = 18.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (leading != null) { leading(); Box(Modifier.width(8.dp)) }
-            LLText(label, color = textColor, size = 15.sp, weight = FontWeight.SemiBold)
+            LLText(label, color = textColor, size = 14.sp, weight = FontWeight.SemiBold)
             if (trailing != null) { Box(Modifier.width(8.dp)); trailing() }
         }
     }
@@ -89,7 +89,7 @@ fun SecondaryButton(
             .clip(RoundedCornerShape(999.dp))
             .border(1.dp, t.lineStrong, RoundedCornerShape(999.dp))
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 11.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -97,7 +97,7 @@ fun SecondaryButton(
             LLText(
                 label,
                 color = if (enabled) t.ink50 else t.ink600,
-                size = 15.sp,
+                size = 14.sp,
                 weight = FontWeight.SemiBold,
             )
             if (trailing != null) { Box(Modifier.width(8.dp)); trailing() }
@@ -119,10 +119,10 @@ fun GhostButton(
             .background(t.surface2)
             .border(1.dp, t.line, RoundedCornerShape(999.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 11.dp),
+            .padding(horizontal = 14.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        LLText(label, color = t.ink200, size = 15.sp, weight = FontWeight.SemiBold)
+        LLText(label, color = t.ink200, size = 14.sp, weight = FontWeight.SemiBold)
     }
 }
 

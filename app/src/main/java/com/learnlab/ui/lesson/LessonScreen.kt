@@ -79,7 +79,10 @@ fun LessonScreen(
     }
 
     var progress by remember(experimentId) { mutableStateOf(0f) }
-    LaunchedEffect(experimentId) { progress = 0f }
+    LaunchedEffect(experimentId) {
+        progress = 0f
+        state.recordRecent(experimentId)
+    }
     val controls = remember(experimentId) {
         ExperimentControls(
             onProgress = { progress = it.coerceIn(0f, 1f) },
@@ -94,25 +97,26 @@ fun LessonScreen(
             onHome = onHome,
         )
 
-        // Stage header: title (left) + progress bar (right).
+        // Stage header: title (left) + progress bar (right). Kept compact so the
+        // experiment stage gets the most vertical room.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.surface)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 20.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             LLText(
                 experiment.title,
                 color = t.ink50,
-                size = 20.sp,
+                size = 17.sp,
                 weight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f).padding(end = 12.dp),
             )
-            ProgressBar(value = progress, modifier = Modifier.width(160.dp))
+            ProgressBar(value = progress, modifier = Modifier.width(140.dp))
         }
 
         InstructionBanner(steps = experiment.steps)
@@ -173,7 +177,7 @@ private fun ExperimentNav(
         modifier = Modifier
             .fillMaxWidth()
             .background(t.bg)
-            .padding(horizontal = 28.dp, vertical = 12.dp),
+            .padding(horizontal = 28.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -192,7 +196,7 @@ private fun ExperimentNav(
                 modifier = Modifier.size(18.dp),
             )
             Spacer(Modifier.width(8.dp))
-            LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
+            LLText("Back to Lab", color = t.ink200, size = 14.sp, weight = FontWeight.Medium)
         }
 
         // Right — home + theme toggle

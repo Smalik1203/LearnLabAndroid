@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,7 +90,10 @@ fun LLSlider(
                     }
                 }
             }
-            LLText("${valueFormat(value)} $unit", color = t.ink500, size = 12.sp)
+            LLText(
+                "${valueFormat(value)} $unit", color = t.ink400, size = 12.sp,
+                weight = FontWeight.SemiBold,
+            )
         }
 
         if (info != null && showInfo) {
@@ -135,6 +138,7 @@ fun LLSlider(
                 val n = ((max - min) / step).toInt() - 1
                 if (n > 0) n else 0
             } else 0
+            val frac = if (max > min) (value.coerceIn(min, max) - min) / (max - min) else 0f
             Slider(
                 value = value.coerceIn(min, max),
                 onValueChange = onValueChange,
@@ -143,15 +147,25 @@ fun LLSlider(
                 interactionSource = interaction,
                 steps = steps,
                 valueRange = min..max,
-                colors = SliderDefaults.colors(
-                    thumbColor = ExperimentAccent,
-                    activeTrackColor = ExperimentAccent,
-                    inactiveTrackColor = t.surface3,
-                    // No per-step tick dots — they read as microscopic noise. Snapping
-                    // (the `steps` param) is preserved; the value readout shows the exact value.
-                    activeTickColor = Color.Transparent,
-                    inactiveTickColor = Color.Transparent,
-                ),
+                // Fully custom track: a thin rounded line. Replacing the Material track
+                // removes the boxy/squared track ends that showed behind the round thumb.
+                track = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(999.dp))
+                            .background(t.surface3),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(frac)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(999.dp))
+                                .background(if (enabled) ExperimentAccent else t.lineStrong),
+                        )
+                    }
+                },
                 thumb = {
                     // Root clipped to a circle so any press/hover state-layer stays round
                     // (no square box around the dragger).

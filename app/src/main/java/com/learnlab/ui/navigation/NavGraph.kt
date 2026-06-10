@@ -12,9 +12,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.learnlab.content.Chapters
 import com.learnlab.content.findExperiment
+import com.learnlab.content.subjectOf
+import com.learnlab.content.topicsFor
+import com.learnlab.engines.experimentRegistry
 import com.learnlab.store.AppState
 import com.learnlab.ui.curriculum.CurriculumScreen
 import com.learnlab.ui.grade.GradeSelectScreen
+import com.learnlab.ui.history.HistoryScreen
 import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.home.LandingScreen
 import com.learnlab.ui.lesson.LessonScreen
@@ -34,6 +38,8 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
             LandingScreen(
                 state = state,
                 onBegin = { navController.navigate(Routes.HOME) },
+                onOpenExperiment = { id -> navController.navigate(Routes.lesson(id)) },
+                onViewAllHistory = { navController.navigate(Routes.HISTORY) },
             )
         }
 
@@ -47,6 +53,22 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                         launchSingleTop = true
                     }
                 },
+                onViewAllHistory = { navController.navigate(Routes.HISTORY) },
+                onBrowse = { subj -> navController.navigate(Routes.gradeSelect(subj.name)) },
+            )
+        }
+
+        composable(Routes.HISTORY) {
+            HistoryScreen(
+                state = state,
+                onBack = { navController.popBackStack() },
+                onHome = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.HOME) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onOpenExperiment = { id -> navController.navigate(Routes.lesson(id)) },
             )
         }
 
@@ -97,10 +119,18 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                 arguments = listOf(navArgument("experimentId") { type = NavType.StringType }),
             ) { backStack ->
                 val experimentId = backStack.arguments?.getString("experimentId") ?: return@composable
-                val chapter = findExperiment(experimentId)?.let { exp ->
-                    Chapters.firstOrNull { it.id == exp.chapterId }
+                // Prev/Next walk the runnable topics of the SAME grade + subject as the
+                // current experiment (catalog order). Scoping to the grade means the
+                // buttons never jump to another grade, and only the true first/last
+                // topic disables them.
+                val grade = findExperiment(experimentId)?.let { exp ->
+                    Chapters.firstOrNull { it.id == exp.chapterId }?.grade
                 }
-                val ids = chapter?.experiments?.map { it.id } ?: emptyList()
+                val subject = subjectOf(experimentId)
+                val ids = if (grade != null && subject != null) {
+                    topicsFor(subject, grade).map { it.id }
+                        .filter { experimentRegistry.containsKey(it) }
+                } else emptyList()
                 val idx = ids.indexOf(experimentId)
 
                 LessonScreen(

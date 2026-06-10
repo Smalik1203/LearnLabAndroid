@@ -42,15 +42,25 @@ import com.learnlab.design.SubjectBiology
 import com.learnlab.design.SubjectChemistry
 import com.learnlab.design.SubjectMath
 import com.learnlab.design.SubjectPhysics
-import com.learnlab.shell.PageChrome
 import com.learnlab.store.AppState
 
 /** Landing hero — mirrors the web Home: centered gradient headline, subtitle,
  *  glowing teal→green CTA, ambient floating science icons, footer. */
 @Composable
-fun LandingScreen(state: AppState, onBegin: () -> Unit) {
+fun LandingScreen(
+    state: AppState,
+    onBegin: () -> Unit,
+    onOpenExperiment: (String) -> Unit,
+    onViewAllHistory: () -> Unit,
+) {
     val t = LL.tokens
-    PageChrome(state = state, onLogo = {}, showFooter = true) {
+    ChromeScaffold(
+        state = state,
+        onLogo = {},
+        onOpenExperiment = onOpenExperiment,
+        onViewAllHistory = onViewAllHistory,
+        showFooter = true,
+    ) {
         Box(Modifier.fillMaxSize()) {
             // Ambient floating icons scattered across the canvas.
             FloatingIcon(Icons.Filled.Hub, SubjectPhysics, Alignment.TopStart, 0, 64.dp, 0.30f)
