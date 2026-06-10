@@ -88,14 +88,32 @@ fun LessonScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
-        // One compact top bar: Back to Lab + title + progress + home + theme.
         ExperimentNav(
             state = state,
-            title = experiment.title,
-            progress = progress,
             onBack = onBack,
             onHome = onHome,
         )
+
+        // Stage header: title (left) + progress bar (right).
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(t.surface)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            LLText(
+                experiment.title,
+                color = t.ink50,
+                size = 20.sp,
+                weight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).padding(end = 12.dp),
+            )
+            ProgressBar(value = progress, modifier = Modifier.width(160.dp))
+        }
 
         InstructionBanner(steps = experiment.steps)
 
@@ -147,8 +165,6 @@ fun LessonScreen(
 @Composable
 private fun ExperimentNav(
     state: AppState,
-    title: String,
-    progress: Float,
     onBack: () -> Unit,
     onHome: () -> Unit,
 ) {
@@ -156,48 +172,31 @@ private fun ExperimentNav(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(t.surface)
-            .border(width = 1.dp, color = t.line, shape = RoundedCornerShape(0.dp))
-            .padding(horizontal = 24.dp, vertical = 10.dp),
+            .background(t.bg)
+            .padding(horizontal = 28.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        // Left — Back to Lab + title
+        // Left — Back to Lab
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(onClick = onBack)
+                .padding(horizontal = 6.dp, vertical = 4.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable(onClick = onBack)
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back to Lab",
-                    tint = t.ink200,
-                    modifier = Modifier.size(18.dp),
-                )
-                Spacer(Modifier.width(8.dp))
-                LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
-            }
-            Spacer(Modifier.width(20.dp))
-            LLText(
-                title,
-                color = t.ink50,
-                size = 18.sp,
-                weight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false),
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back to Lab",
+                tint = t.ink200,
+                modifier = Modifier.size(18.dp),
             )
+            Spacer(Modifier.width(8.dp))
+            LLText("Back to Lab", color = t.ink200, size = 15.sp, weight = FontWeight.Medium)
         }
 
-        // Right — progress + home + theme toggle
+        // Right — home + theme toggle
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ProgressBar(value = progress, modifier = Modifier.width(140.dp))
-            Spacer(Modifier.width(16.dp))
             CircleIconButton(Icons.Filled.Home, "Home", onHome)
             Spacer(Modifier.width(10.dp))
             CircleIconButton(
