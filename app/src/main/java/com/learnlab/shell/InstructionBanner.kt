@@ -1,6 +1,9 @@
 package com.learnlab.shell
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,47 +24,68 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.design.LL
+import com.learnlab.design.LLAnimation
 import com.learnlab.design.LLText
+import com.learnlab.design.Radius
+import com.learnlab.design.bounceClickable
 
 /**
- * Active-step stepper. Renders one numbered circle per step; the active step's
- * circle expands into a pill that shows the step text. Tapping any closed
- * circle activates it (others collapse). Step 1 is open by default.
+ * Premium active-step procedure HUD.
+ * Animates open/closed states of instructions with spring dynamics, styled as glassmorphism.
  */
 @Composable
-fun InstructionBanner(steps: List<String>) {
+fun InstructionBanner(steps: List<String>, activeStep: Int = 0) {
     val t = LL.tokens
-    var activeStep by remember(steps) { mutableStateOf(0) }
-    Row(
+    // The experiment drives the open step; a tap only peeks at another one
+    // until the experiment moves on again.
+    var peek by remember(steps) { mutableStateOf<Int?>(null) }
+    androidx.compose.runtime.LaunchedEffect(activeStep) { peek = null }
+    val openStep = (peek ?: activeStep).coerceIn(0, (steps.size - 1).coerceAtLeast(0))
+    val glassBg = if (t.isDark) t.surface.copy(alpha = 0.3f) else t.surface.copy(alpha = 0.7f)
+    val glassBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.1f else 0.3f), Color.Transparent)
+    )
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(t.surface)
-            .border(1.dp, t.line, RoundedCornerShape(0.dp))
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 24.dp, vertical = 6.dp)
     ) {
-        LLText(
-            "Procedure",
-            color = t.ink50, size = 18.sp,
-            weight = FontWeight.Bold,
-        )
-        Box(Modifier.width(14.dp))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(Radius.md))
+                .background(glassBg)
+                .border(1.dp, glassBorder, RoundedCornerShape(Radius.md))
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            steps.forEachIndexed { i, step ->
-                StepperPill(
-                    number = i + 1,
-                    text = step,
-                    open = i == activeStep,
-                    onClick = { activeStep = i },
-                )
+            LLText(
+                "Procedure",
+                color = t.ink50,
+                size = 15.sp,
+                weight = FontWeight.Bold,
+            )
+            Box(Modifier.width(16.dp))
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                steps.forEachIndexed { i, step ->
+                    StepperPill(
+                        number = i + 1,
+                        text = step,
+                        open = i == openStep,
+                        onClick = { peek = i },
+                    )
+                }
             }
         }
     }
@@ -75,25 +99,43 @@ private fun StepperPill(
     onClick: () -> Unit,
 ) {
     val t = LL.tokens
+    val pillBg = if (open) t.accent50.copy(alpha = 0.15f) else Color.Transparent
+    val pillBorder = if (open) t.accent300 else t.lineStrong.copy(alpha = 0.5f)
+
     Row(
         modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(if (open) t.accent50 else Color.Transparent)
-            .border(
-                1.dp,
-                if (open) t.accent300 else t.lineStrong,
-                RoundedCornerShape(20.dp),
+            .animateContentSize(
+                animationSpec = androidx.compose.animation.core.spring(
+                    dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
+                    stiffness = androidx.compose.animation.core.Spring.StiffnessMedium
+                )
             )
-            .clickable { onClick() },
+            .clip(RoundedCornerShape(20.dp))
+            .background(pillBg)
+            .border(1.dp, pillBorder, RoundedCornerShape(20.dp))
+            .bounceClickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Step number indicator
         Box(
             modifier = Modifier
                 .size(28.dp)
                 .clip(CircleShape)
-                .background(if (open) t.accent500 else Color.Transparent),
+                .background(
+                    if (open) Brush.radialGradient(listOf(t.accent700, t.accent500))
+                    else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
+                ),
             contentAlignment = Alignment.Center,
         ) {
+            // Circle border when closed
+            if (!open) {
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, t.lineStrong.copy(alpha = 0.8f), CircleShape)
+                )
+            }
             LLText(
                 "$number",
                 color = if (open) Color.White else t.ink400,
@@ -101,7 +143,13 @@ private fun StepperPill(
                 weight = FontWeight.Bold,
             )
         }
-        AnimatedVisibility(visible = open) {
+
+        // Expanded text step content
+        AnimatedVisibility(
+            visible = open,
+            enter = fadeIn(animationSpec = androidx.compose.animation.core.tween(250)),
+            exit = fadeOut(animationSpec = androidx.compose.animation.core.tween(150))
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(8.dp))
                 LLText(
@@ -110,8 +158,8 @@ private fun StepperPill(
                     size = 13.sp,
                     weight = FontWeight.Medium,
                     lineHeight = 16.sp,
+                    modifier = Modifier.padding(end = 12.dp)
                 )
-                Box(Modifier.width(10.dp))
             }
         }
     }

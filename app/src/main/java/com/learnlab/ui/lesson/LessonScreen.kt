@@ -1,6 +1,8 @@
 package com.learnlab.ui.lesson
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,17 +28,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.findExperiment
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
+import com.learnlab.design.MeshBackground
 import com.learnlab.design.PrimaryButton
 import com.learnlab.design.ProgressBar
 import com.learnlab.design.Radius
 import com.learnlab.design.SecondaryButton
 import com.learnlab.design.Spacing
+import com.learnlab.design.bounceClickable
 import com.learnlab.engines.experimentRegistry
 import com.learnlab.shell.InstructionBanner
 import com.learnlab.shell.TopBar
@@ -58,79 +65,121 @@ fun LessonScreen(
     val experiment = findExperiment(experimentId)
 
     if (experiment == null) {
-        Column(
-            modifier = Modifier.fillMaxSize().background(t.bg),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            TopBar(state = state, title = "Not Found", showBack = true, onBack = onBack)
-            LLText("Experiment not found.", color = MaterialTheme.colorScheme.onBackground, size = 14.sp)
+        Box(modifier = Modifier.fillMaxSize()) {
+            MeshBackground()
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                TopBar(state = state, title = "Not Found", showBack = true, onBack = onBack)
+                LLText("Experiment not found.", color = t.ink50, size = 16.sp, weight = FontWeight.SemiBold)
+            }
         }
         return
     }
 
     var progress by remember(experimentId) { mutableStateOf(0f) }
+    var activeStep by remember(experimentId) { mutableStateOf(0) }
     LaunchedEffect(experimentId) { progress = 0f }
     val controls = remember(experimentId) {
         ExperimentControls(
             onProgress = { progress = it.coerceIn(0f, 1f) },
             onComplete = { _ -> progress = 1f },
+            onStep = { activeStep = it },
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
-        TopBar(
-            state = state,
-            title = "Back",
-            showBack = true,
-            onBack = onBack,
-            onHomeClick = onHome,
-        )
+    val headerBg = if (t.isDark) t.surface.copy(alpha = 0.45f) else t.surface.copy(alpha = 0.85f)
+    val headerBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.15f else 0.4f), Color.Transparent)
+    )
 
-        // Stage header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(t.surface)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            LLText(
-                experiment.title,
-                color = t.ink50,
-                size = 24.sp,
-                weight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f).padding(end = 12.dp),
+    Box(modifier = Modifier.fillMaxSize()) {
+        MeshBackground()
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopBar(
+                state = state,
+                title = "Back",
+                showBack = true,
+                onBack = onBack,
+                onHomeClick = onHome,
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ProgressBar(value = progress, modifier = Modifier.width(120.dp))
-                Spacer(Modifier.width(Spacing.md))
-                SecondaryButton(label = "‹", onClick = { onPrev?.invoke() }, enabled = onPrev != null)
-                Spacer(Modifier.width(Spacing.xs + 2.dp))
-                if (progress >= 1f && onNext != null) {
-                    PrimaryButton(label = "Next ›", onClick = { onNext.invoke() })
-                } else {
-                    SecondaryButton(label = "Next ›", onClick = { onNext?.invoke() }, enabled = onNext != null)
+
+            // Stage header: Floating glassmorphic dashboard panel
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 6.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(Radius.md))
+                        .background(headerBg)
+                        .border(1.dp, headerBorder, RoundedCornerShape(Radius.md))
+                        .padding(horizontal = 20.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    LLText(
+                        experiment.title,
+                        color = t.ink50,
+                        size = 20.sp,
+                        weight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f).padding(end = 16.dp),
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        ProgressBar(value = progress, modifier = Modifier.width(140.dp))
+                        
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            SecondaryButton(
+                                label = "‹ Prev", 
+                                onClick = { onPrev?.invoke() }, 
+                                enabled = onPrev != null
+                            )
+                            if (progress >= 1f && onNext != null) {
+                                PrimaryButton(label = "Next Lab ›", onClick = { onNext.invoke() })
+                            } else {
+                                SecondaryButton(
+                                    label = "Next Lab ›", 
+                                    onClick = { onNext?.invoke() }, 
+                                    enabled = onNext != null
+                                )
+                            }
+                        }
+                    }
                 }
             }
-        }
 
-        InstructionBanner(steps = experiment.steps)
+            InstructionBanner(steps = experiment.steps, activeStep = activeStep)
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(t.bg),
-        ) {
-            val Component = experimentRegistry[experiment.id]
-            if (Component != null) {
-                Component(experiment, controls)
-            } else {
-                ComingSoon(source = experiment.source)
+            // Experiment Workspace Canvas
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+                    .clip(RoundedCornerShape(Radius.lg))
+                    .background(t.bgDeep.copy(alpha = if (t.isDark) 0.45f else 0.85f))
+                    .border(
+                        1.dp, 
+                        if (t.isDark) t.lineStrong.copy(alpha = 0.2f) else t.lineStrong.copy(alpha = 0.5f), 
+                        RoundedCornerShape(Radius.lg)
+                    ),
+            ) {
+                val Component = experimentRegistry[experiment.id]
+                if (Component != null) {
+                    Component(experiment, controls)
+                } else {
+                    ComingSoon(source = experiment.source)
+                }
             }
         }
     }
@@ -139,33 +188,60 @@ fun LessonScreen(
 @Composable
 private fun ComingSoon(source: String) {
     val t = LL.tokens
+    val glowColor = t.accent500
+    val infiniteTransition = rememberInfiniteTransition(label = "hourglass")
+    
+    // Slow bouncing rotation for hourglass
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = -15f,
+        targetValue = 15f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = EaseInOutSine),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "hourglassBounce"
+    )
+
     Box(
         modifier = Modifier.fillMaxSize().padding(Spacing.xxxl),
         contentAlignment = Alignment.Center,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(64.dp)
                     .clip(RoundedCornerShape(Radius.pill))
-                    .background(t.surface2),
+                    .background(t.surface2.copy(alpha = 0.3f))
+                    .border(1.dp, t.line.copy(alpha = 0.4f), RoundedCornerShape(Radius.pill))
+                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(Radius.pill), spotColor = glowColor.copy(alpha = 0.3f)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Filled.HourglassEmpty,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp),
+                    tint = t.accent700,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .graphicsLayer(rotationZ = rotation),
                 )
             }
-            Spacer(Modifier.size(Spacing.lg))
-            LLText(
-                "This experiment is on the way.",
-                color = MaterialTheme.colorScheme.onSurface,
-                size = 14.sp,
-                weight = FontWeight.SemiBold,
-            )
-            LLText("From $source.", color = MaterialTheme.colorScheme.onSurfaceVariant, size = 12.sp)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                LLText(
+                    "This virtual lab module is on the way",
+                    color = t.ink50,
+                    size = 16.sp,
+                    weight = FontWeight.Bold,
+                )
+                LLText(
+                    "NCERT Curriculum reference: $source", 
+                    color = t.ink400, 
+                    size = 13.sp,
+                    weight = FontWeight.Medium
+                )
+            }
         }
     }
 }
