@@ -27,6 +27,7 @@ import com.learnlab.content.chapter.SlideOverride
 import com.learnlab.data.sync.SlideOverridesRepository
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
+import com.learnlab.design.MeshBackground
 import com.learnlab.design.ProvideTokens
 import com.learnlab.lessons.slides.EditHistory
 import com.learnlab.lessons.slides.OverrideSynthesizer
@@ -135,8 +136,9 @@ private fun ChapterScreenContent(
         }
     }
 
-    val pal = com.learnlab.lessons.lessonPalette()
-    Box(modifier = Modifier.fillMaxSize().background(pal.pageBgBrush)) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        MeshBackground()
+
         when {
             error != null -> Column(
                 modifier = Modifier.fillMaxSize(),

@@ -1,8 +1,13 @@
 package com.learnlab.ui.curriculum
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,7 +53,14 @@ import com.learnlab.content.Chapter
 import com.learnlab.content.Chapters
 import com.learnlab.content.Experiment
 import com.learnlab.design.LL
+import com.learnlab.design.LLAnimation
+import com.learnlab.design.LLText
+import com.learnlab.design.MeshBackground
+import com.learnlab.design.Radius
 import com.learnlab.design.Spacing
+import com.learnlab.design.bounceClickable
+import com.learnlab.design.gradProgress
+import com.learnlab.engines.experimentRegistry
 import com.learnlab.shell.TopBar
 import com.learnlab.store.AppState
 
@@ -69,62 +85,115 @@ fun CurriculumScreen(
         ),
     ) { mutableListOf<String>().toMutableStateList() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.bg)
-    ) {
-        TopBar(
-            state = state,
-            title = "Back to Grades",
-            showBack = true,
-            onBack = onBack,
-            onHomeClick = onHome,
-        )
+    // Dynamic curriculum implementation progress calculation
+    val totalExperiments = remember(gradeChapters) {
+        gradeChapters.sumOf { it.experiments.size }
+    }
+    val availableExperiments = remember(gradeChapters) {
+        gradeChapters.flatMap { it.experiments }.count { it.id in experimentRegistry.keys }
+    }
+    val progressRatio = if (totalExperiments > 0) {
+        availableExperiments.toFloat() / totalExperiments.toFloat()
+    } else 0f
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Spacing.xxxl, vertical = Spacing.lg + Spacing.xs),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                Text(
-                    "Grade $grade",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = t.ink50,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    "${gradeChapters.size} chapters · ${gradeChapters.sumOf { it.experiments.size }} experiments",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = t.accent500,
-                )
-            }
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        MeshBackground()
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 40.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            gradeChapters.forEach { chapter ->
-                item(key = chapter.id) {
-                    ChapterCard(
-                        chapter = chapter,
-                        isExpanded = chapter.id in expandedIds,
-                        onToggle = {
-                            if (chapter.id in expandedIds) expandedIds.remove(chapter.id)
-                            else expandedIds.add(chapter.id)
-                        },
-                        onExperimentSelected = onExperimentSelected,
-                        onReadChapter = chapterJsonIdFor(chapter.id)?.let { jsonId ->
-                            { onChapterSelected(jsonId) }
-                        },
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopBar(
+                state = state,
+                title = "Back to Grades",
+                showBack = true,
+                onBack = onBack,
+                onHomeClick = onHome,
+            )
+
+            // Dynamic header card containing curriculum completion progress ring
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text(
+                        "Grade $grade Curriculum",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = t.ink50,
+                        fontWeight = FontWeight.ExtraBold,
+                    )
+                    LLText(
+                        "${gradeChapters.size} Chapters · $totalExperiments Labs",
+                        color = t.ink400,
+                        size = 14.sp,
+                        weight = FontWeight.Medium
                     )
                 }
-                item { Spacer(Modifier.height(Spacing.xl)) }
+
+                // Completion progress ring
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        LLText("Curriculum Engine", color = t.accent700, size = 11.sp, weight = FontWeight.Bold, letterSpacing = 1.2.sp)
+                        LLText("$availableExperiments of $totalExperiments Labs Active", color = t.ink400, size = 12.sp, weight = FontWeight.SemiBold)
+                    }
+
+                    val progressBrush = gradProgress()
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(54.dp)) {
+                        Canvas(modifier = Modifier.fillMaxSize()) {
+                            val strokeW = 4.5.dp.toPx()
+                            val minDim = size.minDimension
+                            val r = minDim / 2 - strokeW
+
+                            // Track
+                            drawCircle(
+                                color = t.surface3.copy(alpha = 0.25f),
+                                radius = r,
+                                style = Stroke(width = strokeW)
+                            )
+                            // Sweep Progress
+                            drawArc(
+                                brush = progressBrush,
+                                startAngle = -90f,
+                                sweepAngle = progressRatio * 360f,
+                                useCenter = false,
+                                style = Stroke(width = strokeW, cap = StrokeCap.Round)
+                            )
+                        }
+                        LLText(
+                            "${(progressRatio * 100).toInt()}%",
+                            color = t.ink50,
+                            size = 11.sp,
+                            weight = FontWeight.Black
+                        )
+                    }
+                }
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                gradeChapters.forEach { chapter ->
+                    item(key = chapter.id) {
+                        ChapterCard(
+                            chapter = chapter,
+                            isExpanded = chapter.id in expandedIds,
+                            onToggle = {
+                                if (chapter.id in expandedIds) expandedIds.remove(chapter.id)
+                                else expandedIds.add(chapter.id)
+                            },
+                            onExperimentSelected = onExperimentSelected,
+                            onReadChapter = chapterJsonIdFor(chapter.id)?.let { jsonId ->
+                                { onChapterSelected(jsonId) }
+                            },
+                        )
+                    }
+                }
             }
         }
     }
@@ -146,43 +215,68 @@ private fun ChapterCard(
 ) {
     val t = LL.tokens
     val rotation by animateFloatAsState(if (isExpanded) 90f else 0f, label = "chevron")
-    val borderColor by animateColorAsState(
-        if (isExpanded) t.accent500.copy(alpha = 0.5f) else t.lineStrong,
-        label = "chapterBorder",
+    
+    // Border highlights
+    val glowColor by animateColorAsState(
+        if (isExpanded) t.accent500.copy(alpha = 0.5f) else t.lineStrong.copy(alpha = 0.15f),
+        label = "chapterGlow"
+    )
+    val cardBg = if (chapter.comingSoon) t.surface.copy(alpha = 0.12f) else t.surface.copy(alpha = 0.35f)
+    val glassBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (isExpanded) 0.15f else 0.05f), Color.Transparent)
     )
 
     Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = if (chapter.comingSoon) t.surface.copy(alpha = 0.55f) else t.surface,
-        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(Radius.lg),
+        color = Color.Transparent,
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = if (isExpanded) 12.dp else 4.dp,
+                shape = RoundedCornerShape(Radius.lg),
+                ambientColor = Color.Black.copy(alpha = 0.05f),
+                spotColor = Color.Black.copy(alpha = 0.08f)
+            )
     ) {
-        Column {
-            // Chapter header row — green gradient L→R for active chapters
+        Column(
+            modifier = Modifier
+                .animateContentSize(
+                    animationSpec = androidx.compose.animation.core.spring(
+                        dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
+                        stiffness = androidx.compose.animation.core.Spring.StiffnessMedium
+                    )
+                )
+                .background(cardBg)
+                .border(1.dp, glassBorder, RoundedCornerShape(Radius.lg))
+                .border(
+                    width = 1.dp,
+                    color = glowColor,
+                    shape = RoundedCornerShape(Radius.lg)
+                )
+        ) {
+            // Chapter header row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(enabled = !chapter.comingSoon) { onToggle() }
                     .background(
-                        when {
-                            chapter.comingSoon -> Color.Transparent
-                            t.isDark           -> t.accent400.copy(alpha = 0.30f)
-                            else               -> t.accent400.copy(alpha = 0.20f)
-                        }
+                        if (isExpanded) t.accent50.copy(alpha = 0.08f) else Color.Transparent
                     )
-                    .padding(horizontal = Spacing.lg + Spacing.xs, vertical = Spacing.lg),
+                    .padding(horizontal = 20.dp, vertical = 18.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                     // Chapter number badge
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(Radius.sm),
                         color = when {
-                            chapter.comingSoon -> t.surface2.copy(alpha = 0.6f)
-                            isExpanded -> t.accent500.copy(alpha = 0.15f)
-                            else -> t.surface2
+                            chapter.comingSoon -> t.surface2.copy(alpha = 0.2f)
+                            isExpanded -> t.accent50.copy(alpha = 0.2f)
+                            else -> t.surface2.copy(alpha = 0.35f)
                         },
                         modifier = Modifier.size(44.dp),
+                        border = borderConstraintFor(isExpanded, chapter.comingSoon)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -190,35 +284,27 @@ private fun ChapterCard(
                                 style = MaterialTheme.typography.titleSmall,
                                 color = when {
                                     chapter.comingSoon -> t.ink500
-                                    isExpanded -> t.accent500
-                                    else -> t.ink400
+                                    isExpanded -> t.accent700
+                                    else -> t.ink200
                                 },
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.Black,
                             )
                         }
                     }
-                    Spacer(Modifier.width(Spacing.lg))
+                    Spacer(Modifier.width(16.dp))
                     Column {
                         Text(
-                            "CH ${chapter.number}",
+                            "CHAPTER ${chapter.number}",
                             style = MaterialTheme.typography.labelSmall,
-                            color = when {
-                                chapter.comingSoon -> t.ink600
-                                isExpanded -> t.accent500
-                                else -> t.ink500
-                            },
-                            letterSpacing = 1.6.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            color = if (isExpanded) t.accent700 else t.ink500,
+                            letterSpacing = 1.8.sp,
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             chapter.title,
                             style = MaterialTheme.typography.titleSmall,
-                            color = when {
-                                chapter.comingSoon -> t.ink500
-                                isExpanded -> t.ink50
-                                else -> t.ink400
-                            },
-                            fontWeight = FontWeight.SemiBold,
+                            color = if (chapter.comingSoon) t.ink500 else t.ink50,
+                            fontWeight = FontWeight.Bold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -227,28 +313,30 @@ private fun ChapterCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (chapter.comingSoon) {
                         Surface(
-                            shape = RoundedCornerShape(999.dp),
-                            color = t.surface2,
+                            shape = RoundedCornerShape(50),
+                            color = t.surface2.copy(alpha = 0.3f),
+                            modifier = Modifier.border(1.dp, t.line.copy(alpha = 0.3f), RoundedCornerShape(50))
                         ) {
                             Text(
                                 "Coming soon",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = t.ink500,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             )
                         }
                     } else {
-                        Text(
-                            "${chapter.experiments.size} exp",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = t.ink500,
+                        LLText(
+                            "${chapter.experiments.size} Labs",
+                            color = t.ink400,
+                            size = 13.sp,
+                            weight = FontWeight.SemiBold
                         )
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(10.dp))
                         Icon(
                             Icons.Default.ChevronRight,
                             contentDescription = null,
-                            tint = t.ink400,
+                            tint = t.ink200,
                             modifier = Modifier.size(20.dp).rotate(rotation),
                         )
                     }
@@ -257,23 +345,23 @@ private fun ChapterCard(
 
             // Expanded experiments list
             if (isExpanded && !chapter.comingSoon) {
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.line))
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.line.copy(alpha = 0.3f)))
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     if (onReadChapter != null) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(t.accent500.copy(alpha = 0.15f))
+                                .clip(RoundedCornerShape(Radius.sm))
+                                .background(t.accent50.copy(alpha = 0.15f))
                                 .clickable { onReadChapter() }
-                                .padding(horizontal = 12.dp, vertical = 12.dp),
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                "Read full chapter",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = t.accent500,
+                                "Read full chapter textbook theory",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = t.accent700,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.weight(1f),
                             )
@@ -295,25 +383,56 @@ private fun ChapterCard(
 }
 
 @Composable
+private fun borderConstraintFor(isExpanded: Boolean, isComingSoon: Boolean): BorderStroke? {
+    val t = LL.tokens
+    return when {
+        isComingSoon -> null
+        isExpanded -> BorderStroke(1.dp, t.accent300)
+        else -> BorderStroke(1.dp, t.line.copy(alpha = 0.5f))
+    }
+}
+
+@Composable
 private fun ExperimentRow(experiment: Experiment, onClick: () -> Unit) {
     val t = LL.tokens
+    val isRunning = experiment.id in experimentRegistry.keys
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = Spacing.md, vertical = Spacing.md),
+            .clip(RoundedCornerShape(Radius.sm))
+            .bounceClickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                experiment.title,
-                style = MaterialTheme.typography.labelLarge,
-                color = t.ink50,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    experiment.title,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = t.ink50,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (isRunning) {
+                    // Micro badge for live labs
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = Color(0xFF10B981).copy(alpha = 0.15f),
+                        border = BorderStroke(0.5.dp, Color(0xFF10B981).copy(alpha = 0.5f))
+                    ) {
+                        LLText(
+                            "LIVE",
+                            color = Color(0xFF10B981),
+                            size = 8.sp,
+                            weight = FontWeight.Black,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                        )
+                    }
+                }
+            }
             Text(
                 experiment.blurb,
                 style = MaterialTheme.typography.labelSmall,
@@ -323,15 +442,16 @@ private fun ExperimentRow(experiment: Experiment, onClick: () -> Unit) {
             )
         }
         Surface(
-            shape = RoundedCornerShape(50),
-            color = t.accent500.copy(alpha = 0.10f),
+            shape = CircleShape,
+            color = if (isRunning) t.accent50.copy(alpha = 0.2f) else t.surface2.copy(alpha = 0.4f),
             modifier = Modifier.size(32.dp),
+            border = BorderStroke(0.5.dp, if (isRunning) t.accent300 else t.line.copy(alpha = 0.5f))
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     Icons.Default.ChevronRight,
                     contentDescription = null,
-                    tint = t.accent400,
+                    tint = if (isRunning) t.accent700 else t.ink400,
                     modifier = Modifier.size(16.dp),
                 )
             }

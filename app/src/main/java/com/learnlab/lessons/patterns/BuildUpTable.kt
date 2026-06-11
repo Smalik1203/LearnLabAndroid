@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -54,6 +56,7 @@ fun BuildUpTable(
     val t = LL.tokens
     val p = lessonPalette()
     var revealed by remember(caption) { mutableIntStateOf(0) }
+    val scrollState = rememberScrollState()
 
     Box(
         modifier = modifier
@@ -65,7 +68,10 @@ fun BuildUpTable(
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier.widthIn(max = 1300.dp).fillMaxWidth(),
+            modifier = Modifier
+                .widthIn(max = 1300.dp)
+                .fillMaxWidth()
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (caption != null) {

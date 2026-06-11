@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
 import com.learnlab.design.SecondaryButton
+import com.learnlab.design.SpeakControls
+import com.learnlab.design.rememberReadAloud
 
 /**
  * Renders a JSON-driven worked-problem walkthrough.
@@ -106,6 +109,38 @@ fun WorkedProblemEngine(
         }
     }
 
+    val readAloud = rememberReadAloud()
+
+    // The text to narrate for whatever the right column is currently showing:
+    // the final answer once reached, otherwise the step prompt plus its reveal
+    // lines once revealed.
+    val spokenText: String = remember(currentStep, isCurrentRevealed, showFinalAnswer, showBonus) {
+        if (showFinalAnswer) {
+            buildString {
+                append(config.finalAnswer)
+                if (showBonus && config.bonus != null) {
+                    append(". ")
+                    append(config.bonus)
+                }
+            }
+        } else {
+            val step = config.steps[currentStep]
+            buildString {
+                append(step.prompt)
+                if (isCurrentRevealed && step.reveal.isNotEmpty()) {
+                    append(". ")
+                    append(step.reveal.joinToString(". "))
+                }
+            }
+        }
+    }
+
+    // Navigating to a different view stops any in-progress narration so we
+    // never read step 1 while step 2 is on screen.
+    LaunchedEffect(currentStep, showFinalAnswer) {
+        readAloud.stop()
+    }
+
     Row(
         modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -154,6 +189,12 @@ fun WorkedProblemEngine(
             modifier = Modifier.weight(0.35f).fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            SpeakControls(
+                text = spokenText,
+                controller = readAloud,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
             // Step strip OR final answer card. Once last step is revealed
             // the answer takes over the same slot — feels like the
             // walkthrough has "arrived" at the answer rather than sliding

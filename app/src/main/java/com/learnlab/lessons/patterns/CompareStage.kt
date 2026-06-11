@@ -41,6 +41,7 @@ import com.learnlab.design.LLText
 import com.learnlab.design.Radius
 import com.learnlab.lessons.lessonPalette
 import com.learnlab.lessons.slides.loadFigureBitmap
+import com.learnlab.lessons.slides.PlaceholderImage
 
 /**
  * Side-by-side compare with a build-up synthesis row at the bottom.
@@ -168,15 +169,7 @@ private fun CompareCell(
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize())
             } else {
-                // Placeholder
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                        .clip(RoundedCornerShape(Radius.sm))
-                        .background(t.surface3),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    LLText("[ $label ]", color = t.ink500, size = 14.sp)
-                }
+                PlaceholderImage(label = label, modifier = Modifier.fillMaxSize())
             }
         }
         Spacer(Modifier.height(14.dp))

@@ -1,6 +1,8 @@
 package com.learnlab.engines
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -35,9 +37,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -50,15 +55,8 @@ import com.learnlab.design.GhostButton
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
+import com.learnlab.design.Radius
 import com.learnlab.store.ExperimentControls
-
-/**
- * Native port of src/runtime/engines/SortBuckets.tsx.
- *
- * Long-press on a chip to pick it up (avoids palm-rejection misfires on IFP
- * touch panels), drag over a bucket to highlight it, release to drop. Reset
- * sends everything back to the pool. Check answers reveals correct/wrong tint.
- */
 
 data class SortItem(val id: String, val label: String, val emoji: String, val bucketId: String)
 data class SortBucket(val id: String, val label: String, val hint: String? = null)
@@ -104,14 +102,14 @@ fun SortBuckets(
             verticalAlignment = Alignment.Top,
         ) {
             Column(Modifier.weight(1f).padding(end = 16.dp)) {
-                LLText("TASK", color = t.ink500, size = 11.sp,
-                    weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+                LLText("TASK DESCRIPTION", color = t.accent700, size = 11.sp,
+                    weight = FontWeight.Bold, letterSpacing = 1.8.sp)
                 Spacer(Modifier.height(6.dp))
-                LLText(prompt, color = t.ink400, size = 14.sp, lineHeight = 20.sp)
+                LLText(prompt, color = t.ink50, size = 15.sp, lineHeight = 22.sp, weight = FontWeight.SemiBold)
             }
             Row {
                 GhostButton(
-                    label = "Reset",
+                    label = "Reset Board",
                     onClick = {
                         items.forEach { placement[it.id] = POOL }
                         revealed = false
@@ -119,7 +117,7 @@ fun SortBuckets(
                         controls.onProgress(0f)
                     },
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(10.dp))
                 PrimaryButton(
                     label = "Check answers",
                     enabled = placedCount == items.size,
@@ -131,7 +129,7 @@ fun SortBuckets(
             }
         }
 
-        // Pool
+        // Pool Container
         Pool(
             items = items.filter { placement[it.id] == POOL },
             zoneId = POOL,
@@ -152,10 +150,10 @@ fun SortBuckets(
             },
         )
 
-        // Buckets
+        // Buckets Row
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             buckets.forEach { bucket ->
                 BucketBox(
@@ -204,15 +202,21 @@ private fun Pool(
     chip: @Composable (SortItem) -> Unit,
 ) {
     val t = LL.tokens
-    val bg by animateColorAsState(if (isHovered) t.accent50 else t.surface, label = "pool-bg")
-    val border = if (isHovered) t.accent500 else t.line
+    val defaultBg = if (t.isDark) t.surface.copy(alpha = 0.2f) else t.surface.copy(alpha = 0.7f)
+    val hoveredBg = if (t.isDark) t.accent50.copy(alpha = 0.15f) else t.accent50.copy(alpha = 0.4f)
+    val bg by animateColorAsState(if (isHovered) hoveredBg else defaultBg, label = "pool-bg")
+
+    val defaultBorder = t.lineStrong.copy(alpha = 0.2f)
+    val hoveredBorder = t.accent500
+    val border by animateColorAsState(if (isHovered) hoveredBorder else defaultBorder, label = "pool-b")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 100.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .heightIn(min = 110.dp)
+            .clip(RoundedCornerShape(Radius.md))
             .background(bg)
-            .border(2.dp, border, RoundedCornerShape(16.dp))
+            .border(1.dp, border, RoundedCornerShape(Radius.md))
             .padding(16.dp)
             .onGloballyPositioned {
                 val pos = it.positionInRoot()
@@ -222,19 +226,18 @@ private fun Pool(
         LLText(
             "SPECIMENS TO CLASSIFY",
             color = t.ink500, size = 10.sp,
-            weight = FontWeight.SemiBold, letterSpacing = 1.8.sp,
+            weight = FontWeight.Bold, letterSpacing = 1.8.sp,
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         if (items.isEmpty()) {
-            LLText("All items placed. Hit Check answers.", color = t.ink500, size = 12.sp)
+            LLText("All specimens classified! Tap Check Answers.", color = t.ink400, size = 13.sp, weight = FontWeight.Medium)
         } else {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) { items.forEach { chip(it) } }
         }
     }
-    // suppress lint
     @Suppress("UNUSED_EXPRESSION") zoneId
 }
 
@@ -250,14 +253,20 @@ private fun BucketBox(
     modifier: Modifier = Modifier,
 ) {
     val t = LL.tokens
-    val bg by animateColorAsState(if (isHovered) t.accent50 else t.surface, label = "bucket-bg")
-    val border = if (isHovered) t.accent500 else t.line
+    val defaultBg = if (t.isDark) t.surface.copy(alpha = 0.2f) else t.surface.copy(alpha = 0.7f)
+    val hoveredBg = if (t.isDark) t.accent50.copy(alpha = 0.15f) else t.accent50.copy(alpha = 0.4f)
+    val bg by animateColorAsState(if (isHovered) hoveredBg else defaultBg, label = "bucket-bg")
+
+    val defaultBorder = t.lineStrong.copy(alpha = 0.2f)
+    val hoveredBorder = t.accent500
+    val border by animateColorAsState(if (isHovered) hoveredBorder else defaultBorder, label = "bucket-b")
+
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(Radius.md))
             .background(bg)
-            .border(1.dp, border, RoundedCornerShape(16.dp))
-            .padding(16.dp)
+            .border(1.dp, border, RoundedCornerShape(Radius.md))
+            .padding(18.dp)
             .onGloballyPositioned {
                 val pos = it.positionInRoot()
                 onZoneRect(Rect(pos.x, pos.y, pos.x + it.size.width, pos.y + it.size.height))
@@ -265,20 +274,20 @@ private fun BucketBox(
     ) {
         LLText(
             title.uppercase(),
-            color = t.ink500, size = 11.sp,
-            weight = FontWeight.SemiBold, letterSpacing = 1.8.sp,
+            color = t.accent700, size = 11.sp,
+            weight = FontWeight.Bold, letterSpacing = 1.6.sp,
         )
         Spacer(Modifier.height(4.dp))
-        LLText(bucket.label, color = t.ink50, size = 16.sp, weight = FontWeight.SemiBold)
+        LLText(bucket.label, color = t.ink50, size = 18.sp, weight = FontWeight.ExtraBold)
         if (bucket.hint != null) {
             Spacer(Modifier.height(4.dp))
-            LLText(bucket.hint, color = t.ink400, size = 12.sp, lineHeight = 16.sp)
+            LLText(bucket.hint, color = t.ink400, size = 12.sp, lineHeight = 16.sp, weight = FontWeight.Medium)
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(14.dp))
         Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) { items.forEach { chip(it) } }
         }
     }
@@ -299,24 +308,40 @@ private fun ChipDraggable(
 
     val borderColor = when {
         revealed && correct -> t.accent500
-        revealed && !correct -> t.rose300
-        else -> t.lineStrong
+        revealed && !correct -> Color(0xFFEF4444) // Rose-500
+        isDragging -> t.accent300
+        else -> t.lineStrong.copy(alpha = 0.6f)
     }
     val bgColor = when {
-        revealed && correct -> t.accent50
-        revealed && !correct -> t.rose50
-        else -> t.surface3
+        revealed && correct -> t.accent50.copy(alpha = 0.2f)
+        revealed && !correct -> Color(0xFFEF4444).copy(alpha = 0.1f)
+        isDragging -> t.surface2.copy(alpha = 0.8f)
+        else -> t.surface2.copy(alpha = 0.4f)
     }
     val textColor = when {
         revealed && correct -> t.accent700
-        revealed && !correct -> t.rose700
+        revealed && !correct -> Color(0xFFEF4444)
         else -> t.ink200
     }
+
+    // 3D Lift Scale Animation
+    val scale by animateFloatAsState(
+        targetValue = if (isDragging) 1.1f else 1.0f,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 300f),
+        label = "dragScale"
+    )
+    val elevation by animateFloatAsState(
+        targetValue = if (isDragging) 12f else 2f,
+        animationSpec = spring(dampingRatio = 0.75f, stiffness = 300f),
+        label = "dragElevation"
+    )
 
     Box(
         modifier = Modifier
             .offset { dragPx }
             .zIndex(if (isDragging) 100f else 0f)
+            .graphicsLayer(scaleX = scale, scaleY = scale)
+            .shadow(elevation = elevation.dp, shape = RoundedCornerShape(Radius.sm), spotColor = if (isDragging) t.accent300 else Color.Black)
             .onGloballyPositioned { posInRoot = it.positionInRoot() }
             .pointerInput(item.id, revealed) {
                 if (revealed) return@pointerInput
@@ -346,15 +371,15 @@ private fun ChipDraggable(
                     },
                 )
             }
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(Radius.sm))
             .background(bgColor)
-            .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-            .padding(horizontal = 10.dp, vertical = 8.dp),
+            .border(1.dp, borderColor, RoundedCornerShape(Radius.sm))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             LLText(item.emoji, size = 16.sp, color = Color.Unspecified)
-            Spacer(Modifier.width(6.dp))
-            LLText(item.label, color = textColor, size = 14.sp, weight = FontWeight.Medium)
+            Spacer(Modifier.width(8.dp))
+            LLText(item.label, color = textColor, size = 14.sp, weight = FontWeight.SemiBold)
         }
     }
 }
@@ -363,22 +388,28 @@ private fun ChipDraggable(
 private fun ResultBar(correct: Int, total: Int) {
     val t = LL.tokens
     val ok = correct == total
-    val bg = if (ok) t.accent50 else t.surface2
-    val accent = if (ok) t.accent700 else t.ink200
+    val bg = if (ok) t.accent50.copy(alpha = 0.2f) else Color(0xFFEF4444).copy(alpha = 0.1f)
+    val border = if (ok) t.accent300 else Color(0xFFEF4444).copy(alpha = 0.3f)
+    val accent = if (ok) t.accent700 else Color(0xFFEF4444)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(Radius.sm))
             .background(bg)
-            .border(1.dp, t.line, RoundedCornerShape(12.dp))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .border(1.dp, border, RoundedCornerShape(Radius.sm))
+            .padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            LLText("$correct / $total", color = accent, size = 14.sp, weight = FontWeight.SemiBold)
-            Spacer(Modifier.width(6.dp))
-            LLText("correctly sorted. Tap Reset to try again.", color = t.ink400, size = 14.sp)
+            LLText("$correct / $total", color = accent, size = 15.sp, weight = FontWeight.Black)
+            Spacer(Modifier.width(8.dp))
+            LLText(
+                if (ok) "perfectly sorted! Well done." else "correctly sorted. Tap Reset Board to retry.",
+                color = t.ink200,
+                size = 14.sp,
+                weight = FontWeight.Medium
+            )
         }
     }
-    // referenced so list-only edits don't drop them
     @Suppress("UNUSED_EXPRESSION") mutableStateListOf<String>()
 }

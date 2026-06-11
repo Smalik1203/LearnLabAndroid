@@ -1,6 +1,7 @@
 package com.learnlab.lessons.slides
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,6 +10,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Close
@@ -38,6 +41,8 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,9 +54,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -68,9 +76,14 @@ import com.learnlab.content.chapter.Slide
 import com.learnlab.content.chapter.SlideLayout
 import com.learnlab.design.IconSize
 import com.learnlab.design.LL
+import com.learnlab.design.LLAnimation
 import com.learnlab.design.LLText
 import com.learnlab.design.Radius
 import com.learnlab.design.Spacing
+import com.learnlab.design.SpeakControls
+import com.learnlab.design.bounceClickable
+import com.learnlab.design.rememberReadAloud
+import com.learnlab.lessons.lessonPalette
 
 /**
  * Full-screen IFP-friendly slide stage. Top strip = title + counter + outline button.
@@ -107,6 +120,11 @@ fun SlideStage(
     var outlineOpen by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    val readAloud = rememberReadAloud()
+    // Paging to another slide stops narration so we never read the previous
+    // slide while a new one is on screen.
+    LaunchedEffect(index, chapter.id) { readAloud.stop() }
 
     // When edit mode is on AND the visible slide has no override, ask the
     // parent to synthesize one from the auto-layout. Re-runs when the user
@@ -158,6 +176,7 @@ fun SlideStage(
             // Slide area — horizontal swipe pages when not editing.
             val swipeThresholdPx = with(LocalDensity.current) { 80.dp.toPx() }
             var dragAccum by remember { mutableStateOf(0f) }
+            val t = LL.tokens
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,6 +206,7 @@ fun SlideStage(
                         (slideInHorizontally(tween(280)) { if (forward) it else -it } + fadeIn(tween(220)))
                             .togetherWith(slideOutHorizontally(tween(280)) { if (forward) -it / 4 else it / 4 } + fadeOut(tween(180)))
                     },
+                    modifier = Modifier.fillMaxSize()
                 ) { i ->
                     SlideContent(
                         slide = slides[i],
@@ -198,12 +218,40 @@ fun SlideStage(
                         onOverrideCommitted = onOverrideCommitted,
                     )
                 }
+
+                // Stylized corner page counter overlay
+                if (!isEditing) {
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 16.dp, end = 48.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = "${index + 1}",
+                            color = t.amber700,
+                            fontSize = 38.sp,
+                            fontWeight = FontWeight.Black,
+                            fontFamily = com.learnlab.design.LearnLabFonts.Display
+                        )
+                        androidx.compose.material3.Text(
+                            text = " / ${slides.size}",
+                            color = t.ink400,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                            fontFamily = com.learnlab.design.LearnLabFonts.Display
+                        )
+                    }
+                }
             }
             BottomStrip(
                 chapter = chapter,
                 slides = slides,
                 index = index,
                 onJump = { index = it },
+                spokenText = slides[index].spokenText(),
+                readAloud = readAloud,
             )
         }
         if (outlineOpen) {
@@ -238,73 +286,79 @@ private fun TopStrip(
     onRedo: () -> Unit,
 ) {
     val t = LL.tokens
-    Row(
+    val barBg = if (t.isDark) t.surface.copy(alpha = 0.45f) else t.surface.copy(alpha = 0.85f)
+    val barBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.15f else 0.4f), Color.Transparent)
+    )
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .background(t.surface)
-            .border(1.dp, t.line, RoundedCornerShape(0.dp))
-            .padding(horizontal = Spacing.lg),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
-        IconBtn(
-            icon = Icons.AutoMirrored.Filled.ArrowBack,
-            label = "Close",
-            onClick = onBack,
-        )
-        Spacer(Modifier.width(Spacing.md))
-        Column(modifier = Modifier.weight(1f)) {
-            LLText(
-                "CH ${chapter.chapter.number} · ${chapter.chapter.title}",
-                color = t.ink50, size = 14.sp, weight = FontWeight.Bold, maxLines = 1,
-            )
-            if (currentSlide.sectionNumber != null && currentSlide.sectionTitle != null) {
-                LLText(
-                    "${currentSlide.sectionNumber}  ${currentSlide.sectionTitle}",
-                    color = t.ink500, size = 11.sp, maxLines = 1,
-                )
-            }
-        }
-        // Slide counter
-        Box(
+        Row(
             modifier = Modifier
-                .clip(RoundedCornerShape(Radius.pill))
-                .background(t.surface2)
-                .padding(horizontal = Spacing.md, vertical = 6.dp),
+                .fillMaxWidth()
+                .height(64.dp)
+                .clip(RoundedCornerShape(Radius.md))
+                .background(barBg)
+                .border(1.dp, barBorder, RoundedCornerShape(Radius.md))
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            LLText("${index + 1} / $total", color = t.ink400, size = 12.sp, weight = FontWeight.SemiBold)
-        }
-        if (isEditing) {
-            Spacer(Modifier.width(Spacing.sm))
             IconBtn(
-                icon = Icons.AutoMirrored.Filled.Undo,
-                label = "Undo",
-                onClick = onUndo,
-                enabled = canUndo,
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                label = "Close",
+                onClick = onBack,
             )
-            Spacer(Modifier.width(Spacing.sm))
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                LLText(
+                    "CH ${chapter.chapter.number} · ${chapter.chapter.title}",
+                    color = t.ink50, size = 15.sp, weight = FontWeight.Bold, maxLines = 1,
+                )
+                if (currentSlide.sectionNumber != null && currentSlide.sectionTitle != null) {
+                    LLText(
+                        "${currentSlide.sectionNumber}  ${currentSlide.sectionTitle}",
+                        color = t.ink500, size = 12.sp, maxLines = 1, weight = FontWeight.Medium
+                    )
+                }
+            }
+
+
+
+            if (isEditing) {
+                IconBtn(
+                    icon = Icons.AutoMirrored.Filled.Undo,
+                    label = "Undo",
+                    onClick = onUndo,
+                    enabled = canUndo,
+                )
+                Spacer(Modifier.width(8.dp))
+                IconBtn(
+                    icon = Icons.AutoMirrored.Filled.Redo,
+                    label = "Redo",
+                    onClick = onRedo,
+                    enabled = canRedo,
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+
             IconBtn(
-                icon = Icons.AutoMirrored.Filled.Redo,
-                label = "Redo",
-                onClick = onRedo,
-                enabled = canRedo,
+                icon = if (isEditing) Icons.Filled.Done else Icons.Filled.Edit,
+                label = if (isEditing) "Done editing" else "Edit slide",
+                onClick = onToggleEdit,
+                highlighted = isEditing,
             )
+            Spacer(Modifier.width(8.dp))
+            IconBtn(
+                icon = if (isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                label = if (isDark) "Switch to light mode" else "Switch to dark mode",
+                onClick = onToggleTheme,
+            )
+            Spacer(Modifier.width(8.dp))
+            IconBtn(icon = Icons.Filled.GridView, label = "Outline", onClick = onOutline)
         }
-        Spacer(Modifier.width(Spacing.sm))
-        IconBtn(
-            icon = if (isEditing) Icons.Filled.Done else Icons.Filled.Edit,
-            label = if (isEditing) "Done editing" else "Edit slide",
-            onClick = onToggleEdit,
-            highlighted = isEditing,
-        )
-        Spacer(Modifier.width(Spacing.sm))
-        IconBtn(
-            icon = if (isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-            label = if (isDark) "Switch to light mode" else "Switch to dark mode",
-            onClick = onToggleTheme,
-        )
-        Spacer(Modifier.width(Spacing.sm))
-        IconBtn(icon = Icons.Filled.GridView, label = "Outline", onClick = onOutline)
     }
 }
 
@@ -318,21 +372,28 @@ private fun IconBtn(
 ) {
     val t = LL.tokens
     val bg = when {
-        !enabled -> t.surface2.copy(alpha = 0.4f)
+        !enabled -> t.surface2.copy(alpha = 0.15f)
         highlighted -> t.accent500
-        else -> t.surface2
+        else -> t.surface2.copy(alpha = 0.4f)
     }
     val tint = when {
-        !enabled -> t.ink500
-        highlighted -> t.surface
+        !enabled -> t.ink600
+        highlighted -> Color.White
         else -> t.ink200
     }
+    val borderStroke = if (highlighted) {
+        BorderStroke(1.dp, t.accent300)
+    } else {
+        BorderStroke(1.dp, t.line.copy(alpha = 0.4f))
+    }
+
     Box(
         modifier = Modifier
-            .size(40.dp)
+            .size(38.dp)
             .clip(CircleShape)
             .background(bg)
-            .clickable(enabled = enabled, onClick = onClick),
+            .border(borderStroke, CircleShape)
+            .bounceClickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = label, tint = tint, modifier = Modifier.size(IconSize.md))
@@ -347,74 +408,235 @@ private fun BottomStrip(
     slides: List<Slide>,
     index: Int,
     onJump: (Int) -> Unit,
+    spokenText: String,
+    readAloud: com.learnlab.design.ReadAloudController,
 ) {
     val t = LL.tokens
-    val railState = rememberLazyListState()
-    LaunchedEffect(index) {
-        val target = (index - 3).coerceAtLeast(0)
-        railState.animateScrollToItem(target)
-    }
-    Row(
+    val p = lessonPalette()
+
+    val barBg = if (t.isDark) t.surface.copy(alpha = 0.45f) else t.surface.copy(alpha = 0.85f)
+    val barBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.15f else 0.4f), Color.Transparent)
+    )
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(44.dp)
-            .padding(horizontal = Spacing.lg),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
-        // Pagination dot rail — takes most of the width
-        LazyRow(
-            state = railState,
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .clip(RoundedCornerShape(Radius.md))
+                .background(barBg)
+                .border(1.dp, barBorder, RoundedCornerShape(Radius.md))
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            items(slides.size) { i ->
-                ThumbnailDot(slides[i], i, isCurrent = i == index, onJump = { onJump(i) })
+            if (spokenText.isNotBlank()) {
+                SpeakControls(text = spokenText, controller = readAloud)
+                Spacer(Modifier.width(16.dp))
             }
-        }
-        Spacer(Modifier.width(Spacing.md))
-        // Centre label
-        LLText(
-            "CH ${chapter.chapter.number} - ${chapter.chapter.title}",
-            color = t.ink400,
-            size = 13.sp,
-            weight = FontWeight.SemiBold,
-            maxLines = 1,
-        )
-        Spacer(Modifier.width(Spacing.md))
-        // Right counter pill
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(Radius.pill))
-                .background(t.surface2)
-                .padding(horizontal = 12.dp, vertical = 4.dp),
-        ) {
-            LLText(
-                "${index + 1}/${slides.size}",
-                color = t.ink400, size = 12.sp, weight = FontWeight.SemiBold,
+
+            // Left Navigation Button: Previous
+            val prevEnabled = index > 0
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Radius.md))
+                    .background(if (prevEnabled) t.surface2.copy(alpha = 0.4f) else Color.Transparent)
+                    .border(
+                        BorderStroke(
+                            1.dp, 
+                            if (prevEnabled) t.line.copy(alpha = 0.4f) else t.line.copy(alpha = 0.1f)
+                        ), 
+                        RoundedCornerShape(Radius.md)
+                    )
+                    .then(
+                        if (prevEnabled) Modifier.bounceClickable { onJump(index - 1) }
+                        else Modifier
+                    )
+                    .padding(horizontal = 18.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Previous",
+                        tint = if (prevEnabled) t.ink200 else t.ink600,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    LLText(
+                        "Previous",
+                        color = if (prevEnabled) t.ink200 else t.ink600,
+                        size = 14.sp,
+                        weight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Center Pagination Timeline Rail
+            TimelineRail(
+                slides = slides,
+                currentIndex = index,
+                onJump = onJump,
+                modifier = Modifier.weight(1f).padding(horizontal = 24.dp)
             )
+
+            // Right Navigation Button: Next
+            val nextEnabled = index < slides.lastIndex
+            val nextBg = if (nextEnabled) t.amber700 else t.surface2.copy(alpha = 0.15f)
+            val nextTint = if (nextEnabled) Color.White else t.ink600
+            val nextBorder = if (nextEnabled) BorderStroke(1.dp, t.amber700) else BorderStroke(1.dp, t.line.copy(alpha = 0.1f))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Radius.md))
+                    .background(nextBg)
+                    .border(nextBorder, RoundedCornerShape(Radius.md))
+                    .then(
+                        if (nextEnabled) Modifier.bounceClickable { onJump(index + 1) }
+                        else Modifier
+                    )
+                    .padding(horizontal = 22.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    LLText(
+                        "Next",
+                        color = nextTint,
+                        size = 14.sp,
+                        weight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Next",
+                        tint = nextTint,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun ThumbnailDot(slide: Slide, i: Int, isCurrent: Boolean, onJump: () -> Unit) {
+private fun TimelineRail(
+    slides: List<Slide>,
+    currentIndex: Int,
+    onJump: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val t = LL.tokens
-    val accent = t.accent500
-    val isMarker = slide.layout == SlideLayout.SectionTitle || slide.layout == SlideLayout.Cover
-    val width = if (isMarker) 22.dp else 16.dp
-    val bg = when {
-        isCurrent -> accent
-        isMarker -> t.ink400
-        else -> t.surface3
+    val p = lessonPalette()
+    
+    // Identify section positions dynamically
+    val sectionPositions = remember(slides) {
+        val map = mutableMapOf<Int, String>()
+        var lastSec: String? = null
+        slides.forEachIndexed { idx, slide ->
+            val sec = slide.sectionNumber
+            if (sec != null && sec != lastSec) {
+                val count = map.size + 1
+                val formatted = if (count < 10) "0$count" else "$count"
+                map[idx] = formatted
+                lastSec = sec
+            }
+        }
+        map
     }
-    Box(
-        modifier = Modifier
-            .size(width = width, height = 16.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(bg)
-            .clickable { onJump() },
-    )
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        slides.forEachIndexed { i, slide ->
+            val secLabel = sectionPositions[i]
+            if (secLabel != null) {
+                LLText(
+                    text = secLabel,
+                    color = if (i <= currentIndex) t.amber700 else t.ink500,
+                    size = 12.sp,
+                    weight = FontWeight.Black,
+                    modifier = Modifier
+                        .bounceClickable { onJump(i) }
+                        .padding(horizontal = 6.dp)
+                )
+                Spacer(Modifier.width(4.dp))
+            }
+
+            val isCurrent = i == currentIndex
+            val isBefore = i < currentIndex
+            
+            val targetWidth = if (isCurrent) 28.dp else 12.dp
+            val targetHeight = if (isCurrent) 8.dp else 4.dp
+            val width by animateDpAsState(
+                targetValue = targetWidth,
+                animationSpec = androidx.compose.animation.core.spring(
+                    dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
+                    stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow
+                ),
+                label = "lineWidth"
+            )
+            val height by animateDpAsState(
+                targetValue = targetHeight,
+                animationSpec = androidx.compose.animation.core.spring(
+                    dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
+                    stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow
+                ),
+                label = "lineHeight"
+            )
+
+            val color = when {
+                isCurrent -> t.amber700
+                isBefore -> t.amber700.copy(alpha = 0.5f)
+                slide.layout == SlideLayout.ActivityLaunch -> p.emerald.accent.copy(alpha = 0.7f)
+                else -> t.surface3.copy(alpha = 0.5f)
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(width = width, height = height)
+                    .clip(RoundedCornerShape(Radius.pill))
+                    .background(color)
+                    .then(
+                        if (isCurrent) Modifier.shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(Radius.pill),
+                            ambientColor = t.amber700.copy(alpha = 0.4f),
+                            spotColor = t.amber700.copy(alpha = 0.8f)
+                        ) else Modifier
+                    )
+                    .bounceClickable { onJump(i) }
+            )
+
+            if (i < slides.lastIndex) {
+                Spacer(Modifier.width(6.dp))
+            }
+        }
+
+        Spacer(Modifier.width(8.dp))
+        val finalSlideIsActivity = slides.lastOrNull()?.layout == SlideLayout.ActivityLaunch
+        val sparkColor = if (currentIndex == slides.lastIndex) p.emerald.accent else t.ink500
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(sparkColor.copy(alpha = 0.15f))
+                .border(BorderStroke(1.dp, sparkColor.copy(alpha = 0.4f)), CircleShape)
+                .bounceClickable { onJump(slides.lastIndex) },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = if (finalSlideIsActivity) Icons.Filled.Science else Icons.Filled.PlayArrow,
+                contentDescription = null,
+                tint = sparkColor,
+                modifier = Modifier.size(10.dp)
+            )
+        }
+    }
 }
 
 /* ───────────────────────── Outline drawer ───────────────────────── */
@@ -428,11 +650,16 @@ private fun OutlineDrawer(
     onClose: () -> Unit,
 ) {
     val t = LL.tokens
+    val drawerBg = if (t.isDark) t.surface.copy(alpha = 0.65f) else t.surface.copy(alpha = 0.9f)
+    val drawerBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.15f else 0.4f), Color.Transparent)
+    )
+
     // Scrim
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.45f))
+            .background(Color.Black.copy(alpha = 0.5f))
             .clickable(onClick = onClose),
     )
     // Drawer
@@ -442,35 +669,58 @@ private fun OutlineDrawer(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(440.dp)
-                .background(t.surface)
-                .border(1.dp, t.line, RoundedCornerShape(0.dp))
+                .background(drawerBg)
+                .border(1.dp, drawerBorder, RoundedCornerShape(0.dp))
+                .shadow(elevation = 24.dp)
                 .padding(Spacing.lg),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    LLText("OUTLINE", color = t.ink500, size = 11.sp, weight = FontWeight.Bold, letterSpacing = 1.5.sp)
-                    LLText(chapter.chapter.title, color = t.ink50, size = 16.sp, weight = FontWeight.Bold, maxLines = 1)
+                    LLText("OUTLINE", color = t.accent700, size = 11.sp, weight = FontWeight.Bold, letterSpacing = 1.6.sp)
+                    LLText(chapter.chapter.title, color = t.ink50, size = 18.sp, weight = FontWeight.ExtraBold, maxLines = 1)
                 }
                 Box(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(t.surface2)
-                        .clickable(onClick = onClose),
+                        .background(t.surface2.copy(alpha = 0.4f))
+                        .border(1.dp, t.line.copy(alpha = 0.3f), CircleShape)
+                        .bounceClickable(onClick = onClose),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Filled.Close, contentDescription = "Close outline",
-                        tint = t.ink200, modifier = Modifier.size(IconSize.md))
+                    Icon(
+                        Icons.Filled.Close, 
+                        contentDescription = "Close outline",
+                        tint = t.ink200, 
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
-            Spacer(Modifier.height(Spacing.md))
-            // Only show section + cover entries so the list isn't 40 items long
-            val markers = slides.mapIndexedNotNull { idx, s ->
-                if (s.layout == SlideLayout.Cover || s.layout == SlideLayout.SectionTitle) idx to s else null
+            Spacer(Modifier.height(Spacing.xl))
+            // Only show section start slides + cover entries so the list isn't 40 items long
+            val markers = remember(slides) {
+                val list = mutableListOf<Pair<Int, Slide>>()
+                val coverIdx = slides.indexOfFirst { it.layout == SlideLayout.Cover }
+                if (coverIdx >= 0) {
+                    list.add(coverIdx to slides[coverIdx])
+                }
+                var lastSec: String? = null
+                slides.forEachIndexed { idx, s ->
+                    val sec = s.sectionNumber
+                    if (sec != null && sec != lastSec) {
+                        list.add(idx to s)
+                        lastSec = sec
+                    }
+                }
+                list
             }
             androidx.compose.foundation.lazy.LazyColumn(
                 modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(markers) { (idx, s) ->
                     val isCurrent = idx == currentIndex || (currentIndex > idx && markers.indexOfFirst { it.first > currentIndex } - 1 == markers.indexOfFirst { it.first == idx })
@@ -484,22 +734,39 @@ private fun OutlineDrawer(
 @Composable
 private fun OutlineRow(idx: Int, slide: Slide, isCurrent: Boolean, onJump: () -> Unit) {
     val t = LL.tokens
+    val rowBg = if (isCurrent) t.accent50.copy(alpha = 0.15f) else Color.Transparent
+    val borderStroke = if (isCurrent) {
+        BorderStroke(1.dp, t.accent300)
+    } else {
+        BorderStroke(1.dp, Color.Transparent)
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Radius.sm))
-            .background(if (isCurrent) t.surface2 else t.surface)
-            .clickable { onJump() }
-            .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+            .background(rowBg)
+            .border(borderStroke, RoundedCornerShape(Radius.sm))
+            .bounceClickable { onJump() }
+            .padding(horizontal = Spacing.md, vertical = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (slide.layout == SlideLayout.Cover) {
-            LLText("Cover", color = t.ink50, size = 14.sp, weight = FontWeight.SemiBold)
+            LLText("Cover / Title slide", color = if (isCurrent) t.accent700 else t.ink50, size = 14.sp, weight = FontWeight.Bold)
         } else {
-            LLText(slide.sectionNumber ?: "·",
-                color = t.accent500, size = 13.sp, weight = FontWeight.Bold, modifier = Modifier.width(40.dp))
-            LLText(slide.sectionTitle ?: "(untitled)",
-                color = t.ink50, size = 14.sp, weight = FontWeight.SemiBold)
+            LLText(
+                slide.sectionNumber ?: "·",
+                color = t.accent700, 
+                size = 13.sp, 
+                weight = FontWeight.Black, 
+                modifier = Modifier.width(44.dp)
+            )
+            LLText(
+                slide.sectionTitle ?: "(untitled)",
+                color = if (isCurrent) t.ink50 else t.ink200, 
+                size = 14.sp, 
+                weight = FontWeight.SemiBold
+            )
         }
     }
 }

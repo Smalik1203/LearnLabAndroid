@@ -71,6 +71,18 @@ object SlidePlanner {
         var sectionNum: String? = null
         var sectionTitle: String? = null
 
+        val keyTermsBySection = mutableMapOf<String?, MutableList<ChapterBlock.KeyTerm>>()
+        val emittedKeyTermsForSection = mutableSetOf<String?>()
+        var currentSec: String? = null
+        chapter.blocks.forEach { b ->
+            if (b is ChapterBlock.SectionHeader) {
+                currentSec = b.number
+            }
+            if (b is ChapterBlock.KeyTerm) {
+                keyTermsBySection.getOrPut(currentSec) { mutableListOf() }.add(b)
+            }
+        }
+
         // 1. Cover
         out += Slide(
             id = "cover",
@@ -102,20 +114,7 @@ object SlidePlanner {
                 is ChapterBlock.SectionHeader -> {
                     sectionNum = b.number
                     sectionTitle = b.title
-                    val next = blocks.getOrNull(i + 1)
-                    if (next is ChapterBlock.Paragraph && next.body.length < 600) {
-                        out += Slide(
-                            id = mintId("section-intro", b),
-                            layout = SlideLayout.SectionIntro,
-                            blocks = listOf(b, next),
-                            sectionNumber = sectionNum,
-                            sectionTitle = sectionTitle,
-                        )
-                        i += 2
-                    } else {
-                        out += Slide(mintId("section", b), SlideLayout.SectionTitle, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                        i++
-                    }
+                    i++
                 }
                 is ChapterBlock.KnowScientist -> {
                     out += Slide(mintId("scientist", b), SlideLayout.ScientistInterlude, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
@@ -143,50 +142,45 @@ object SlidePlanner {
                         out += Slide(mintId("figure", b), SlideLayout.FigureFocus, listOf(b),
                             sectionNumber = sectionNum, sectionTitle = sectionTitle)
                         i++
-                        continue
-                    }
-                    val prevSlide = out.lastOrNull()
-                    val prevWasShortText = prevSlide != null
-                        && prevSlide.layout == SlideLayout.TextOnly
-                        && prevSlide.blocks.size == 1
-                        && (prevSlide.blocks[0] as? ChapterBlock.Paragraph)?.body?.length?.let { it < 320 } == true
-                    if (prevWasShortText) {
-                        val mergedBlocks = listOf(prevSlide!!.blocks[0], b)
-                        val merged = Slide(
-                            id = mintId("text-fig", mergedBlocks[0], b),
-                            layout = SlideLayout.TextWithFigure,
-                            blocks = mergedBlocks,
-                            sectionNumber = sectionNum,
-                            sectionTitle = sectionTitle,
-                        )
-                        out[out.lastIndex] = merged
                     } else {
-                        val next = blocks.getOrNull(i + 1)
-                        if (next is ChapterBlock.Paragraph && next.body.length < 320) {
-                            out += Slide(mintId("text-fig", b, next), SlideLayout.TextWithFigure, listOf(b, next), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                            i += 2
-                            continue
+                        // Look ahead for paragraph(s) to merge
+                        val paragraphGroup = mutableListOf<ChapterBlock.Paragraph>()
+                        var totalLength = 0
+                        var j = i + 1
+                        while (j < blocks.size) {
+                            val nextB = blocks[j]
+                            if (nextB is ChapterBlock.Paragraph) {
+                                val hasNextBubble = j + 1 < blocks.size && blocks[j + 1] is ChapterBlock.SpeechBubble
+                                val hasNextNextBubble = j + 2 < blocks.size && blocks[j + 2] is ChapterBlock.SpeechBubble
+                                if (hasNextBubble && !hasNextNextBubble) break
+
+                                if (paragraphGroup.isNotEmpty() && totalLength + nextB.body.length > 900) break
+
+                                paragraphGroup.add(nextB)
+                                totalLength += nextB.body.length
+                                j++
+                            } else {
+                                break
+                            }
                         }
-                        out += Slide(mintId("figure", b), SlideLayout.FigureFocus, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                        if (paragraphGroup.isNotEmpty()) {
+                            val mergedBlocks = listOf(b) + paragraphGroup
+                            out += Slide(
+                                id = mintId("text-fig", *mergedBlocks.toTypedArray()),
+                                layout = SlideLayout.TextWithFigure,
+                                blocks = mergedBlocks,
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle,
+                            )
+                            i = j
+                        } else {
+                            out += Slide(mintId("figure", b), SlideLayout.FigureFocus, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                            i++
+                        }
                     }
-                    i++
                 }
                 is ChapterBlock.Activity -> {
                     out += Slide(mintId("activity", b), SlideLayout.ActivityLaunch, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                    b.tables.forEachIndexed { idx, spec ->
-                        val tableBlock = ChapterBlock.TableBlock(
-                            caption = spec.caption,
-                            headers = spec.headers,
-                            rows = spec.exampleRows,
-                        )
-                        out += Slide(
-                            id = mintId("activity-table", b, tableBlock),
-                            layout = SlideLayout.TableSlide,
-                            blocks = listOf(tableBlock),
-                            sectionNumber = sectionNum,
-                            sectionTitle = sectionTitle,
-                        )
-                    }
                     i++
                 }
                 is ChapterBlock.Exercise -> {
@@ -207,21 +201,96 @@ object SlidePlanner {
                 }
                 is ChapterBlock.Quotation -> {
                     val isLast = i == blocks.lastIndex
-                    out += Slide(
-                        id = mintId(if (isLast) "closing" else "quote", b),
-                        layout = if (isLast) SlideLayout.Closing else SlideLayout.Callout,
-                        blocks = listOf(b),
-                        sectionNumber = sectionNum,
-                        sectionTitle = sectionTitle,
-                    )
-                    i++
+                    if (isLast) {
+                        out += Slide(mintId("closing", b), SlideLayout.Closing, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                        i++
+                    } else {
+                        // Look ahead for paragraph(s) to merge
+                        val paragraphGroup = mutableListOf<ChapterBlock.Paragraph>()
+                        var totalLength = 0
+                        var j = i + 1
+                        while (j < blocks.size) {
+                            val nextB = blocks[j]
+                            if (nextB is ChapterBlock.Paragraph) {
+                                val hasNextBubble = j + 1 < blocks.size && blocks[j + 1] is ChapterBlock.SpeechBubble
+                                val hasNextNextBubble = j + 2 < blocks.size && blocks[j + 2] is ChapterBlock.SpeechBubble
+                                if (hasNextBubble && !hasNextNextBubble) break
+
+                                if (paragraphGroup.isNotEmpty() && totalLength + nextB.body.length > 900) break
+
+                                paragraphGroup.add(nextB)
+                                totalLength += nextB.body.length
+                                j++
+                            } else {
+                                break
+                            }
+                        }
+                        if (paragraphGroup.isNotEmpty()) {
+                            val mergedBlocks = listOf(b) + paragraphGroup
+                            out += Slide(
+                                id = mintId("text-callout", *mergedBlocks.toTypedArray()),
+                                layout = SlideLayout.Callout,
+                                blocks = mergedBlocks,
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle,
+                            )
+                            i = j
+                        } else {
+                            out += Slide(mintId("quote", b), SlideLayout.Callout, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                            i++
+                        }
+                    }
                 }
                 is ChapterBlock.Callout -> {
-                    out += Slide(mintId("callout", b), SlideLayout.Callout, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                    i++
+                    // Look ahead for paragraph(s) to merge
+                    val paragraphGroup = mutableListOf<ChapterBlock.Paragraph>()
+                    var totalLength = 0
+                    var j = i + 1
+                    while (j < blocks.size) {
+                        val nextB = blocks[j]
+                        if (nextB is ChapterBlock.Paragraph) {
+                            val hasNextBubble = j + 1 < blocks.size && blocks[j + 1] is ChapterBlock.SpeechBubble
+                            val hasNextNextBubble = j + 2 < blocks.size && blocks[j + 2] is ChapterBlock.SpeechBubble
+                            if (hasNextBubble && !hasNextNextBubble) break
+
+                            if (paragraphGroup.isNotEmpty() && totalLength + nextB.body.length > 900) break
+
+                            paragraphGroup.add(nextB)
+                            totalLength += nextB.body.length
+                            j++
+                        } else {
+                            break
+                        }
+                    }
+                    if (paragraphGroup.isNotEmpty()) {
+                        val mergedBlocks = listOf(b) + paragraphGroup
+                        out += Slide(
+                            id = mintId("text-callout", *mergedBlocks.toTypedArray()),
+                            layout = SlideLayout.Callout,
+                            blocks = mergedBlocks,
+                            sectionNumber = sectionNum,
+                            sectionTitle = sectionTitle,
+                        )
+                        i = j
+                    } else {
+                        out += Slide(mintId("callout", b), SlideLayout.Callout, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                        i++
+                    }
                 }
                 is ChapterBlock.KeyTerm -> {
-                    out += Slide(mintId("term", b), SlideLayout.KeyTermCard, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                    if (sectionNum !in emittedKeyTermsForSection) {
+                        emittedKeyTermsForSection.add(sectionNum)
+                        val terms = keyTermsBySection[sectionNum] ?: emptyList()
+                        if (terms.isNotEmpty()) {
+                            out += Slide(
+                                id = mintId("terms-sec", *terms.toTypedArray()),
+                                layout = SlideLayout.KeyTermCard,
+                                blocks = terms,
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle
+                            )
+                        }
+                    }
                     i++
                 }
                 is ChapterBlock.StoryFrame -> {
@@ -255,8 +324,60 @@ object SlidePlanner {
                         )
                         i += 2
                     } else {
-                        out += Slide(mintId("text", b), SlideLayout.TextOnly, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                        i++
+                        // Scan all consecutive paragraphs starting at i
+                        val paragraphGroup = mutableListOf<ChapterBlock.Paragraph>()
+                        var totalLength = 0
+                        var j = i
+                        while (j < blocks.size) {
+                            val nextB = blocks[j]
+                            if (nextB is ChapterBlock.Paragraph) {
+                                val hasNextBubble = j + 1 < blocks.size && blocks[j + 1] is ChapterBlock.SpeechBubble
+                                val hasNextNextBubble = j + 2 < blocks.size && blocks[j + 2] is ChapterBlock.SpeechBubble
+                                if (hasNextBubble && !hasNextNextBubble) break
+
+                                if (paragraphGroup.isNotEmpty() && totalLength + nextB.body.length > 900) break
+
+                                paragraphGroup.add(nextB)
+                                totalLength += nextB.body.length
+                                j++
+                            } else {
+                                break
+                            }
+                        }
+
+                        // Check if the block right after the paragraph group is a Figure, Callout, or WorkedExample
+                        val nextBlock = blocks.getOrNull(j)
+                        if (nextBlock is ChapterBlock.Figure && nextBlock.assetType != "composeDraw" && totalLength < 900) {
+                            val mergedBlocks = paragraphGroup + nextBlock
+                            out += Slide(
+                                id = mintId("text-fig", *mergedBlocks.toTypedArray()),
+                                layout = SlideLayout.TextWithFigure,
+                                blocks = mergedBlocks,
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle,
+                            )
+                            i = j + 1
+                        } else if ((nextBlock is ChapterBlock.Callout || nextBlock is ChapterBlock.WorkedExample) && totalLength < 900) {
+                            val mergedBlocks = paragraphGroup + nextBlock
+                            out += Slide(
+                                id = mintId("text-callout", *mergedBlocks.toTypedArray()),
+                                layout = SlideLayout.Callout,
+                                blocks = mergedBlocks,
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle,
+                            )
+                            i = j + 1
+                        } else {
+                            // Emit them as a single consolidated TextOnly slide!
+                            out += Slide(
+                                id = mintId("text", *paragraphGroup.toTypedArray()),
+                                layout = SlideLayout.TextOnly,
+                                blocks = paragraphGroup,
+                                sectionNumber = sectionNum,
+                                sectionTitle = sectionTitle
+                            )
+                            i = j
+                        }
                     }
                 }
                 is ChapterBlock.TableBlock -> {
@@ -264,8 +385,40 @@ object SlidePlanner {
                     i++
                 }
                 is ChapterBlock.WorkedExample -> {
-                    out += Slide(mintId("worked", b), SlideLayout.Callout, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
-                    i++
+                    // Look ahead for paragraph(s) to merge
+                    val paragraphGroup = mutableListOf<ChapterBlock.Paragraph>()
+                    var totalLength = 0
+                    var j = i + 1
+                    while (j < blocks.size) {
+                        val nextB = blocks[j]
+                        if (nextB is ChapterBlock.Paragraph) {
+                            val hasNextBubble = j + 1 < blocks.size && blocks[j + 1] is ChapterBlock.SpeechBubble
+                            val hasNextNextBubble = j + 2 < blocks.size && blocks[j + 2] is ChapterBlock.SpeechBubble
+                            if (hasNextBubble && !hasNextNextBubble) break
+
+                            if (paragraphGroup.isNotEmpty() && totalLength + nextB.body.length > 900) break
+
+                            paragraphGroup.add(nextB)
+                            totalLength += nextB.body.length
+                            j++
+                        } else {
+                            break
+                        }
+                    }
+                    if (paragraphGroup.isNotEmpty()) {
+                        val mergedBlocks = listOf(b) + paragraphGroup
+                        out += Slide(
+                            id = mintId("text-callout", *mergedBlocks.toTypedArray()),
+                            layout = SlideLayout.Callout,
+                            blocks = mergedBlocks,
+                            sectionNumber = sectionNum,
+                            sectionTitle = sectionTitle,
+                        )
+                        i = j
+                    } else {
+                        out += Slide(mintId("worked", b), SlideLayout.Callout, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)
+                        i++
+                    }
                 }
                 is ChapterBlock.ImageWithCallout -> {
                     out += Slide(mintId("image", b), SlideLayout.FigureFocus, listOf(b), sectionNumber = sectionNum, sectionTitle = sectionTitle)

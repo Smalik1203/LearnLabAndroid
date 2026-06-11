@@ -1,6 +1,8 @@
 package com.learnlab.lessons.slides
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +41,13 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Icon
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,12 +63,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +91,7 @@ import com.learnlab.data.sync.SlideAssetsRepository
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.Radius
+import com.learnlab.design.bounceClickable
 import com.learnlab.lessons.figures.composeDraw.ComposeFigureRegistry
 import com.learnlab.lessons.LessonPalette
 import com.learnlab.lessons.lessonPalette
@@ -84,6 +99,7 @@ import com.learnlab.lessons.patterns.BuildUpReveal
 import com.learnlab.lessons.patterns.BuildUpTable
 import com.learnlab.lessons.patterns.CompareStage
 import com.learnlab.lessons.patterns.DefinitionHero
+import com.learnlab.lessons.patterns.MultiDefinitionHero
 import com.learnlab.lessons.patterns.GlossaryWall
 import com.learnlab.lessons.patterns.HeroParagraph
 import com.learnlab.lessons.patterns.InterludeKind
@@ -108,11 +124,11 @@ fun SlideContent(
         SlideLayout.Cover -> CoverSlide(chapter)
         SlideLayout.Shloka -> ShlokaSlide(slide.blocks[0] as ChapterBlock.SanskritShloka)
         SlideLayout.SectionTitle -> SectionTitleSlide(slide.blocks[0] as ChapterBlock.SectionHeader)
-        SlideLayout.TextOnly -> TextOnlySlide(slide.blocks[0] as ChapterBlock.Paragraph, slide)
+        SlideLayout.TextOnly -> TextOnlySlide(slide.blocks.filterIsInstance<ChapterBlock.Paragraph>(), slide)
         SlideLayout.TextWithFigure -> TextWithFigureSlide(slide.blocks)
         SlideLayout.FigureFocus -> FigureFocusSlide(slide.blocks[0])
         SlideLayout.Compare -> CompareSlide(slide.blocks[0] as ChapterBlock.SideBySideCompare)
-        SlideLayout.KeyTermCard -> KeyTermSlide(slide.blocks[0] as ChapterBlock.KeyTerm)
+        SlideLayout.KeyTermCard -> KeyTermSlide(slide.blocks.filterIsInstance<ChapterBlock.KeyTerm>())
         SlideLayout.SectionIntro -> SectionIntroSlide(
             slide.blocks[0] as ChapterBlock.SectionHeader,
             slide.blocks[1] as ChapterBlock.Paragraph,
@@ -123,7 +139,7 @@ fun SlideContent(
         SlideLayout.ScientistInterlude -> ScientistSlide(slide.blocks[0] as ChapterBlock.KnowScientist)
         SlideLayout.SuccessStoryInterlude -> SuccessStorySlide(slide.blocks[0] as ChapterBlock.SuccessStory)
         SlideLayout.DidYouKnowInterlude -> DidYouKnowSlide(slide.blocks[0])
-        SlideLayout.Callout -> CalloutSlide(slide.blocks[0])
+        SlideLayout.Callout -> CalloutSlide(slide.blocks)
         SlideLayout.ActivityLaunch -> ActivityLaunchSlide(slide.blocks[0] as ChapterBlock.Activity, onOpenActivity)
         SlideLayout.TableSlide -> TableSlide(slide.blocks[0] as ChapterBlock.TableBlock)
         SlideLayout.Collage -> CollageSlide(slide.blocks[0] as ChapterBlock.FigureCollage)
@@ -154,48 +170,106 @@ fun SlideContent(
 private fun CoverSlide(chapter: Chapter) {
     val t = LL.tokens
     val p = lessonPalette()
+
+    val infinite = rememberInfiniteTransition(label = "badgePulse")
+    val badgeScale by infinite.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.06f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(p.emerald.surface, t.surface2))),
+            .background(Color.Transparent),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.widthIn(max = 900.dp).padding(48.dp),
+            modifier = Modifier
+                .widthIn(max = 800.dp)
+                .shadow(
+                    elevation = 24.dp,
+                    shape = RoundedCornerShape(Radius.xl),
+                    ambientColor = p.emerald.accent.copy(alpha = 0.1f),
+                    spotColor = p.emerald.accent.copy(alpha = 0.2f)
+                )
+                .clip(RoundedCornerShape(Radius.xl))
+                .background(t.surface.copy(alpha = if (t.isDark) 0.45f else 0.85f))
+                .border(
+                    BorderStroke(
+                        1.5.dp,
+                        Brush.verticalGradient(
+                            listOf(p.emerald.accent.copy(alpha = 0.6f), t.line.copy(alpha = 0.2f))
+                        )
+                    ),
+                    RoundedCornerShape(Radius.xl)
+                )
+                .padding(48.dp),
         ) {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(Radius.sm))
+                    .graphicsLayer(scaleX = badgeScale, scaleY = badgeScale)
+                    .clip(RoundedCornerShape(Radius.pill))
                     .background(p.emerald.accent)
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                    .border(1.dp, Color.White.copy(alpha = 0.4f), RoundedCornerShape(Radius.pill))
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
             ) {
-                LLText("CHAPTER ${chapter.chapter.number}", color = t.surface,
-                    size = 16.sp, weight = FontWeight.Bold, letterSpacing = 2.sp)
-            }
-            Spacer(Modifier.height(40.dp))
-            LLText(
-                chapter.chapter.title,
-                color = t.ink50, size = 64.sp, weight = FontWeight.ExtraBold,
-                lineHeight = 72.sp, align = TextAlign.Center,
-            )
-            if (chapter.chapter.subtitle != null) {
-                Spacer(Modifier.height(20.dp))
                 LLText(
-                    chapter.chapter.subtitle, color = t.ink400, size = 22.sp,
-                    lineHeight = 30.sp, align = TextAlign.Center,
+                    "CHAPTER ${chapter.chapter.number}",
+                    color = Color.White,
+                    size = 15.sp,
+                    weight = FontWeight.ExtraBold,
+                    letterSpacing = 2.sp
                 )
             }
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(36.dp))
+            LLText(
+                chapter.chapter.title,
+                color = t.ink50,
+                size = 56.sp,
+                weight = FontWeight.ExtraBold,
+                lineHeight = 68.sp,
+                align = TextAlign.Center,
+            )
+            if (chapter.chapter.subtitle != null) {
+                Spacer(Modifier.height(16.dp))
+                LLText(
+                    chapter.chapter.subtitle,
+                    color = t.ink400,
+                    size = 20.sp,
+                    lineHeight = 28.sp,
+                    align = TextAlign.Center,
+                )
+            }
+            Spacer(Modifier.height(40.dp))
             if (chapter.estimatedMinutes > 0) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(Radius.pill))
-                        .background(p.emerald.surfaceStrong.copy(alpha = 0.5f))
-                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                        .background(p.emerald.surfaceStrong.copy(alpha = 0.15f))
+                        .border(1.dp, p.emerald.accent.copy(alpha = 0.3f), RoundedCornerShape(Radius.pill))
+                        .padding(horizontal = 18.dp, vertical = 8.dp),
                 ) {
-                    LLText("~ ${chapter.estimatedMinutes} minutes",
-                        color = p.emerald.accent, size = 15.sp, weight = FontWeight.SemiBold)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Science,
+                            contentDescription = null,
+                            tint = p.emerald.accent,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        LLText(
+                            "~ ${chapter.estimatedMinutes} minutes",
+                            color = p.emerald.accent,
+                            size = 14.sp,
+                            weight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -207,29 +281,84 @@ private fun CoverSlide(chapter: Chapter) {
 @Composable
 private fun ShlokaSlide(b: ChapterBlock.SanskritShloka) {
     val p = lessonPalette()
+    val t = LL.tokens
     Box(modifier = Modifier.fillMaxSize().padding(48.dp), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier
                 .widthIn(max = 900.dp)
+                .shadow(
+                    elevation = 24.dp,
+                    shape = RoundedCornerShape(Radius.xl),
+                    ambientColor = p.amber.accent.copy(alpha = 0.1f),
+                    spotColor = p.amber.accent.copy(alpha = 0.2f)
+                )
                 .clip(RoundedCornerShape(Radius.xl))
-                .background(p.amber.surface)
-                .border(1.dp, p.amber.border, RoundedCornerShape(Radius.xl))
+                .background(t.surface.copy(alpha = if (t.isDark) 0.45f else 0.85f))
+                .border(
+                    BorderStroke(
+                        1.5.dp,
+                        Brush.verticalGradient(
+                            listOf(p.amber.accent.copy(alpha = 0.6f), t.line.copy(alpha = 0.2f))
+                        )
+                    ),
+                    RoundedCornerShape(Radius.xl)
+                )
                 .padding(48.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            LLText(b.devanagari, color = p.amber.ink, size = 32.sp,
-                lineHeight = 48.sp, align = TextAlign.Center, weight = FontWeight.Medium)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Radius.pill))
+                    .background(p.amber.accent.copy(alpha = 0.15f))
+                    .border(1.dp, p.amber.accent.copy(alpha = 0.3f), RoundedCornerShape(Radius.pill))
+                    .padding(horizontal = 20.dp, vertical = 6.dp),
+            ) {
+                LLText("SANSKRIT SHLOKA", color = p.amber.accent, size = 12.sp, weight = FontWeight.ExtraBold, letterSpacing = 2.sp)
+            }
+            Spacer(Modifier.height(32.dp))
+            LLText(
+                b.devanagari,
+                color = t.ink50,
+                size = 36.sp,
+                lineHeight = 54.sp,
+                align = TextAlign.Center,
+                weight = FontWeight.Bold
+            )
             if (b.transliteration != null) {
-                Spacer(Modifier.height(16.dp))
-                LLText(b.transliteration, color = p.amber.ink.copy(alpha = 0.7f),
-                    size = 16.sp, lineHeight = 22.sp, align = TextAlign.Center)
+                Spacer(Modifier.height(20.dp))
+                LLText(
+                    b.transliteration,
+                    color = t.ink400,
+                    size = 18.sp,
+                    lineHeight = 26.sp,
+                    align = TextAlign.Center,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                )
             }
             Spacer(Modifier.height(28.dp))
-            LLText(b.translation, color = p.amber.ink, size = 22.sp,
-                lineHeight = 32.sp, align = TextAlign.Center)
+            Box(
+                modifier = Modifier
+                    .height(1.dp)
+                    .width(160.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(Color.Transparent, p.amber.accent.copy(alpha = 0.6f), Color.Transparent)
+                        )
+                    )
+            )
+            Spacer(Modifier.height(28.dp))
+            androidx.compose.material3.Text(
+                text = "“${b.translation}”",
+                color = t.ink200,
+                fontSize = 24.sp,
+                lineHeight = 36.sp,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic,
+                modifier = Modifier.fillMaxWidth()
+            )
             if (b.attribution != null) {
-                Spacer(Modifier.height(20.dp))
-                LLText(b.attribution, color = p.amber.accent, size = 14.sp, weight = FontWeight.SemiBold)
+                Spacer(Modifier.height(24.dp))
+                LLText(b.attribution, color = p.amber.accent, size = 15.sp, weight = FontWeight.Bold)
             }
         }
     }
@@ -241,20 +370,44 @@ private fun ShlokaSlide(b: ChapterBlock.SanskritShloka) {
 private fun SectionTitleSlide(b: ChapterBlock.SectionHeader) {
     val t = LL.tokens
     val p = lessonPalette()
+    var startAnim by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { startAnim = true }
+    val lineWidth by androidx.compose.animation.core.animateDpAsState(
+        targetValue = if (startAnim) 120.dp else 0.dp,
+        animationSpec = androidx.compose.animation.core.spring(
+            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
+            stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow
+        ),
+        label = "lineWidth"
+    )
+
     Box(modifier = Modifier.fillMaxSize().padding(64.dp), contentAlignment = Alignment.CenterStart) {
         Column(modifier = Modifier.widthIn(max = 1100.dp)) {
             Box(
                 modifier = Modifier
-                    .height(8.dp).width(72.dp)
+                    .height(6.dp)
+                    .width(lineWidth)
                     .clip(RoundedCornerShape(Radius.pill))
                     .background(Brush.horizontalGradient(listOf(p.emerald.accent, p.sky.accent))),
             )
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(24.dp))
             if (b.number != null) {
-                LLText(b.number, color = p.emerald.accent, size = 80.sp, weight = FontWeight.ExtraBold, lineHeight = 80.sp)
-                Spacer(Modifier.height(8.dp))
+                LLText(
+                    b.number,
+                    color = p.emerald.accent,
+                    size = 96.sp,
+                    weight = FontWeight.Black,
+                    lineHeight = 96.sp
+                )
+                Spacer(Modifier.height(12.dp))
             }
-            LLText(b.title, color = t.ink50, size = 52.sp, weight = FontWeight.Bold, lineHeight = 60.sp)
+            LLText(
+                b.title,
+                color = t.ink50,
+                size = 56.sp,
+                weight = FontWeight.ExtraBold,
+                lineHeight = 66.sp
+            )
         }
     }
 }
@@ -262,9 +415,11 @@ private fun SectionTitleSlide(b: ChapterBlock.SectionHeader) {
 /* ───────────────────────── Text only ───────────────────────── */
 
 @Composable
-private fun TextOnlySlide(b: ChapterBlock.Paragraph, slide: com.learnlab.content.chapter.Slide) {
+private fun TextOnlySlide(paragraphs: List<ChapterBlock.Paragraph>, slide: com.learnlab.content.chapter.Slide) {
+    if (paragraphs.isEmpty()) return
     HeroParagraph(
-        body = b.body,
+        body = paragraphs[0].body,
+        otherParagraphs = paragraphs.drop(1).map { it.body },
         sectionNumber = slide.sectionNumber,
         sectionTitle = slide.sectionTitle,
     )
@@ -276,22 +431,59 @@ private fun TextOnlySlide(b: ChapterBlock.Paragraph, slide: com.learnlab.content
 private fun TextWithFigureSlide(blocks: List<ChapterBlock>) {
     val t = LL.tokens
     val figure = blocks.firstOrNull { it is ChapterBlock.Figure } as? ChapterBlock.Figure
-    val paragraph = blocks.firstOrNull { it is ChapterBlock.Paragraph } as? ChapterBlock.Paragraph
-    if (figure == null || paragraph == null) return
+    val paragraphs = blocks.filterIsInstance<ChapterBlock.Paragraph>()
+    if (figure == null || paragraphs.isEmpty()) return
 
     Row(
-        modifier = Modifier.fillMaxSize().padding(48.dp),
+        modifier = Modifier.fillMaxSize().padding(40.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(40.dp),
+        horizontalArrangement = Arrangement.spacedBy(36.dp),
     ) {
-        Box(modifier = Modifier.weight(1.1f).fillMaxHeight(0.85f)) {
+        // Left pane: Figure block wrapped in glassmorphism
+        Box(
+            modifier = Modifier
+                .weight(1.1f)
+                .fillMaxHeight(0.9f)
+                .shadow(12.dp, shape = RoundedCornerShape(Radius.lg))
+                .clip(RoundedCornerShape(Radius.lg))
+                .background(t.surface.copy(alpha = if (t.isDark) 0.35f else 0.8f))
+                .border(
+                    BorderStroke(1.dp, t.line.copy(alpha = 0.4f)),
+                    RoundedCornerShape(Radius.lg)
+                )
+                .padding(20.dp)
+        ) {
             FigureBlock(figure, captionSize = 14.sp)
         }
-        Column(modifier = Modifier.weight(1f)) {
-            LLText(
-                text = paragraph.body.replace(Regex("""\{\{([^}]+)\}\}""")) { it.groupValues[1] },
-                color = t.ink50, size = 28.sp, lineHeight = 42.sp,
-            )
+
+        // Right pane: Text wrapped in glassmorphism
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(0.9f)
+                .clip(RoundedCornerShape(Radius.lg))
+                .background(t.surface.copy(alpha = if (t.isDark) 0.2f else 0.6f))
+                .border(
+                    BorderStroke(1.dp, t.line.copy(alpha = 0.2f)),
+                    RoundedCornerShape(Radius.lg)
+                )
+                .padding(32.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center
+        ) {
+            paragraphs.forEachIndexed { index, p ->
+                if (index > 0) {
+                    Spacer(Modifier.height(18.dp))
+                }
+                val formattedText = buildAnnotatedStringWithKeywords(p.body, t.accent500, t.ink50)
+                androidx.compose.material3.Text(
+                    text = formattedText,
+                    fontSize = if (paragraphs.size > 1) 24.sp else 28.sp,
+                    lineHeight = if (paragraphs.size > 1) 38.sp else 44.sp,
+                    fontFamily = com.learnlab.design.LearnLabFonts.Body,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }
@@ -300,27 +492,58 @@ private fun TextWithFigureSlide(blocks: List<ChapterBlock>) {
 
 @Composable
 private fun FigureFocusSlide(block: ChapterBlock) {
+    val t = LL.tokens
     Box(modifier = Modifier.fillMaxSize().padding(40.dp), contentAlignment = Alignment.Center) {
         when (block) {
-            is ChapterBlock.Figure -> FigureBlock(block, captionSize = 18.sp)
+            is ChapterBlock.Figure -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.9f)
+                        .shadow(16.dp, shape = RoundedCornerShape(Radius.lg))
+                        .clip(RoundedCornerShape(Radius.lg))
+                        .background(t.surface.copy(alpha = if (t.isDark) 0.35f else 0.8f))
+                        .border(
+                            BorderStroke(1.dp, t.line.copy(alpha = 0.4f)),
+                            RoundedCornerShape(Radius.lg)
+                        )
+                        .padding(24.dp)
+                ) {
+                    FigureBlock(block, captionSize = 18.sp)
+                }
+            }
             is ChapterBlock.ImageWithCallout -> {
-                val t = LL.tokens
                 Column(
-                    modifier = Modifier.widthIn(max = 1100.dp),
+                    modifier = Modifier
+                        .widthIn(max = 1100.dp)
+                        .shadow(16.dp, shape = RoundedCornerShape(Radius.lg))
+                        .clip(RoundedCornerShape(Radius.lg))
+                        .background(t.surface.copy(alpha = if (t.isDark) 0.35f else 0.8f))
+                        .border(
+                            BorderStroke(1.dp, t.line.copy(alpha = 0.4f)),
+                            RoundedCornerShape(Radius.lg)
+                        )
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     val bmp = loadFigureBitmap(block.asset)
-                    if (bmp != null) {
-                        Image(bitmap = bmp, contentDescription = block.caption,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.78f)
-                                .clip(RoundedCornerShape(Radius.lg)))
-                    } else {
-                        PlaceholderImage(label = block.id, modifier = Modifier.fillMaxWidth().fillMaxHeight(0.78f))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.75f)
+                            .clip(RoundedCornerShape(Radius.md))
+                    ) {
+                        if (bmp != null) {
+                            Image(bitmap = bmp, contentDescription = block.caption,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.fillMaxSize())
+                        } else {
+                            PlaceholderImage(label = block.id, modifier = Modifier.fillMaxSize())
+                        }
                     }
-                    Spacer(Modifier.height(20.dp))
-                    LLText(block.caption, color = t.ink400, size = 22.sp, align = TextAlign.Center,
-                        lineHeight = 30.sp, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(16.dp))
+                    LLText(block.caption, color = t.ink200, size = 20.sp, align = TextAlign.Center,
+                        lineHeight = 28.sp, modifier = Modifier.fillMaxWidth())
                 }
             }
             else -> {}
@@ -344,26 +567,53 @@ private fun FigureBlock(b: ChapterBlock.Figure, captionSize: androidx.compose.ui
                 .border(1.dp, t.line, RoundedCornerShape(Radius.lg)),
         ) {
             if (isComposeDraw) {
-                // Compose-drawn interactive diagram — owns its own interactivity.
-                // We do NOT overlay hotspots; the diagram has its own tap targets.
                 ComposeFigureRegistry.render(b.asset, modifier = Modifier.fillMaxSize())
             } else {
                 val asset = loadFigureBitmap(b.asset)
                 if (asset != null) {
                     Image(bitmap = asset, contentDescription = b.altText,
                         contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
+                    
+                    if (b.capabilities.hotspots) {
+                        val density = LocalDensity.current
+                        val boxWidthPx = with(density) { maxWidth.toPx() }
+                        val boxHeightPx = with(density) { maxHeight.toPx() }
+                        val imgWidthPx = asset.width.toFloat()
+                        val imgHeightPx = asset.height.toFloat()
+
+                        if (imgWidthPx > 0f && imgHeightPx > 0f && boxWidthPx > 0f && boxHeightPx > 0f) {
+                            val scale = minOf(boxWidthPx / imgWidthPx, boxHeightPx / imgHeightPx)
+                            val actualWidthPx = imgWidthPx * scale
+                            val actualHeightPx = imgHeightPx * scale
+
+                            val offsetX = (boxWidthPx - actualWidthPx) / 2f
+                            val offsetY = (boxHeightPx - actualHeightPx) / 2f
+
+                            b.hotspots.forEach { hs ->
+                                val xDp = with(density) { (offsetX + actualWidthPx * hs.x).toDp() }
+                                val yDp = with(density) { (offsetY + actualHeightPx * hs.y).toDp() }
+                                HotspotDot(
+                                    hs = hs,
+                                    xDp = xDp,
+                                    yDp = yDp,
+                                    selected = selectedHotspot?.id == hs.id,
+                                    onTap = { selectedHotspot = if (selectedHotspot?.id == hs.id) null else hs },
+                                )
+                            }
+                        }
+                    }
                 } else {
                     PlaceholderImage(label = "${b.assetType} • ${b.asset}", modifier = Modifier.fillMaxSize())
                 }
-                if (b.capabilities.hotspots) {
-                    b.hotspots.forEach { hs ->
-                        HotspotDot(
-                            hs = hs,
-                            boxWidth = maxWidth,
-                            boxHeight = maxHeight,
-                            selected = selectedHotspot?.id == hs.id,
-                            onTap = { selectedHotspot = if (selectedHotspot?.id == hs.id) null else hs },
-                        )
+
+                // HotspotDetail floating overlay
+                if (selectedHotspot != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                    ) {
+                        HotspotDetail(selectedHotspot!!)
                     }
                 }
             }
@@ -373,53 +623,98 @@ private fun FigureBlock(b: ChapterBlock.Figure, captionSize: androidx.compose.ui
             LLText(b.caption, color = t.ink400, size = captionSize, align = TextAlign.Center,
                 lineHeight = (captionSize.value * 1.4f).sp, modifier = Modifier.fillMaxWidth())
         }
-        if (!isComposeDraw && selectedHotspot != null) {
-            Spacer(Modifier.height(12.dp))
-            HotspotDetail(selectedHotspot!!)
-        }
     }
 }
 
 @Composable
 private fun HotspotDot(
     hs: Hotspot,
-    boxWidth: androidx.compose.ui.unit.Dp,
-    boxHeight: androidx.compose.ui.unit.Dp,
+    xDp: androidx.compose.ui.unit.Dp,
+    yDp: androidx.compose.ui.unit.Dp,
     selected: Boolean,
     onTap: () -> Unit,
 ) {
     val t = LL.tokens
-    val xDp = boxWidth * hs.x
-    val yDp = boxHeight * hs.y
+
+    val infiniteTransition = rememberInfiniteTransition(label = "hotspotRipple")
+    val rippleScale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rippleScale"
+    )
+    val rippleAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.6f,
+        targetValue = 0.0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rippleAlpha"
+    )
+
     Box(
         modifier = Modifier
-            .padding(start = xDp - 22.dp, top = yDp - 22.dp)
-            .size(44.dp)
-            .clip(CircleShape)
-            .background(if (selected) t.accent500 else t.accent500.copy(alpha = 0.78f))
-            .border(3.dp, Color.White, CircleShape)
-            .clickable { onTap() },
-        contentAlignment = Alignment.Center,
+            .padding(start = xDp - 24.dp, top = yDp - 24.dp)
+            .size(48.dp),
+        contentAlignment = Alignment.Center
     ) {
-        LLText(hs.label.firstOrNull()?.uppercase() ?: "·", color = Color.White, size = 18.sp, weight = FontWeight.Bold)
+        Box(
+            modifier = Modifier
+                .graphicsLayer(scaleX = rippleScale, scaleY = rippleScale)
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(t.accent500.copy(alpha = rippleAlpha))
+                .border(1.5.dp, t.accent500.copy(alpha = rippleAlpha), CircleShape)
+        )
+
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(if (selected) t.accent500 else t.accent500.copy(alpha = 0.85f))
+                .border(2.5.dp, Color.White, CircleShape)
+                .clickable { onTap() },
+            contentAlignment = Alignment.Center,
+        ) {
+            LLText(
+                hs.label.firstOrNull()?.uppercase() ?: "·",
+                color = Color.White,
+                size = 15.sp,
+                weight = FontWeight.Black
+            )
+        }
     }
 }
 
 @Composable
 private fun HotspotDetail(hs: Hotspot) {
     val p = lessonPalette()
+    val t = LL.tokens
     Column(
         modifier = Modifier
             .widthIn(max = 720.dp)
+            .shadow(8.dp, shape = RoundedCornerShape(Radius.md))
             .clip(RoundedCornerShape(Radius.md))
-            .background(p.sky.surface)
-            .border(1.dp, p.sky.border, RoundedCornerShape(Radius.md))
+            .background(t.surface.copy(alpha = if (t.isDark) 0.55f else 0.9f))
+            .border(
+                BorderStroke(
+                    1.dp,
+                    Brush.verticalGradient(
+                        listOf(p.sky.accent.copy(alpha = 0.5f), t.line.copy(alpha = 0.2f))
+                    )
+                ),
+                RoundedCornerShape(Radius.md)
+            )
             .padding(20.dp),
     ) {
         LLText(hs.label, color = p.sky.accent, size = 20.sp, weight = FontWeight.Bold)
         if (hs.blurb != null) {
-            Spacer(Modifier.height(6.dp))
-            LLText(hs.blurb, color = p.sky.ink, size = 16.sp, lineHeight = 24.sp)
+            Spacer(Modifier.height(8.dp))
+            LLText(hs.blurb, color = t.ink200, size = 16.sp, lineHeight = 24.sp)
         }
     }
 }
@@ -439,46 +734,15 @@ private fun CompareSlide(b: ChapterBlock.SideBySideCompare) {
     )
 }
 
-@Composable
-private fun CompareCell(label: String, blurb: String?, asset: String, modifier: Modifier = Modifier) {
-    val t = LL.tokens
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(Radius.lg))
-            .background(t.surface2)
-            .border(1.dp, t.line, RoundedCornerShape(Radius.lg))
-            .padding(20.dp),
-    ) {
-        val bmp = loadFigureBitmap(asset)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .clip(RoundedCornerShape(Radius.md)),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (bmp != null) {
-                Image(bitmap = bmp, contentDescription = label, contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize())
-            } else {
-                PlaceholderImage(label = label, modifier = Modifier.fillMaxSize())
-            }
-        }
-        Spacer(Modifier.height(16.dp))
-        LLText(label, color = t.ink50, size = 32.sp, weight = FontWeight.Bold)
-        if (blurb != null) {
-            Spacer(Modifier.height(10.dp))
-            LLText(blurb, color = t.ink400, size = 22.sp, lineHeight = 32.sp)
-        }
-    }
-}
-
 /* ───────────────────────── Key term card ───────────────────────── */
 
 @Composable
-private fun KeyTermSlide(b: ChapterBlock.KeyTerm) {
-    DefinitionHero(term = b.term, definition = b.definition)
+private fun KeyTermSlide(terms: List<ChapterBlock.KeyTerm>) {
+    if (terms.size == 1) {
+        DefinitionHero(term = terms[0].term, definition = terms[0].definition)
+    } else {
+        MultiDefinitionHero(terms = terms)
+    }
 }
 
 /* ───────────────────────── Story (single bubble) ───────────────────────── */
@@ -543,48 +807,6 @@ private fun CharacterBadge(label: String, accentHex: String?) {
     }
 }
 
-@Composable
-private fun BigBubble(b: ChapterBlock.SpeechBubble, cast: Map<String, Character>) {
-    val t = LL.tokens
-    val ch = cast[b.speakerId]
-    val accent = parseHexColor(ch?.accentColor, t.accent500)
-    Row(verticalAlignment = Alignment.Top, modifier = Modifier.widthIn(max = 1100.dp)) {
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .clip(CircleShape)
-                .background(accent.copy(alpha = 0.22f))
-                .border(3.dp, accent, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            LLText((ch?.displayName ?: b.speakerId).firstOrNull()?.uppercase() ?: "?",
-                color = accent, size = 40.sp, weight = FontWeight.Bold)
-        }
-        Spacer(Modifier.width(24.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            LLText((ch?.displayName ?: b.speakerId).uppercase(), color = accent,
-                size = 16.sp, weight = FontWeight.Bold, letterSpacing = 1.5.sp)
-            Spacer(Modifier.height(10.dp))
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(topStart = 4.dp, topEnd = Radius.lg,
-                        bottomEnd = Radius.lg, bottomStart = Radius.lg))
-                    .background(t.surface2)
-                    .padding(28.dp),
-            ) {
-                ItalicText("“${b.body}”", color = t.ink50, size = 28.sp, lineHeight = 40.sp)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ItalicText(text: String, color: Color, size: androidx.compose.ui.unit.TextUnit, lineHeight: androidx.compose.ui.unit.TextUnit) {
-    androidx.compose.material3.Text(
-        text = text, color = color, fontSize = size, lineHeight = lineHeight, fontStyle = FontStyle.Italic,
-    )
-}
-
 /* ───────────────────────── Conversation (multiple bubbles) ───────────────────────── */
 
 @Composable
@@ -593,61 +815,6 @@ private fun ConversationSlide(blocks: List<ChapterBlock>, cast: Map<String, Char
         StoryLine(speaker = cast[b.speakerId], idFallback = b.speakerId, body = b.body)
     }
     StoryPanelConversation(lines = lines)
-}
-
-@Composable
-private fun ConversationBubble(b: ChapterBlock.SpeechBubble, cast: Map<String, Character>, alignRight: Boolean) {
-    val t = LL.tokens
-    val ch = cast[b.speakerId]
-    val accent = parseHexColor(ch?.accentColor, t.accent500)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (alignRight) Arrangement.End else Arrangement.Start,
-        verticalAlignment = Alignment.Top,
-    ) {
-        if (!alignRight) Avatar(ch, accent, b.speakerId)
-        if (!alignRight) Spacer(Modifier.width(16.dp))
-        Column(
-            horizontalAlignment = if (alignRight) Alignment.End else Alignment.Start,
-            modifier = Modifier.widthIn(max = 760.dp),
-        ) {
-            LLText((ch?.displayName ?: b.speakerId).uppercase(), color = accent,
-                size = 13.sp, weight = FontWeight.Bold, letterSpacing = 1.4.sp)
-            Spacer(Modifier.height(6.dp))
-            Box(
-                modifier = Modifier
-                    .clip(
-                        if (alignRight)
-                            RoundedCornerShape(topStart = Radius.lg, topEnd = 4.dp,
-                                bottomEnd = Radius.lg, bottomStart = Radius.lg)
-                        else
-                            RoundedCornerShape(topStart = 4.dp, topEnd = Radius.lg,
-                                bottomEnd = Radius.lg, bottomStart = Radius.lg)
-                    )
-                    .background(t.surface2)
-                    .padding(22.dp),
-            ) {
-                ItalicText("“${b.body}”", color = t.ink50, size = 22.sp, lineHeight = 32.sp)
-            }
-        }
-        if (alignRight) Spacer(Modifier.width(16.dp))
-        if (alignRight) Avatar(ch, accent, b.speakerId)
-    }
-}
-
-@Composable
-private fun Avatar(ch: Character?, accent: Color, speakerId: String) {
-    Box(
-        modifier = Modifier
-            .size(64.dp)
-            .clip(CircleShape)
-            .background(accent.copy(alpha = 0.22f))
-            .border(3.dp, accent, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        LLText((ch?.displayName ?: speakerId).firstOrNull()?.uppercase() ?: "?",
-            color = accent, size = 26.sp, weight = FontWeight.Bold)
-    }
 }
 
 /* ───────────────────────── Scientist interlude ───────────────────────── */
@@ -702,8 +869,80 @@ private fun DidYouKnowSlide(block: ChapterBlock) {
 
 /* ───────────────────────── Callout / WorkedExample ───────────────────────── */
 
+/* ───────────────────────── Callout / WorkedExample ───────────────────────── */
+
 @Composable
-private fun CalloutSlide(block: ChapterBlock) {
+private fun CalloutSlide(blocks: List<ChapterBlock>) {
+    val t = LL.tokens
+    val p = lessonPalette()
+    val paragraphs = blocks.filterIsInstance<ChapterBlock.Paragraph>()
+    val calloutOrExample = blocks.firstOrNull { it !is ChapterBlock.Paragraph }
+
+    if (paragraphs.isNotEmpty() && calloutOrExample != null) {
+        // Render split screen layout: left side is text, right side is the callout/worked example
+        Row(
+            modifier = Modifier.fillMaxSize().padding(40.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(36.dp),
+        ) {
+            // Left pane: Text column, scrollable
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(0.9f)
+                    .clip(RoundedCornerShape(Radius.lg))
+                    .background(t.surface.copy(alpha = if (t.isDark) 0.2f else 0.6f))
+                    .border(
+                        BorderStroke(1.dp, t.line.copy(alpha = 0.2f)),
+                        RoundedCornerShape(Radius.lg)
+                    )
+                    .padding(32.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center
+            ) {
+                paragraphs.forEachIndexed { idx, p ->
+                    if (idx > 0) {
+                        Spacer(Modifier.height(18.dp))
+                    }
+                    val formattedText = buildAnnotatedStringWithKeywords(p.body, t.accent500, t.ink50)
+                    androidx.compose.material3.Text(
+                        text = formattedText,
+                        fontSize = 24.sp,
+                        lineHeight = 38.sp,
+                        fontFamily = com.learnlab.design.LearnLabFonts.Body,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            // Right pane: Callout or WorkedExample, scrollable
+            Box(
+                modifier = Modifier
+                    .weight(1.1f)
+                    .fillMaxHeight(0.9f)
+                    .shadow(12.dp, shape = RoundedCornerShape(Radius.lg))
+                    .clip(RoundedCornerShape(Radius.lg))
+                    .background(t.surface.copy(alpha = if (t.isDark) 0.35f else 0.8f))
+                    .border(
+                        BorderStroke(1.dp, t.line.copy(alpha = 0.4f)),
+                        RoundedCornerShape(Radius.lg)
+                    )
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
+                    CalloutOrExampleContent(calloutOrExample)
+                }
+            }
+        }
+    } else {
+        val block = calloutOrExample ?: blocks.firstOrNull() ?: return
+        CalloutOrExampleContent(block)
+    }
+}
+
+@Composable
+private fun CalloutOrExampleContent(block: ChapterBlock) {
     val t = LL.tokens
     val p = lessonPalette()
     when (block) {
@@ -724,7 +963,7 @@ private fun CalloutSlide(block: ChapterBlock) {
             )
         }
         is ChapterBlock.WorkedExample -> {
-            Box(modifier = Modifier.fillMaxSize().padding(56.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.widthIn(max = 1100.dp)) {
                     LLText(block.title, color = p.violet.accent, size = 28.sp,
                         weight = FontWeight.Bold, lineHeight = 36.sp)
@@ -761,78 +1000,256 @@ private fun ActivityLaunchSlide(b: ChapterBlock.Activity, onOpen: (String) -> Un
     val t = LL.tokens
     val p = lessonPalette()
     val interactive = b.experimentId != null
-    Box(modifier = Modifier.fillMaxSize().padding(56.dp), contentAlignment = Alignment.Center) {
+    var selectedTabIndex by remember(b.title) { mutableStateOf(0) }
+
+    val infinite = rememberInfiniteTransition(label = "launchPulse")
+    val launchScale by infinite.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    Box(modifier = Modifier.fillMaxSize().padding(48.dp), contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier
-                .widthIn(max = 1100.dp)
-                .clip(RoundedCornerShape(Radius.xl))
-                .background(p.emerald.surface)
-                .border(1.dp, p.emerald.border, RoundedCornerShape(Radius.xl))
-                .padding(56.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.widthIn(max = 1200.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier.size(56.dp).clip(CircleShape)
-                        .background(p.emerald.surfaceStrong),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(Icons.Filled.Science, contentDescription = null,
-                        tint = p.emerald.accent, modifier = Modifier.size(32.dp))
-                }
-                Spacer(Modifier.width(20.dp))
-                if (b.ncertReference != null) {
-                    LLText(b.ncertReference.uppercase(), color = p.emerald.accent,
-                        size = 16.sp, weight = FontWeight.Bold, letterSpacing = 2.sp)
-                }
-            }
-            Spacer(Modifier.height(20.dp))
-            LLText(b.title, color = t.ink50, size = 48.sp, weight = FontWeight.ExtraBold,
-                align = TextAlign.Center, lineHeight = 56.sp)
-            if (b.intro != null) {
-                Spacer(Modifier.height(28.dp))
-                LLText(b.intro, color = t.ink200, size = 26.sp, lineHeight = 38.sp,
-                    align = TextAlign.Center)
-            }
-            if (b.estimatedMinutes > 0) {
-                Spacer(Modifier.height(20.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(Radius.pill))
-                        .background(p.emerald.surfaceStrong.copy(alpha = 0.5f))
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                ) {
-                    LLText("~ ${b.estimatedMinutes} min", color = p.emerald.accent,
-                        size = 14.sp, weight = FontWeight.SemiBold)
-                }
-            }
-            Spacer(Modifier.height(36.dp))
-            if (interactive) {
+            if (b.tables.isNotEmpty()) {
+                // Segmented tab bar
                 Row(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(Radius.md))
-                        .background(p.emerald.accent)
-                        .clickable { onOpen(b.experimentId!!) }
-                        .padding(horizontal = 36.dp, vertical = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = null,
-                        tint = t.surface, modifier = Modifier.size(24.dp))
-                    Spacer(Modifier.width(12.dp))
-                    LLText("Open activity", color = t.surface, size = 20.sp, weight = FontWeight.Bold)
-                    Spacer(Modifier.width(12.dp))
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
-                        tint = t.surface, modifier = Modifier.size(20.dp))
-                }
-            } else {
-                Box(
-                    modifier = Modifier
+                        .padding(bottom = 16.dp)
                         .clip(RoundedCornerShape(Radius.pill))
-                        .background(p.emerald.surfaceStrong)
-                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                        .background(t.surface2.copy(alpha = 0.5f))
+                        .border(1.dp, t.line.copy(alpha = 0.2f), RoundedCornerShape(Radius.pill))
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    LLText("${b.kind.uppercase()} — teacher-led",
-                        color = p.emerald.accent, size = 14.sp, weight = FontWeight.Bold, letterSpacing = 1.5.sp)
+                    val tabNames = listOf("Description") + b.tables.map { it.caption ?: "Data Table" }
+                    tabNames.forEachIndexed { index, name ->
+                        val isSelected = selectedTabIndex == index
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(Radius.pill))
+                                .background(if (isSelected) p.emerald.accent else Color.Transparent)
+                                .clickable { selectedTabIndex = index }
+                                .padding(horizontal = 20.dp, vertical = 8.dp)
+                        ) {
+                            LLText(
+                                name,
+                                color = if (isSelected) Color.White else t.ink400,
+                                size = 14.sp,
+                                weight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Main Slide Content Card
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.9f)
+                    .shadow(
+                        elevation = 24.dp,
+                        shape = RoundedCornerShape(Radius.xl),
+                        ambientColor = p.emerald.accent.copy(alpha = 0.1f),
+                        spotColor = p.emerald.accent.copy(alpha = 0.25f)
+                    )
+                    .clip(RoundedCornerShape(Radius.xl))
+                    .background(t.surface.copy(alpha = if (t.isDark) 0.5f else 0.85f))
+                    .border(
+                        BorderStroke(
+                            1.5.dp,
+                            Brush.verticalGradient(
+                                listOf(p.emerald.accent.copy(alpha = 0.7f), t.line.copy(alpha = 0.2f))
+                            )
+                        ),
+                        RoundedCornerShape(Radius.xl)
+                    )
+            ) {
+                if (selectedTabIndex == 0) {
+                    Row(
+                        modifier = Modifier.fillMaxSize().padding(48.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(40.dp)
+                    ) {
+                        // Left Column: Lab info and metadata
+                        Column(modifier = Modifier.weight(1.2f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(CircleShape)
+                                        .background(p.emerald.accent.copy(alpha = 0.15f))
+                                        .border(1.dp, p.emerald.accent.copy(alpha = 0.3f), CircleShape),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Science,
+                                        contentDescription = null,
+                                        tint = p.emerald.accent,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                                Spacer(Modifier.width(16.dp))
+                                Column {
+                                    LLText(
+                                        "VIRTUAL EXPERIMENT",
+                                        color = p.emerald.accent,
+                                        size = 11.sp,
+                                        weight = FontWeight.Black,
+                                        letterSpacing = 2.sp
+                                    )
+                                    if (b.ncertReference != null) {
+                                        LLText(
+                                            b.ncertReference.uppercase(),
+                                            color = t.ink400,
+                                            size = 13.sp,
+                                            weight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(Modifier.height(24.dp))
+                            LLText(
+                                b.title,
+                                color = t.ink50,
+                                size = 40.sp,
+                                weight = FontWeight.ExtraBold,
+                                lineHeight = 48.sp
+                            )
+                            if (b.intro != null) {
+                                Spacer(Modifier.height(16.dp))
+                                LLText(
+                                    b.intro,
+                                    color = t.ink200,
+                                    size = 20.sp,
+                                    lineHeight = 30.sp
+                                )
+                            }
+                            if (b.estimatedMinutes > 0) {
+                                Spacer(Modifier.height(24.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(Radius.pill))
+                                        .background(p.emerald.surfaceStrong.copy(alpha = 0.15f))
+                                        .border(1.dp, p.emerald.accent.copy(alpha = 0.3f), RoundedCornerShape(Radius.pill))
+                                        .padding(horizontal = 14.dp, vertical = 6.dp),
+                                ) {
+                                    LLText(
+                                        "Estimated time: ~ ${b.estimatedMinutes} mins",
+                                        color = p.emerald.accent,
+                                        size = 13.sp,
+                                        weight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+
+                        // Right Column: Launch Button Action Portal
+                        Box(
+                            modifier = Modifier
+                                .weight(0.8f)
+                                .clip(RoundedCornerShape(Radius.lg))
+                                .background(t.surface2.copy(alpha = 0.4f))
+                                .border(1.dp, t.line.copy(alpha = 0.3f), RoundedCornerShape(Radius.lg))
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (interactive) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    LLText(
+                                        "Ready to begin?",
+                                        color = t.ink400,
+                                        size = 14.sp,
+                                        weight = FontWeight.Medium,
+                                        modifier = Modifier.padding(bottom = 20.dp)
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .graphicsLayer(scaleX = launchScale, scaleY = launchScale)
+                                            .clip(RoundedCornerShape(Radius.md))
+                                            .background(p.emerald.accent)
+                                            .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(Radius.md))
+                                            .bounceClickable { onOpen(b.experimentId!!) }
+                                            .padding(horizontal = 32.dp, vertical = 18.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                Icons.Filled.PlayArrow,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                            Spacer(Modifier.width(8.dp))
+                                            LLText("ENTER LAB", color = Color.White, size = 18.sp, weight = FontWeight.Black)
+                                            Spacer(Modifier.width(8.dp))
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.ArrowForward,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(Radius.pill))
+                                            .background(p.emerald.accent.copy(alpha = 0.15f))
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    ) {
+                                        LLText(
+                                            "CLASSROOM ACTIVITY",
+                                            color = p.emerald.accent,
+                                            size = 11.sp,
+                                            weight = FontWeight.Bold,
+                                            letterSpacing = 1.5.sp
+                                        )
+                                    }
+                                    Spacer(Modifier.height(16.dp))
+                                    LLText(
+                                        "Teacher-Led Demonstration",
+                                        color = t.ink200,
+                                        size = 16.sp,
+                                        weight = FontWeight.SemiBold,
+                                        align = TextAlign.Center
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    LLText(
+                                        "Follow your teacher's instructions to perform this activity in class.",
+                                        color = t.ink400,
+                                        size = 13.sp,
+                                        align = TextAlign.Center,
+                                        lineHeight = 18.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    val tableSpec = b.tables[selectedTabIndex - 1]
+                    BuildUpTable(
+                        caption = tableSpec.caption,
+                        headers = tableSpec.headers,
+                        rows = tableSpec.exampleRows,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
@@ -852,12 +1269,13 @@ private fun TableSlide(b: ChapterBlock.TableBlock) {
 private fun CollageSlide(b: ChapterBlock.FigureCollage) {
     val t = LL.tokens
     var selected by remember(b.id) { mutableStateOf<com.learnlab.content.chapter.CollageCircle?>(null) }
+    val p = lessonPalette()
     Box(modifier = Modifier.fillMaxSize().padding(40.dp), contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.widthIn(max = 1200.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(if (selected != null) 0.62f else 0.82f)
+                    .fillMaxHeight(0.85f)
                     .clip(RoundedCornerShape(Radius.lg))
                     .background(t.surface2)
                     .border(1.dp, t.line, RoundedCornerShape(Radius.lg)),
@@ -866,49 +1284,73 @@ private fun CollageSlide(b: ChapterBlock.FigureCollage) {
                 if (bmp != null) {
                     Image(bitmap = bmp, contentDescription = b.altText,
                         contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
+                    
+                    val density = LocalDensity.current
+                    val boxWidthPx = with(density) { maxWidth.toPx() }
+                    val boxHeightPx = with(density) { maxHeight.toPx() }
+                    val imgWidthPx = bmp.width.toFloat()
+                    val imgHeightPx = bmp.height.toFloat()
+
+                    if (imgWidthPx > 0f && imgHeightPx > 0f && boxWidthPx > 0f && boxHeightPx > 0f) {
+                        val scale = minOf(boxWidthPx / imgWidthPx, boxHeightPx / imgHeightPx)
+                        val actualWidthPx = imgWidthPx * scale
+                        val actualHeightPx = imgHeightPx * scale
+
+                        val offsetX = (boxWidthPx - actualWidthPx) / 2f
+                        val offsetY = (boxHeightPx - actualHeightPx) / 2f
+
+                        b.circles.forEach { c ->
+                            val xDp = with(density) { (offsetX + actualWidthPx * c.x).toDp() }
+                            val yDp = with(density) { (offsetY + actualHeightPx * c.y).toDp() }
+                            Box(
+                                modifier = Modifier
+                                    .padding(start = xDp - 26.dp, top = yDp - 26.dp)
+                                    .size(52.dp)
+                                    .clip(CircleShape)
+                                    .background(t.accent500.copy(alpha = 0.35f))
+                                    .border(3.dp, t.accent500, CircleShape)
+                                    .clickable { selected = if (selected?.id == c.id) null else c },
+                            )
+                        }
+                    }
                 } else {
                     PlaceholderImage(label = "scene collage", modifier = Modifier.fillMaxSize())
                 }
-                b.circles.forEach { c ->
-                    val xDp = maxWidth * c.x
-                    val yDp = maxHeight * c.y
+
+                // Floating collage circle description overlay
+                if (selected != null) {
+                    val c = selected!!
                     Box(
                         modifier = Modifier
-                            .padding(start = xDp - 26.dp, top = yDp - 26.dp)
-                            .size(52.dp)
-                            .clip(CircleShape)
-                            .background(t.accent500.copy(alpha = 0.35f))
-                            .border(3.dp, t.accent500, CircleShape)
-                            .clickable { selected = if (selected?.id == c.id) null else c },
-                    )
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                            .widthIn(max = 640.dp)
+                            .clip(RoundedCornerShape(Radius.md))
+                            .background(p.emerald.surface.copy(alpha = 0.95f))
+                            .border(1.dp, p.emerald.border, RoundedCornerShape(Radius.md))
+                            .padding(16.dp)
+                    ) {
+                        Column {
+                            LLText(c.label, color = p.emerald.accent, size = 20.sp, weight = FontWeight.Bold)
+                            if (c.moves != null || c.parts != null) {
+                                Spacer(Modifier.height(6.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                    if (c.moves != null) {
+                                        LLText("Moves: ${c.moves}", color = p.emerald.ink, size = 15.sp)
+                                    }
+                                    if (c.parts != null) {
+                                        LLText("Body parts: ${c.parts}", color = p.emerald.ink, size = 15.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             if (b.caption != null) {
-                Spacer(Modifier.height(14.dp))
-                LLText(b.caption, color = t.ink400, size = 16.sp, align = TextAlign.Center,
+                Spacer(Modifier.height(12.dp))
+                LLText(b.caption, color = t.ink400, size = 15.sp, align = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth())
-            }
-            if (selected != null) {
-                val c = selected!!
-                val p = lessonPalette()
-                Spacer(Modifier.height(20.dp))
-                Column(
-                    modifier = Modifier
-                        .widthIn(max = 720.dp).fillMaxWidth()
-                        .clip(RoundedCornerShape(Radius.md))
-                        .background(p.emerald.surface)
-                        .border(1.dp, p.emerald.border, RoundedCornerShape(Radius.md))
-                        .padding(20.dp),
-                ) {
-                    LLText(c.label, color = p.emerald.accent, size = 22.sp, weight = FontWeight.Bold)
-                    if (c.moves != null) {
-                        Spacer(Modifier.height(4.dp))
-                        LLText("Moves: ${c.moves}", color = p.emerald.ink, size = 17.sp)
-                    }
-                    if (c.parts != null) {
-                        LLText("Body parts: ${c.parts}", color = p.emerald.ink, size = 17.sp)
-                    }
-                }
             }
         }
     }
@@ -928,8 +1370,15 @@ private fun KeywordCloudSlide(b: ChapterBlock.KeywordCloud) {
 private fun SummaryGridSlide(b: ChapterBlock.Summary) {
     val t = LL.tokens
     val p = lessonPalette()
+    val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize().padding(40.dp), contentAlignment = Alignment.Center) {
-        Column(modifier = Modifier.widthIn(max = 1300.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = 1300.dp)
+                .fillMaxHeight()
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             LLText(b.title, color = p.amber.accent, size = 26.sp,
                 weight = FontWeight.Bold, letterSpacing = 1.5.sp)
             Spacer(Modifier.height(28.dp))
@@ -992,8 +1441,15 @@ private fun ExerciseSlide(b: ChapterBlock.Exercise) {
 private fun LearningFurtherSlide(b: ChapterBlock.LearningFurther) {
     val t = LL.tokens
     val p = lessonPalette()
+    val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize().padding(40.dp), contentAlignment = Alignment.Center) {
-        Column(modifier = Modifier.widthIn(max = 1300.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = 1300.dp)
+                .fillMaxHeight()
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             LLText(b.title, color = p.violet.accent, size = 32.sp, weight = FontWeight.Bold)
             Spacer(Modifier.height(28.dp))
             FlowRow(
@@ -1096,12 +1552,13 @@ private fun SectionIntroSlide(header: ChapterBlock.SectionHeader, para: ChapterB
             modifier = Modifier.weight(1.4f).fillMaxHeight(),
             verticalArrangement = Arrangement.Center,
         ) {
-            LLText(
-                text = para.body.replace(Regex("""\{\{([^}]+)\}\}""")) { it.groupValues[1] },
-                color = t.ink50,
-                size = 26.sp,
+            val formattedText = buildAnnotatedStringWithKeywords(para.body, p.emerald.accent, t.ink50)
+            androidx.compose.material3.Text(
+                text = formattedText,
+                fontSize = 26.sp,
                 lineHeight = 40.sp,
-                weight = FontWeight.Medium,
+                fontFamily = com.learnlab.design.LearnLabFonts.Body,
+                fontWeight = FontWeight.Medium,
             )
         }
     }
@@ -1137,11 +1594,13 @@ private fun StoryWithContextSlide(blocks: List<ChapterBlock>, cast: Map<String, 
         ) {
             // Paragraph — left column.
             Column(modifier = Modifier.weight(1.4f)) {
-                LLText(
-                    text = para.body.replace(Regex("""\{\{([^}]+)\}\}""")) { it.groupValues[1] },
-                    color = t.ink50,
-                    size = 26.sp,
+                val accent = ch?.accentColor?.let { parseHexColor(it, t.accent500) } ?: t.accent500
+                val formattedText = buildAnnotatedStringWithKeywords(para.body, accent, t.ink50)
+                androidx.compose.material3.Text(
+                    text = formattedText,
+                    fontSize = 26.sp,
                     lineHeight = 40.sp,
+                    fontFamily = com.learnlab.design.LearnLabFonts.Body,
                 )
             }
             // Right column: portrait on top, bubble below.
@@ -1190,11 +1649,12 @@ private fun StoryWithContextSlide(blocks: List<ChapterBlock>, cast: Map<String, 
                         .border(1.dp, p.sky.border, RoundedCornerShape(12.dp))
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                 ) {
-                    ItalicText(
+                    androidx.compose.material3.Text(
                         text = "“${bubble.body}”",
                         color = t.ink50,
-                        size = 15.sp,
+                        fontSize = 15.sp,
                         lineHeight = 22.sp,
+                        fontStyle = FontStyle.Italic
                     )
                 }
             }
@@ -1974,11 +2434,12 @@ private fun BubbleElementBody(el: OverrideElement.Bubble) {
                 .border(1.dp, hue.border, RoundedCornerShape(12.dp))
                 .padding(horizontal = 16.dp, vertical = 14.dp),
         ) {
-            ItalicText(
+            androidx.compose.material3.Text(
                 text = "“${el.body}”",
                 color = t.ink50,
-                size = el.sizeSp.sp,
+                fontSize = el.sizeSp.sp,
                 lineHeight = (el.sizeSp * 1.45f).sp,
+                fontStyle = FontStyle.Italic
             )
         }
     }
@@ -1991,10 +2452,96 @@ fun PlaceholderImage(label: String, modifier: Modifier = Modifier) {
     val t = LL.tokens
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Radius.sm))
-            .background(t.surface3),
-        contentAlignment = Alignment.Center,
+            .clip(RoundedCornerShape(Radius.md))
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(t.surface3.copy(alpha = 0.6f), t.surface2.copy(alpha = 0.3f))
+                )
+            )
+            .border(
+                1.dp,
+                Brush.verticalGradient(
+                    listOf(t.accent500.copy(alpha = 0.4f), t.line.copy(alpha = 0.1f))
+                ),
+                RoundedCornerShape(Radius.md)
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        LLText("[ $label ]", color = t.ink500, size = 14.sp, weight = FontWeight.Medium)
+        // Subtle wireframe blueprint background
+        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+            val w = size.width
+            val h = size.height
+            val strokeColor = t.accent500.copy(alpha = 0.08f)
+            
+            // Diagonals
+            drawLine(strokeColor, Offset(0f, 0f), Offset(w, h), strokeWidth = 1.dp.toPx())
+            drawLine(strokeColor, Offset(w, 0f), Offset(0f, h), strokeWidth = 1.dp.toPx())
+            
+            // Inner bounding box
+            drawRect(
+                color = strokeColor,
+                topLeft = Offset(w * 0.15f, h * 0.15f),
+                size = androidx.compose.ui.geometry.Size(w * 0.7f, h * 0.7f),
+                style = Stroke(width = 1.dp.toPx())
+            )
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.AddPhotoAlternate,
+                contentDescription = null,
+                tint = t.accent500.copy(alpha = 0.6f),
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(Modifier.height(12.dp))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Radius.pill))
+                    .background(t.surface.copy(alpha = 0.6f))
+                    .border(1.dp, t.line.copy(alpha = 0.3f), RoundedCornerShape(Radius.pill))
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                LLText(
+                    text = label.substringAfterLast("/").uppercase(),
+                    color = t.ink400,
+                    size = 11.sp,
+                    weight = FontWeight.Bold,
+                    letterSpacing = 1.sp
+                )
+            }
+        }
+    }
+}
+
+private fun buildAnnotatedStringWithKeywords(
+    text: String,
+    accentColor: Color,
+    defaultColor: Color
+): androidx.compose.ui.text.AnnotatedString {
+    val rx = Regex("""\{\{([^}]+)\}\}""")
+    return buildAnnotatedString {
+        var lastIndex = 0
+        rx.findAll(text).forEach { match ->
+            val start = match.range.first
+            val end = match.range.last + 1
+            if (start > lastIndex) {
+                withStyle(style = SpanStyle(color = defaultColor)) {
+                    append(text.substring(lastIndex, start))
+                }
+            }
+            withStyle(style = SpanStyle(color = accentColor, fontWeight = FontWeight.Bold)) {
+                append(match.groupValues[1])
+            }
+            lastIndex = end
+        }
+        if (lastIndex < text.length) {
+            withStyle(style = SpanStyle(color = defaultColor)) {
+                append(text.substring(lastIndex))
+            }
+        }
     }
 }

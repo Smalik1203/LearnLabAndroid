@@ -35,13 +35,13 @@ object OverrideSynthesizer {
     /* ─────────── per-layout templates ─────────── */
 
     private fun synthesizeTextOnly(blocks: List<ChapterBlock>): List<OverrideElement> {
-        val para = blocks.firstOrNull { it is ChapterBlock.Paragraph } as? ChapterBlock.Paragraph
-            ?: return emptyList()
+        val paras = blocks.filterIsInstance<ChapterBlock.Paragraph>()
+        if (paras.isEmpty()) return emptyList()
         return listOf(
             OverrideElement.Text(
                 id = "para",
                 x = 0.06f, y = 0.10f, width = 0.88f, height = 0.80f,
-                body = stripTokens(para.body),
+                body = paras.joinToString("\n\n") { stripTokens(it.body) },
                 sizeSp = 28f,
                 weight = "normal",
             ),

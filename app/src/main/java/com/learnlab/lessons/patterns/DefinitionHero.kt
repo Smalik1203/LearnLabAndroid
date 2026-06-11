@@ -22,13 +22,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,6 +44,8 @@ import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.Radius
 import com.learnlab.lessons.lessonPalette
+import com.learnlab.design.LearnLabFonts
+import kotlinx.coroutines.delay
 
 /**
  * Big centred term, glyph-as-hero (gently pulsing), then the definition.
@@ -55,6 +64,26 @@ fun DefinitionHero(
     val p = lessonPalette()
     val glyph = glyphForTerm(term)
 
+    var startAnim by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        startAnim = true
+    }
+
+    val entryAlpha by animateFloatAsState(
+        targetValue = if (startAnim) 1f else 0f,
+        animationSpec = tween(600, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+        label = "entryAlpha"
+    )
+
+    val entryScale by animateFloatAsState(
+        targetValue = if (startAnim) 1f else 0.9f,
+        animationSpec = androidx.compose.animation.core.spring(
+            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
+            stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow
+        ),
+        label = "entryScale"
+    )
+
     val infinite = rememberInfiniteTransition(label = "hero")
     val pulse by infinite.animateFloat(
         initialValue = 1.0f, targetValue = 1.06f,
@@ -67,7 +96,14 @@ fun DefinitionHero(
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier.widthIn(max = 1000.dp).fillMaxWidth(),
+            modifier = Modifier
+                .widthIn(max = 1000.dp)
+                .fillMaxWidth()
+                .graphicsLayer(
+                    alpha = entryAlpha,
+                    scaleX = entryScale,
+                    scaleY = entryScale
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Section-style label
@@ -161,5 +197,141 @@ private fun glyphForTerm(term: String): String {
         "monocot" in key -> "🌽"
         "dicot" in key -> "🫘"
         else -> "✦"
+    }
+}
+
+@Composable
+fun MultiDefinitionHero(
+    terms: List<com.learnlab.content.chapter.ChapterBlock.KeyTerm>,
+    modifier: Modifier = Modifier,
+) {
+    val t = LL.tokens
+    val p = lessonPalette()
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 48.dp, vertical = 32.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.widthIn(max = 1300.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            // Section-style label
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(p.indigo.accent))
+                Spacer(Modifier.width(8.dp))
+                LLText(
+                    "KEY TERMS",
+                    color = p.indigo.accent, size = 13.sp,
+                    weight = FontWeight.Bold, letterSpacing = 2.sp,
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+
+            // Grid of definition cards
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 320.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.weight(1f, fill = false)
+            ) {
+                items(terms.size) { index ->
+                    val item = terms[index]
+                    KeyTermGridCard(item = item, index = index, palette = p, tokens = t)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun KeyTermGridCard(
+    item: com.learnlab.content.chapter.ChapterBlock.KeyTerm,
+    index: Int,
+    palette: com.learnlab.lessons.LessonPalette,
+    tokens: com.learnlab.design.LearnLabTokens,
+) {
+    var animate by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(index * 80L)
+        animate = true
+    }
+    
+    val alpha by animateFloatAsState(
+        targetValue = if (animate) 1f else 0f,
+        animationSpec = tween(durationMillis = 400, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+        label = "alpha"
+    )
+    
+    val scale by animateFloatAsState(
+        targetValue = if (animate) 1f else 0.88f,
+        animationSpec = androidx.compose.animation.core.spring(
+            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
+            stiffness = androidx.compose.animation.core.Spring.StiffnessLow
+        ),
+        label = "scale"
+    )
+    
+    val translationY by animateFloatAsState(
+        targetValue = if (animate) 0f else 30f,
+        animationSpec = androidx.compose.animation.core.spring(
+            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
+            stiffness = androidx.compose.animation.core.Spring.StiffnessLow
+        ),
+        label = "translationY"
+    )
+
+    val glyph = glyphForTerm(item.term)
+    
+    Column(
+        modifier = Modifier
+            .graphicsLayer(
+                alpha = alpha,
+                scaleX = scale,
+                scaleY = scale,
+                translationY = translationY
+            )
+            .clip(RoundedCornerShape(Radius.md))
+            .background(tokens.surface2.copy(alpha = 0.5f))
+            .border(
+                1.dp, 
+                Brush.verticalGradient(
+                    listOf(palette.indigo.accent.copy(alpha = 0.4f), tokens.line.copy(alpha = 0.1f))
+                ),
+                RoundedCornerShape(Radius.md)
+            )
+            .padding(20.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(palette.indigo.surfaceStrong)
+                    .border(1.dp, palette.indigo.accent.copy(alpha = 0.3f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                LLText(glyph, color = palette.indigo.accent, size = 20.sp)
+            }
+            LLText(
+                text = item.term,
+                color = tokens.ink50,
+                size = 18.sp,
+                weight = FontWeight.Bold,
+                fontFamily = LearnLabFonts.Display
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        LLText(
+            text = item.definition,
+            color = tokens.ink200,
+            size = 14.sp,
+            lineHeight = 20.sp
+        )
     }
 }

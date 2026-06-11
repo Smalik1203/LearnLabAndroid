@@ -15,19 +15,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,9 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
+import com.learnlab.design.Radius
+import com.learnlab.design.bounceClickable
 import com.learnlab.design.gradLogo
 import com.learnlab.store.AppState
 
+/**
+ * Premium floating glassmorphic top header.
+ * Slides over the background mesh, featuring tactile bounce navigation controls.
+ */
 @Composable
 fun TopBar(
     state: AppState,
@@ -47,99 +51,123 @@ fun TopBar(
     onHomeClick: (() -> Unit)? = null,
 ) {
     val t = LL.tokens
-    Row(
+    val barBg = if (t.isDark) t.surface.copy(alpha = 0.45f) else t.surface.copy(alpha = 0.85f)
+    val barBorder = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.15f else 0.4f), Color.Transparent)
+    )
+
+    // Layout margins so it floats beautifully
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp)
-            .background(t.surface)
-            .border(width = 1.dp, color = t.line, shape = RoundedCornerShape(0.dp))
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
-        // Left side
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (showBack) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = t.ink200,
-                    )
-                }
-                if (title != null) {
-                    Spacer(Modifier.width(4.dp))
-                    LLText(
-                        title,
-                        color = t.ink50,
-                        size = 16.sp,
-                        weight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(gradLogo()),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Science,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp),
-                    )
-                }
-                Spacer(Modifier.width(12.dp))
-                Row(verticalAlignment = Alignment.Bottom) {
-                    LLText("LearnLab", color = t.ink50, size = 17.sp, weight = FontWeight.Bold)
-                    Spacer(Modifier.width(8.dp))
-                    LLText("·", color = t.ink600, size = 17.sp)
-                    Spacer(Modifier.width(8.dp))
-                    LLText("Sciences", color = t.ink400, size = 14.sp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .clip(RoundedCornerShape(Radius.md))
+                .background(barBg)
+                .border(1.dp, barBorder, RoundedCornerShape(Radius.md))
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            // Left side: Brand or Back Button
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (showBack) {
+                    // Back button wrapper with bounce animation and circular glass style
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(t.surface2.copy(alpha = 0.4f))
+                            .border(1.dp, t.line.copy(alpha = 0.4f), CircleShape)
+                            .bounceClickable(onClick = onBack),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = t.ink200,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                    if (title != null) {
+                        Spacer(Modifier.width(12.dp))
+                        LLText(
+                            title,
+                            color = t.ink50,
+                            size = 15.sp,
+                            weight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                } else {
+                    // Logo Box with electric gradient
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(gradLogo()),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Science,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        LLText("LearnLab", color = t.ink50, size = 18.sp, weight = FontWeight.ExtraBold)
+                        Spacer(Modifier.width(8.dp))
+                        LLText("·", color = t.ink600, size = 18.sp, weight = FontWeight.Bold)
+                        Spacer(Modifier.width(8.dp))
+                        LLText("Virtual Labs", color = t.accent700, size = 13.sp, weight = FontWeight.SemiBold)
+                    }
                 }
             }
-        }
 
-        // Right: optional home, then theme toggle
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (onHomeClick != null) {
+            // Right side: Action controls (Home, Theme Toggle)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (onHomeClick != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(t.surface2.copy(alpha = 0.4f))
+                            .border(1.dp, t.line.copy(alpha = 0.4f), CircleShape)
+                            .bounceClickable(onClick = onHomeClick),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "Go to home",
+                            tint = t.ink200,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(10.dp))
+                }
                 Box(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(t.surface2)
-                        .border(1.dp, t.line, CircleShape)
-                        .clickable(onClick = onHomeClick),
+                        .background(t.surface2.copy(alpha = 0.4f))
+                        .border(1.dp, t.line.copy(alpha = 0.4f), CircleShape)
+                        .bounceClickable { state.toggleTheme() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Home,
-                        contentDescription = "Go to home",
-                        tint = t.ink400,
+                        imageVector = if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                        contentDescription = if (state.isDark) "Switch to light theme" else "Switch to dark theme",
+                        tint = t.ink200,
                         modifier = Modifier.size(16.dp),
                     )
                 }
-                Spacer(Modifier.width(8.dp))
-            }
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(t.surface2)
-                    .border(1.dp, t.line, CircleShape)
-                    .clickable { state.toggleTheme() },
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                    contentDescription = if (state.isDark) "Switch to light theme" else "Switch to dark theme",
-                    tint = t.ink400,
-                    modifier = Modifier.size(16.dp),
-                )
             }
         }
     }
