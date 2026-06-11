@@ -1,0 +1,29 @@
+// Unlit, single-colour material for the 3D simulation primitives.
+//
+// Deliberately unlit: no per-pixel lighting math, which roughly halves fragment
+// cost on entry Mali/Adreno GPUs versus a PBR lit model. Flat high-chroma shapes
+// also read better from the back of a classroom than subtly-lit ones.
+//
+// COMPILE STEP (run by `matc` at build time — see app/build.gradle.kts):
+//   matc -a opengl -p mobile -o src/main/assets/materials/unlit.filamat \
+//        src/main/assets/materials/unlit.mat
+// The runtime loads the compiled `unlit.filamat`; if it is missing the host
+// shows its error state rather than a black screen.
+
+material {
+    name : unlit,
+    shadingModel : unlit,
+    blending : opaque,
+    culling : back,
+    depthCulling : true,
+    parameters : [
+        { type : float4, name : baseColor }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = materialParams.baseColor;
+    }
+}

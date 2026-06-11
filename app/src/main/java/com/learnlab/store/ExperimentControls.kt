@@ -7,4 +7,7 @@ package com.learnlab.store
 data class ExperimentControls(
     val onProgress: (Float) -> Unit,
     val onComplete: (Float?) -> Unit,
+    // Index into the experiment's procedure steps; drives the shell's
+    // instruction banner so the teacher never has to tap it mid-lesson.
+    val onStep: (Int) -> Unit = {},
 )

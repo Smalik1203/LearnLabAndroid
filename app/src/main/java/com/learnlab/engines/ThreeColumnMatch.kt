@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,24 +35,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.design.GhostButton
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
+import com.learnlab.design.Radius
+import com.learnlab.design.bounceClickable
+import com.learnlab.store.AppState
 import com.learnlab.store.ExperimentControls
 import kotlinx.coroutines.delay
-
-/**
- * Native port of src/runtime/engines/ThreeColumnMatch.tsx.
- *
- * Three columns, one tile per row. Pick A, then B, then C. If all three are
- * the same row id, lock it in (green). If any mismatch, brief red flash, reset
- * selection. Notes for locked rows show in a panel under the columns.
- */
 
 data class MatchTile(val label: String, val emoji: String? = null)
 data class MatchRow(
@@ -133,24 +131,25 @@ fun ThreeColumnMatch(
             verticalAlignment = Alignment.Top,
         ) {
             Column(Modifier.weight(1f).padding(end = 16.dp)) {
-                LLText("BUILD THE CHAIN", color = t.ink500, size = 11.sp,
-                    weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+                LLText("BUILD THE CHAIN", color = t.accent700, size = 11.sp,
+                    weight = FontWeight.Bold, letterSpacing = 1.8.sp)
                 Spacer(Modifier.height(6.dp))
-                LLText(prompt, color = t.ink400, size = 14.sp, lineHeight = 20.sp)
+                LLText(prompt, color = t.ink50, size = 15.sp, lineHeight = 22.sp, weight = FontWeight.SemiBold)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                LLText("${completed.size}/${rows.size} linked", color = t.ink500, size = 12.sp)
-                Spacer(Modifier.width(8.dp))
-                GhostButton(label = "Reset", onClick = { reset() })
+                LLText("${completed.size}/${rows.size} linked", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
+                Spacer(Modifier.width(12.dp))
+                GhostButton(label = "Reset Chains", onClick = { reset() })
             }
         }
 
         // 3 columns
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             MatchColumn(
+                step = 1,
                 title = columnTitles.first,
                 rows = rows,
                 tileFor = { it.a },
@@ -161,6 +160,7 @@ fun ThreeColumnMatch(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
             MatchColumn(
+                step = 2,
                 title = columnTitles.second,
                 rows = rows,
                 tileFor = { it.b },
@@ -171,6 +171,7 @@ fun ThreeColumnMatch(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
             MatchColumn(
+                step = 3,
                 title = columnTitles.third,
                 rows = rows,
                 tileFor = { it.c },
@@ -182,51 +183,59 @@ fun ThreeColumnMatch(
             )
         }
 
-        // Status / error / hint
+        // Status / error / hint panel: frosted glass
+        val statusBg = if (t.isDark) t.surface.copy(alpha = 0.25f) else t.surface.copy(alpha = 0.7f)
+        val statusBorder = if (errorMsg != null) Color(0xFFEF4444).copy(alpha = 0.4f) else t.line.copy(alpha = 0.3f)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(t.surface2)
-                .border(1.dp, t.line, RoundedCornerShape(12.dp))
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .clip(RoundedCornerShape(Radius.sm))
+                .background(statusBg)
+                .border(1.dp, statusBorder, RoundedCornerShape(Radius.sm))
+                .padding(horizontal = 16.dp, vertical = 14.dp),
         ) {
             val msg = errorMsg
             when {
-                msg != null -> LLText(msg, color = t.rose700, size = 14.sp, weight = FontWeight.SemiBold)
+                msg != null -> LLText(msg, color = Color(0xFFEF4444), size = 14.sp, weight = FontWeight.Bold)
                 aId != null && bId == null -> LLText(
-                    "Now pick the ${columnTitles.second} for this one.",
-                    color = t.ink400, size = 14.sp,
+                    "Now pick the matching ${columnTitles.second} for this element.",
+                    color = t.ink200, size = 14.sp, weight = FontWeight.Medium
                 )
                 bId != null -> LLText(
-                    "Pick the matching ${columnTitles.third} to lock the chain.",
-                    color = t.ink400, size = 14.sp,
+                    "Pick the matching ${columnTitles.third} to complete and lock the chain.",
+                    color = t.ink200, size = 14.sp, weight = FontWeight.Medium
                 )
-                else -> LLText("Start by tapping a ${columnTitles.first}.",
-                    color = t.ink400, size = 14.sp)
+                else -> LLText("Start the sequence by tapping a tile in ${columnTitles.first}.",
+                    color = t.ink400, size = 14.sp, weight = FontWeight.Medium)
             }
         }
 
-        // Revealed notes for locked chains
+        // Revealed notes for locked chains: glassmorphic card list
         if (completed.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 130.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(t.surface)
-                    .border(1.dp, t.line, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
+                    .heightIn(max = 140.dp)
+                    .clip(RoundedCornerShape(Radius.sm))
+                    .background(statusBg)
+                    .border(1.dp, t.line.copy(alpha = 0.3f), RoundedCornerShape(Radius.sm))
+                    .padding(14.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 rows.filter { completed.contains(it.id) }.forEach { r ->
-                    Row {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
                         LLText(
                             "${r.a.label} → ${r.b.label}: ",
-                            color = t.ink200, size = 12.sp, weight = FontWeight.SemiBold,
+                            color = t.accent700, size = 13.sp, weight = FontWeight.Bold,
                         )
-                        LLText(r.note, color = t.ink400, size = 12.sp)
+                        Spacer(Modifier.width(6.dp))
+                        LLText(r.note, color = t.ink50, size = 13.sp, weight = FontWeight.Medium)
                     }
                 }
             }
@@ -236,6 +245,7 @@ fun ThreeColumnMatch(
 
 @Composable
 private fun MatchColumn(
+    step: Int,
     title: String,
     rows: List<MatchRow>,
     tileFor: (MatchRow) -> MatchTile,
@@ -246,16 +256,35 @@ private fun MatchColumn(
     modifier: Modifier = Modifier,
 ) {
     val t = LL.tokens
+    val colBg = if (t.isDark) t.surface.copy(alpha = 0.2f) else t.surface.copy(alpha = 0.7f)
+    val borderBrush = Brush.verticalGradient(
+        listOf(Color.White.copy(alpha = if (t.isDark) 0.15f else 0.4f), Color.Transparent)
+    )
+
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(t.surface)
-            .border(1.dp, t.line, RoundedCornerShape(16.dp))
-            .padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+            .clip(RoundedCornerShape(Radius.md))
+            .background(colBg)
+            .border(1.dp, borderBrush, RoundedCornerShape(Radius.md))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        LLText(title.uppercase(), color = t.ink500, size = 10.sp,
-            weight = FontWeight.SemiBold, letterSpacing = 1.8.sp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(Brush.radialGradient(listOf(t.accent700, t.accent500))),
+                contentAlignment = Alignment.Center,
+            ) {
+                LLText("$step", color = Color.White, size = 11.sp, weight = FontWeight.Black)
+            }
+            LLText(title.uppercase(), color = t.ink500, size = 10.sp,
+                weight = FontWeight.Bold, letterSpacing = 1.6.sp)
+        }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(rows, key = { it.id }) { row ->
                 MatchTileButton(
@@ -283,40 +312,40 @@ private fun MatchTileButton(
         targetValue = when {
             done -> t.accent500
             active -> t.accent500
-            else -> t.line
+            else -> t.line.copy(alpha = 0.4f)
         },
         label = "match-b",
     )
     val bg = when {
-        done -> t.accent50
-        active -> t.accent50
-        else -> t.surface2
+        done -> t.accent50.copy(alpha = 0.2f)
+        active -> t.accent50.copy(alpha = 0.15f)
+        else -> t.surface2.copy(alpha = 0.4f)
     }
     val fg = when {
         done -> t.accent700
         active -> t.ink50
-        dim -> t.ink500
+        dim -> t.ink600
         else -> t.ink200
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(Radius.sm))
             .background(bg)
-            .border(1.dp, borderColor, RoundedCornerShape(10.dp))
-            .alpha(if (dim) 0.55f else 1f)
-            .clickable(enabled = !done) { onClick() }
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .border(1.dp, borderColor, RoundedCornerShape(Radius.sm))
+            .bounceClickable(enabled = !done) { onClick() }
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (tile.emoji != null) {
-            LLText(tile.emoji, size = 16.sp, color = androidx.compose.ui.graphics.Color.Unspecified)
-            Spacer(Modifier.width(8.dp))
+            LLText(tile.emoji, size = 16.sp, color = Color.Unspecified)
+            Spacer(Modifier.width(10.dp))
         }
-        LLText(tile.label, color = fg, size = 13.sp, weight = FontWeight.Medium,
-            modifier = Modifier.weight(1f), lineHeight = 17.sp)
+        LLText(tile.label, color = fg, size = 14.sp, weight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f), lineHeight = 18.sp)
         if (done) {
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Filled.Check,
                 contentDescription = "Matched",

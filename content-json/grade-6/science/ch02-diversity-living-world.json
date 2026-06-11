@@ -46,7 +46,7 @@
     { "type": "storyFrame",
       "scene": "A sunny morning after rain. The Grade 6 class has gone on a nature walk with Ms Priya and Leela dadi to a small park near the school.",
       "characters": ["ms-priya", "dadi-leela", "aarav", "diya", "kabir", "tashi"],
-      "imageRef": "g6-sci-ch02/scene-nature-walk.jpg"
+      "imageRef": "g6-sci-ch02/scene-nature-walk.png"
     },
 
     { "type": "paragraph",

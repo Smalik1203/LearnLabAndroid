@@ -1,5 +1,12 @@
 package com.learnlab.lessons.patterns
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +24,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,6 +44,7 @@ import com.learnlab.content.chapter.Character
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.Radius
+import com.learnlab.lessons.slides.loadFigureBitmap
 
 /* ────────────── Single speaker panel ────────────── */
 
@@ -53,8 +67,8 @@ fun StoryPanelSingle(
         modifier = modifier.fillMaxSize().background(
             Brush.linearGradient(
                 colors = listOf(
-                    accent.copy(alpha = 0.08f),
-                    t.bg,
+                    accent.copy(alpha = 0.12f),
+                    Color.Transparent,
                 ),
             ),
         ).padding(56.dp),
@@ -86,14 +100,10 @@ fun StoryPanelSingle(
     }
 }
 
-/* ────────────── Conversation (multi-speaker) ────────────── */
+/* ────────────────────────────── Conversation (multi-speaker) ────────────────────────────── */
 
 data class StoryLine(val speaker: Character?, val idFallback: String, val body: String)
 
-/**
- * Multi-speaker conversation arranged as a comic strip. 2 lines: side by side.
- * 3+ lines: zig-zag (left/right/left).
- */
 @Composable
 fun StoryPanelConversation(
     lines: List<StoryLine>,
@@ -101,7 +111,8 @@ fun StoryPanelConversation(
     modifier: Modifier = Modifier,
 ) {
     val t = LL.tokens
-    Box(modifier = modifier.fillMaxSize().padding(40.dp)) {
+    val scrollState = rememberScrollState()
+    Box(modifier = modifier.fillMaxSize().background(Color.Transparent).padding(40.dp)) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (sceneCaption != null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -115,7 +126,9 @@ fun StoryPanelConversation(
                 Spacer(Modifier.height(20.dp))
             }
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 lines.forEachIndexed { i, line ->
@@ -159,48 +172,100 @@ private fun ConversationRow(line: StoryLine, alignRight: Boolean) {
     }
 }
 
-/* ────────────── Sub-elements ────────────── */
+/* ────────────────────────────── Sub-elements ────────────────────────────── */
 
 @Composable
 private fun BigAvatar(ch: Character?, fallback: String, accent: Color) {
+    val infinite = rememberInfiniteTransition(label = "avatarPulse")
+    val pulseScale by infinite.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse"
+    )
+    val bmp = ch?.avatar?.let { loadFigureBitmap(it) }
+
     Box(
         modifier = Modifier
-            .size(180.dp)
-            .clip(CircleShape)
-            .background(
-                Brush.radialGradient(
-                    listOf(
-                        accent.copy(alpha = 0.30f),
-                        accent.copy(alpha = 0.12f),
-                    )
-                ),
-            )
-            .border(4.dp, accent, CircleShape),
-        contentAlignment = Alignment.Center,
+            .graphicsLayer(scaleX = pulseScale, scaleY = pulseScale)
+            .size(180.dp),
+        contentAlignment = Alignment.Center
     ) {
-        LLText(
-            (ch?.displayName ?: fallback).firstOrNull()?.uppercase() ?: "?",
-            color = accent, size = 72.sp,
-            weight = FontWeight.ExtraBold,
+        Box(
+            modifier = Modifier
+                .size(174.dp)
+                .clip(CircleShape)
+                .border(2.5.dp, accent.copy(alpha = 0.45f), CircleShape)
         )
+        Box(
+            modifier = Modifier
+                .size(156.dp)
+                .clip(CircleShape)
+                .background(
+                    Brush.radialGradient(
+                        listOf(accent.copy(alpha = 0.25f), accent.copy(alpha = 0.08f))
+                    )
+                )
+                .border(3.dp, accent, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            if (bmp != null) {
+                androidx.compose.foundation.Image(
+                    bitmap = bmp,
+                    contentDescription = ch?.displayName ?: fallback,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                LLText(
+                    (ch?.displayName ?: fallback).firstOrNull()?.uppercase() ?: "?",
+                    color = accent, size = 64.sp,
+                    weight = FontWeight.Black,
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun MediumAvatar(ch: Character?, fallback: String, accent: Color) {
+    val bmp = ch?.avatar?.let { loadFigureBitmap(it) }
     Box(
-        modifier = Modifier
-            .size(80.dp)
-            .clip(CircleShape)
-            .background(accent.copy(alpha = 0.22f))
-            .border(3.dp, accent, CircleShape),
-        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(80.dp),
+        contentAlignment = Alignment.Center
     ) {
-        LLText(
-            (ch?.displayName ?: fallback).firstOrNull()?.uppercase() ?: "?",
-            color = accent, size = 32.sp,
-            weight = FontWeight.ExtraBold,
+        Box(
+            modifier = Modifier
+                .size(76.dp)
+                .clip(CircleShape)
+                .border(2.dp, accent.copy(alpha = 0.4f), CircleShape)
         )
+        Box(
+            modifier = Modifier
+                .size(68.dp)
+                .clip(CircleShape)
+                .background(accent.copy(alpha = 0.18f))
+                .border(2.dp, accent, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (bmp != null) {
+                androidx.compose.foundation.Image(
+                    bitmap = bmp,
+                    contentDescription = ch?.displayName ?: fallback,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                LLText(
+                    (ch?.displayName ?: fallback).firstOrNull()?.uppercase() ?: "?",
+                    color = accent, size = 28.sp,
+                    weight = FontWeight.ExtraBold,
+                )
+            }
+        }
     }
 }
 
@@ -220,9 +285,23 @@ private fun ComicBubble(body: String, accent: Color, big: Boolean, pointRight: B
     }
     Box(
         modifier = Modifier
+            .shadow(
+                elevation = 12.dp,
+                shape = shape,
+                ambientColor = accent.copy(alpha = 0.05f),
+                spotColor = accent.copy(alpha = 0.12f)
+            )
             .clip(shape)
-            .background(t.surface)
-            .border(2.dp, accent.copy(alpha = 0.4f), shape)
+            .background(t.surface.copy(alpha = if (t.isDark) 0.5f else 0.85f))
+            .border(
+                BorderStroke(
+                    1.5.dp,
+                    Brush.verticalGradient(
+                        listOf(accent.copy(alpha = 0.6f), t.line.copy(alpha = 0.2f))
+                    )
+                ),
+                shape
+            )
             .padding(if (big) 28.dp else 22.dp),
     ) {
         androidx.compose.material3.Text(

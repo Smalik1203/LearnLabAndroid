@@ -16,6 +16,11 @@ data class Slide(
     /** Optional section anchor for outline / jump targets. */
     val sectionNumber: String? = null,
     val sectionTitle: String? = null,
+    /**
+     * Author-edited free-form layout. When non-null the renderer ignores
+     * [layout]/[blocks] and draws the elements absolutely positioned.
+     */
+    val override: SlideOverride? = null,
 )
 
 enum class SlideLayout {
@@ -35,6 +40,10 @@ enum class SlideLayout {
     Compare,
     /** A single key term, large and centred for emphasis. */
     KeyTermCard,
+    /** Section header + the first paragraph of that section, one slide. */
+    SectionIntro,
+    /** Paragraph + a single adjacent speech bubble, one slide. */
+    StoryWithContext,
     /** One character + one speech bubble, large. */
     Story,
     /** Two-or-more characters arranged spatially with their bubbles. */
@@ -63,4 +72,9 @@ enum class SlideLayout {
     LearningFurther,
     /** Closing quote / final slide. */
     Closing,
+    /**
+     * Free-form, author-edited layout. The slide's [Slide.override] holds
+     * the elements; auto-layout fields are ignored.
+     */
+    FreeForm,
 }

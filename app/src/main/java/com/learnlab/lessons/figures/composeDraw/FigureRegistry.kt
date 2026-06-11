@@ -21,6 +21,7 @@ object ComposeFigureRegistry {
         "RootSystemsExplorer"      to { m -> RootSystemsExplorer(m) },
         "CotyledonDissection"      to { m -> CotyledonDissection(m) },
         "PlantGroupingConceptMap"  to { m -> PlantGroupingConceptMap(m) },
+        "GroupingCriteriaPills"    to { m -> GroupingCriteriaPills(m) },
     )
 
     fun has(id: String): Boolean = id in registry

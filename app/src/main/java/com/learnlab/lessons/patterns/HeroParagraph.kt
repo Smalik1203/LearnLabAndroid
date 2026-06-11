@@ -18,11 +18,15 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +37,10 @@ import com.learnlab.design.LLText
 import com.learnlab.design.LearnLabFonts
 import com.learnlab.design.Radius
 import com.learnlab.lessons.lessonPalette
+
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.horizontalScroll
 
 /**
  * A paragraph rendered like an editorial spread, not a wall of centred prose.
@@ -53,6 +61,7 @@ import com.learnlab.lessons.lessonPalette
 @Composable
 fun HeroParagraph(
     body: String,
+    otherParagraphs: List<String> = emptyList(),
     sectionNumber: String? = null,
     sectionTitle: String? = null,
     accent: Color = LL.tokens.accent500,
@@ -60,7 +69,9 @@ fun HeroParagraph(
 ) {
     val t = LL.tokens
     val (firstSentence, restOfBody) = splitFirstSentence(body)
-    val keyTerms = extractKeyTerms(body)
+    val keyTerms = remember(body, otherParagraphs) {
+        (extractKeyTerms(body) + otherParagraphs.flatMap { extractKeyTerms(it) }).distinct()
+    }
 
     Box(
         modifier = modifier
@@ -95,30 +106,56 @@ fun HeroParagraph(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .widthIn(max = 1200.dp),
+                .widthIn(max = 1200.dp)
+                .padding(top = 24.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            // First sentence as a hero line
-            HeroLine(text = stripTokens(firstSentence), accent = accent)
-            if (restOfBody.isNotBlank()) {
-                Spacer(Modifier.height(24.dp))
-                LLText(
-                    text = stripTokens(restOfBody),
-                    color = t.ink200,
-                    size = 22.sp,
-                    lineHeight = 34.sp,
-                )
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // First sentence as a hero line
+                HeroLine(text = stripTokens(firstSentence), accent = accent)
+                if (restOfBody.isNotBlank()) {
+                    Spacer(Modifier.height(24.dp))
+                    val formattedBody = buildAnnotatedStringWithKeywords(restOfBody, accent, t.ink200)
+                    androidx.compose.material3.Text(
+                        text = formattedBody,
+                        fontSize = 22.sp,
+                        lineHeight = 34.sp,
+                        fontFamily = LearnLabFonts.Body,
+                    )
+                }
+                otherParagraphs.forEach { otherBody ->
+                    if (otherBody.isNotBlank()) {
+                        Spacer(Modifier.height(20.dp))
+                        val formattedOther = buildAnnotatedStringWithKeywords(otherBody, accent, t.ink200)
+                        androidx.compose.material3.Text(
+                            text = formattedOther,
+                            fontSize = 22.sp,
+                            lineHeight = 34.sp,
+                            fontFamily = LearnLabFonts.Body,
+                        )
+                    }
+                }
             }
             // Inline key-terms strip (if any tokens like {{biodiversity}} were in body)
             if (keyTerms.isNotEmpty()) {
                 Spacer(Modifier.height(28.dp))
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     LLText("KEY", color = t.ink500, size = 11.sp,
                         weight = FontWeight.Bold, letterSpacing = 1.5.sp)
-                    keyTerms.forEach { term -> KeywordPill(term, accent) }
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        keyTerms.forEach { term -> KeywordPill(term, accent) }
+                    }
                 }
             }
         }
@@ -128,40 +165,35 @@ fun HeroParagraph(
 @Composable
 private fun HeroLine(text: String, accent: Color) {
     val t = LL.tokens
-    val first = text.firstOrNull()
-    val rest = if (first != null) text.drop(1) else ""
-    if (first == null) return
+    if (text.isBlank()) return
 
-    Row(verticalAlignment = Alignment.Top) {
-        // Drop-cap
-        Box(
-            modifier = Modifier
-                .padding(top = 4.dp, end = 16.dp)
-                .clip(RoundedCornerShape(Radius.md))
-                .background(Brush.verticalGradient(listOf(accent.copy(alpha = 0.22f), accent.copy(alpha = 0.08f))))
-                .border(2.dp, accent.copy(alpha = 0.55f), RoundedCornerShape(Radius.md))
-                .padding(horizontal = 14.dp, vertical = 4.dp),
-        ) {
-            androidx.compose.material3.Text(
-                text = first.uppercase(),
-                color = accent,
-                fontSize = 72.sp,
-                lineHeight = 80.sp,
-                fontWeight = FontWeight.ExtraBold,
-                fontFamily = LearnLabFonts.Display,
-            )
+    // Find the last word and highlight it in accent color
+    val words = text.trim().split(Regex("""\s+"""))
+    val annotatedText = if (words.size > 1) {
+        val mainText = words.dropLast(1).joinToString(" ") + " "
+        val lastWord = words.last()
+        buildAnnotatedString {
+            append(mainText)
+            withStyle(style = SpanStyle(color = accent)) {
+                append(lastWord)
+            }
         }
-        // Rest of the first sentence — wraps naturally next to the drop-cap
-        androidx.compose.material3.Text(
-            text = rest,
-            color = t.ink50,
-            fontSize = 30.sp,
-            lineHeight = 44.sp,
-            fontWeight = FontWeight.SemiBold,
-            fontFamily = LearnLabFonts.Display,
-            modifier = Modifier.padding(top = 12.dp),
-        )
+    } else {
+        buildAnnotatedString {
+            withStyle(style = SpanStyle(color = accent)) {
+                append(text)
+            }
+        }
     }
+
+    androidx.compose.material3.Text(
+        text = annotatedText,
+        color = t.ink50,
+        fontSize = 32.sp,
+        lineHeight = 46.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontFamily = LearnLabFonts.Display,
+    )
 }
 
 @Composable
@@ -174,6 +206,35 @@ private fun KeywordPill(term: String, accent: Color) {
             .padding(horizontal = 14.dp, vertical = 6.dp),
     ) {
         LLText(term, color = accent, size = 14.sp, weight = FontWeight.Bold)
+    }
+}
+
+private fun buildAnnotatedStringWithKeywords(
+    text: String,
+    accentColor: Color,
+    defaultColor: Color
+): androidx.compose.ui.text.AnnotatedString {
+    val rx = Regex("""\{\{([^}]+)\}\}""")
+    return buildAnnotatedString {
+        var lastIndex = 0
+        rx.findAll(text).forEach { match ->
+            val start = match.range.first
+            val end = match.range.last + 1
+            if (start > lastIndex) {
+                withStyle(style = SpanStyle(color = defaultColor)) {
+                    append(text.substring(lastIndex, start))
+                }
+            }
+            withStyle(style = SpanStyle(color = accentColor, fontWeight = FontWeight.Bold)) {
+                append(match.groupValues[1])
+            }
+            lastIndex = end
+        }
+        if (lastIndex < text.length) {
+            withStyle(style = SpanStyle(color = defaultColor)) {
+                append(text.substring(lastIndex))
+            }
+        }
     }
 }
 

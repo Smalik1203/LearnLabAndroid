@@ -1,0 +1,97 @@
+{
+  "problem": "A projectile is launched at 20 m/s at 30° above horizontal from ground level. Take g = 10 m/s². Find (a) the time of flight, (b) the maximum height reached, and (c) the horizontal range.",
+  "given": [
+    { "sym": "u",  "value": "20 m/s" },
+    { "sym": "θ",  "value": "30°" },
+    { "sym": "g",  "value": "10 m/s²" }
+  ],
+  "find": [
+    { "sym": "T",  "label": "time of flight" },
+    { "sym": "H",  "label": "max height" },
+    { "sym": "R",  "label": "horizontal range" }
+  ],
+  "diagram": "projectile-launch",
+  "steps": [
+    {
+      "prompt": "Decompose the launch velocity into horizontal and vertical components.",
+      "reveal": [
+        "u_x = u · cos θ = 20 × cos 30° = 17.32 m/s",
+        "u_y = u · sin θ = 20 × sin 30° = 10 m/s"
+      ],
+      "annotation": "components",
+      "teacherNote": {
+        "ask": "Before revealing — what part of 20 m/s goes upward? Half? All of it? Less than half?",
+        "mistake": "Students often plug the full 20 m/s in as the vertical speed and get H = 20 m. Only u_y = 10 m/s lifts the ball; the rest moves it forward."
+      },
+      "whyAnswers": [
+        {
+          "question": "Why do we need sin and cos at all?",
+          "answer": "Because the ball is not moving straight up — it is moving up AND forward at the same time. The angle (30°) is the only piece of information telling us how the 20 m/s is split between the two. Sin and cos are the geometric tools that perform that split for any right triangle. Without them, we cannot get H or R unless someone hands us the components directly."
+        },
+        {
+          "question": "Can we avoid them for this specific question?",
+          "answer": "Only by remembering common values like sin 30° = 1/2 and cos 30° = √3/2. Then you can say 'at 30°, half the speed goes upward', giving u_y = 20 × 1/2 = 10 m/s without a calculator. But that is still using the result of sine — just from memory. There is no way to skip the split itself."
+        },
+        {
+          "question": "Why can't I just use the full 20 m/s as the upward speed?",
+          "answer": "Because only a part of the velocity points upward. If you plug 20 m/s into H = u_y²/(2g), you get H = 400/20 = 20 m. But the real height is 5 m. The other 17.3 m/s is being spent moving forward, not gaining height. The ball doesn't get the benefit of its full speed in any single direction — it has to share."
+        },
+        {
+          "question": "Why specifically sin and cos — why not some other tool?",
+          "answer": "Forget physics for a moment. Imagine a ladder leaning against a wall, 20 m long, making 30° with the floor. People worked out thousands of years ago that for any right triangle: cos θ = (horizontal side) / hypotenuse, sin θ = (vertical side) / hypotenuse. That is literally the definition of sin and cos — they were invented for this exact question. Your velocity arrow is just the ladder. Sin and cos are not extra physics — they are geometry that physics borrows."
+        }
+      ]
+    },
+    {
+      "prompt": "The horizontal motion has no acceleration. The vertical motion accelerates downward at g. Sketch the trajectory.",
+      "reveal": [
+        "Horizontal: a_x = 0   →   u_x stays at 17.32 m/s.",
+        "Vertical:   a_y = −g  →   slows on the way up, speeds on the way down.",
+        "Path is a symmetric parabola."
+      ],
+      "annotation": "trajectory"
+    },
+    {
+      "prompt": "At the highest point the vertical velocity is zero. Use v = u + a·t to find the time to reach the top.",
+      "reveal": [
+        "At apex:   0 = u_y − g · t_top",
+        "t_top = u_y / g = 10 / 10 = 1 s"
+      ],
+      "annotation": "apex",
+      "teacherNote": {
+        "ask": "Hold the animation here — what is the ball's vertical velocity at this exact instant?"
+      }
+    },
+    {
+      "prompt": "By symmetry, the projectile takes the same time to come back down. So time of flight T = 2 · t_top.",
+      "reveal": [
+        "T = 2 × t_top = 2 × 1 = 2 s"
+      ],
+      "annotation": "timeOfFlight",
+      "teacherNote": {
+        "ask": "Why is the time going up the same as the time coming down? What would change if there were air resistance?"
+      }
+    },
+    {
+      "prompt": "Use v² = u² − 2·g·H at the highest point (where v = 0) to find the maximum height H.",
+      "reveal": [
+        "0 = u_y² − 2 · g · H",
+        "H = u_y² / (2g) = 10² / (2 × 10) = 100 / 20 = 5 m"
+      ],
+      "annotation": "maxHeight",
+      "teacherNote": {
+        "mistake": "Watch for u² vs u_y² — only the vertical part lifts the ball. Using u = 20 here gives 20 m, not 5 m."
+      }
+    },
+    {
+      "prompt": "The horizontal range is simply the horizontal speed times the total flight time. R = u_x · T.",
+      "reveal": [
+        "R = u_x · T = 17.32 × 2 = 34.64 m",
+        "R ≈ 34.6 m"
+      ],
+      "annotation": "range"
+    }
+  ],
+  "finalAnswer": "T = 2 s    H = 5 m    R ≈ 34.6 m",
+  "bonus": "Shortcut formula:  R = u² · sin(2θ) / g  =  (20)² · sin 60° / 10  =  400 × 0.866 / 10  ≈  34.64 m"
+}

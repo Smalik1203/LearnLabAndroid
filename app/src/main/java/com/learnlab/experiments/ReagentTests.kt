@@ -58,6 +58,7 @@ fun FatPaperTest(controls: ExperimentControls) {
             negativeColor = Color(0xFF334155),
             positiveBadge = "Fat",
             negativeBadge = "None",
+            isFatPaperTest = true,
         ),
         controls = controls,
     )
@@ -86,6 +87,7 @@ fun ProteinVioletTest(controls: ExperimentControls) {
             negativeColor = Color(0xFFCBD5E1),
             positiveBadge = "Protein",
             negativeBadge = "None",
+            reagentDropColor = Color(0xFF3B82F6),
         ),
         controls = controls,
     )
