@@ -120,7 +120,15 @@ fun ChapterReaderScreen(
             }
         }
 
-        // Reading Content
+        // Reading Content. Chapters without authored reader blocks (e.g. a
+        // slideshow-only chapter) fall back to listing their activities so the
+        // experiments stay reachable.
+        val displayBlocks = remember(chapter) {
+            chapter.blocks.ifEmpty {
+                listOf(ChapterBlock.Heading("Activities", level = 1)) +
+                    chapter.experiments.map { ChapterBlock.ActivityRef(it.id) }
+            }
+        }
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -128,7 +136,7 @@ fun ChapterReaderScreen(
             contentPadding = PaddingValues(horizontal = 40.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            items(chapter.blocks) { block ->
+            items(displayBlocks) { block ->
                 ChapterBlockItem(
                     block = block,
                     onExperimentSelected = onExperimentSelected

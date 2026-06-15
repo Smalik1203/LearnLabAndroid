@@ -59,7 +59,6 @@ fun LandingScreen(
         onLogo = {},
         onOpenExperiment = onOpenExperiment,
         onViewAllHistory = onViewAllHistory,
-        showFooter = true,
     ) {
         Box(Modifier.fillMaxSize()) {
             // Ambient floating icons scattered across the canvas.

@@ -1,5 +1,6 @@
 package com.learnlab.ui.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,9 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -31,11 +35,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.learnlab.content.Subject
 import com.learnlab.content.gradesFor
 import com.learnlab.content.topicsFor
@@ -52,7 +60,7 @@ fun SubjectTopicsModal(
     subject: Subject,
     onDismiss: () -> Unit,
     onTopic: (String) -> Unit,
-    onBrowseAll: () -> Unit,
+    onBrowseChapters: (Int) -> Unit,
 ) {
     val t = LL.tokens
     val available = remember(subject) { gradesFor(subject).toSet() }
@@ -60,10 +68,16 @@ fun SubjectTopicsModal(
     var grade by remember(subject) { mutableIntStateOf(-1) }
     val topics = remember(subject, grade) { if (grade >= 0) topicsFor(subject, grade) else emptyList() }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        // Full-screen window so we control the panel width; the Card is capped and
+        // centered so neither it nor its dropdowns reach the screen edges.
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         // Reuse the shared Card frame so the picker matches every other surface
         // (same radius, border, fill, and soft elevation).
-        Card(modifier = Modifier.fillMaxWidth(), padding = 28.dp) {
+        Card(modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth(), padding = 28.dp) {
           Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -118,16 +132,18 @@ fun SubjectTopicsModal(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .clickable(onClick = onBrowseAll)
+                    .clickable(enabled = grade >= 0) { onBrowseChapters(grade) }
                     .padding(vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 LLText(
-                    "Browse all grades & chapters →",
-                    color = t.accent600, size = 14.sp, weight = FontWeight.SemiBold,
+                    if (grade >= 0) "Browse all Grade $grade chapters →" else "Pick a grade to browse chapters",
+                    color = if (grade >= 0) t.accent500 else t.ink500,
+                    size = 14.sp, weight = FontWeight.SemiBold,
                 )
             }
           }
+        }
         }
     }
 }
@@ -145,10 +161,13 @@ private fun GradeDropdown(
     val t = LL.tokens
     var open by remember { mutableStateOf(false) }
     val enabled = available.isNotEmpty()
+    var anchorWidth by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
     Box {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .onSizeChanged { anchorWidth = it.width }
                 .clip(RoundedCornerShape(12.dp))
                 .background(t.surface2)
                 .border(1.dp, t.line, RoundedCornerShape(12.dp))
@@ -165,7 +184,18 @@ private fun GradeDropdown(
             )
             Icon(Icons.Filled.ExpandMore, contentDescription = null, tint = t.ink400, modifier = Modifier.size(20.dp))
         }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        DropdownMenu(
+            expanded = open,
+            onDismissRequest = { open = false },
+            modifier = Modifier
+                .width(with(density) { anchorWidth.toDp() })
+                .heightIn(max = 200.dp),
+            offset = DpOffset(0.dp, 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            containerColor = t.surface2,
+            tonalElevation = 0.dp,
+            border = BorderStroke(1.dp, t.line),
+        ) {
             (1..10).forEach { g ->
                 val on = g in available
                 DropdownMenuItem(
@@ -204,10 +234,13 @@ private fun <T> Dropdown(
 ) {
     val t = LL.tokens
     var open by remember { mutableStateOf(false) }
+    var anchorWidth by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
     Box {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .onSizeChanged { anchorWidth = it.width }
                 .clip(RoundedCornerShape(12.dp))
                 .background(t.surface2)
                 .border(1.dp, t.line, RoundedCornerShape(12.dp))
@@ -219,7 +252,18 @@ private fun <T> Dropdown(
             LLText(label, color = if (enabled) t.ink50 else t.ink500, size = 15.sp, weight = FontWeight.Medium)
             Icon(Icons.Filled.ExpandMore, contentDescription = null, tint = t.ink400, modifier = Modifier.size(20.dp))
         }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        DropdownMenu(
+            expanded = open,
+            onDismissRequest = { open = false },
+            modifier = Modifier
+                .width(with(density) { anchorWidth.toDp() })
+                .heightIn(max = 200.dp),
+            offset = DpOffset(0.dp, 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            containerColor = t.surface2,
+            tonalElevation = 0.dp,
+            border = BorderStroke(1.dp, t.line),
+        ) {
             items.forEachIndexed { idx, item ->
                 DropdownMenuItem(
                     text = { LLText(item.toString(), color = t.ink50, size = 15.sp) },

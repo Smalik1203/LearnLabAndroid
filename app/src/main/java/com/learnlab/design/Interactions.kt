@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -38,6 +39,7 @@ fun Modifier.interactiveCard(
     glowColor: Color,
     shape: Shape = RoundedCornerShape(20.dp),
     background: Color = LL.tokens.surface,
+    backgroundBrush: Brush? = null,
     hoverScale: Float = 1.03f,
     pressScale: Float = 0.97f,
 ): Modifier {
@@ -81,7 +83,7 @@ fun Modifier.interactiveCard(
         }
         .shadow(elevation, shape, clip = false, spotColor = glowColor, ambientColor = glowColor)
         .clip(shape)
-        .background(background)
+        .then(if (backgroundBrush != null) Modifier.background(backgroundBrush) else Modifier.background(background))
         .border(1.dp, borderColor, shape)
         .hoverable(interactionSource)
 }

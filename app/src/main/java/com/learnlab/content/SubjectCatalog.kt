@@ -22,25 +22,25 @@ enum class Subject(
 ) {
     PHYSICS(
         "Physics",
-        "Explore motion, forces, waves, and the fundamental laws that govern our universe.",
+        "Motion, forces, and energy.",
         SubjectPhysics,
         R.drawable.subject_physics,
     ),
     CHEMISTRY(
         "Chemistry",
-        "Discover reactions, molecules, and the building blocks of matter through virtual labs.",
+        "Reactions, molecules, and matter.",
         SubjectChemistry,
         R.drawable.subject_chemistry,
     ),
     MATHEMATICS(
         "Mathematics",
-        "Visualize patterns, geometry, and abstract concepts through interactive demonstrations.",
+        "Patterns, geometry, and logic.",
         SubjectMath,
         R.drawable.subject_mathematics,
     ),
     BIOLOGY(
         "Biology",
-        "Experience life processes, ecosystems, and the wonders of living organisms.",
+        "Life, cells, and ecosystems.",
         SubjectBiology,
         R.drawable.subject_biology,
     ),

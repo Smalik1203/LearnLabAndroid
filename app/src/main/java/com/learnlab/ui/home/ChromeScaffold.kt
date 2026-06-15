@@ -22,7 +22,6 @@ fun ChromeScaffold(
     onLogo: () -> Unit,
     onOpenExperiment: (String) -> Unit,
     onViewAllHistory: () -> Unit,
-    showFooter: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     var dialog by remember { mutableStateOf(ChromeDialog.NONE) }
@@ -30,7 +29,6 @@ fun ChromeScaffold(
     PageChrome(
         state = state,
         onLogo = onLogo,
-        showFooter = showFooter,
         onSearch = { dialog = ChromeDialog.SEARCH },
         onHistory = { dialog = ChromeDialog.HISTORY },
         onLogin = { dialog = ChromeDialog.LOGIN },

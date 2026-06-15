@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.learnlab.content.Chapter
 import com.learnlab.content.Chapters
 import com.learnlab.content.Experiment
+import com.learnlab.content.slidesFor
 import com.learnlab.design.LL
 import com.learnlab.shell.TopBar
 import com.learnlab.store.AppState
@@ -157,7 +158,7 @@ private fun ChapterCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(enabled = !chapter.comingSoon) {
-                        if (chapter.blocks.isNotEmpty()) {
+                        if (chapter.blocks.isNotEmpty() || slidesFor(chapter.id).isNotEmpty()) {
                             onChapterSelected(chapter.id)
                         } else {
                             onToggle()
