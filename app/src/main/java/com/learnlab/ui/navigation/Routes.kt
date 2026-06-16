@@ -8,11 +8,11 @@ object Routes {
     const val CURRICULUM   = "curriculum/{grade}"
     const val LESSON       = "lesson/{experimentId}"
     const val CHAPTER_READER = "chapter-reader/{chapterId}"
-    const val CHAPTER_SLIDESHOW = "chapter-slideshow/{chapterId}"
+    const val TEXTBOOK = "textbook/{grade}"
 
     fun gradeSelect(subject: String) = "grade-select/$subject"
     fun curriculum(grade: Int) = "curriculum/$grade"
     fun lesson(experimentId: String) = "lesson/$experimentId"
     fun chapterReader(chapterId: String) = "chapter-reader/$chapterId"
-    fun chapterSlideshow(chapterId: String) = "chapter-slideshow/$chapterId"
+    fun textbook(grade: Int) = "textbook/$grade"
 }

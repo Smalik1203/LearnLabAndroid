@@ -95,3 +95,21 @@ private val chapterSlides: Map<String, List<ChapterSlide>> = mapOf(
 )
 
 fun slidesFor(chapterId: String): List<ChapterSlide> = chapterSlides[chapterId].orEmpty()
+
+/** One entry in the continuous grade "textbook": a slide plus the chapter it belongs to. */
+data class TextbookItem(val chapterTitle: String, val slide: ChapterSlide)
+
+/**
+ * The continuous textbook for a grade: every chapter that has authored slides (in
+ * chapter order), each chapter's reading slides followed by an inline experiment
+ * slide per experiment. Empty for grades with no authored content yet.
+ */
+fun textbookDeck(grade: Int): List<TextbookItem> =
+    Chapters.filter { it.grade == grade && !it.comingSoon }
+        .sortedBy { it.number }
+        .flatMap { ch ->
+            val slides = slidesFor(ch.id)
+            if (slides.isEmpty()) emptyList()
+            else (slides + ch.experiments.map { ChapterSlide.Experiment(it.id) })
+                .map { TextbookItem(ch.title, it) }
+        }

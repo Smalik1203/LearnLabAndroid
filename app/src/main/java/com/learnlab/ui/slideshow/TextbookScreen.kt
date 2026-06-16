@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -37,9 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.learnlab.content.Chapters
-import com.learnlab.content.slidesFor
-import com.learnlab.design.GhostButton
+import com.learnlab.content.textbookDeck
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
 import com.learnlab.design.PrimaryButton
@@ -49,102 +45,83 @@ import com.learnlab.store.AppState
 import kotlinx.coroutines.launch
 
 /**
- * Pre-experiment deck for a chapter: a swipeable set of generated, designed
- * slides built from the chapter's textbook content (see [slidesFor]), shown
- * before the experiments.
+ * The continuous "textbook" for a grade: one swipeable deck of every authored
+ * chapter's slides (in order), with each chapter's experiments embedded as inline
+ * slides. No chapter/topic selection — you just flip through.
  */
 @Composable
-fun ChapterSlideshowScreen(
+fun TextbookScreen(
     state: AppState,
-    chapterId: String,
-    onStartExperiments: () -> Unit,
+    grade: Int,
+    onRunExperiment: (String) -> Unit,
     onBack: () -> Unit,
     onHome: () -> Unit,
 ) {
     val t = LL.tokens
-    val chapter = remember(chapterId) { Chapters.firstOrNull { it.id == chapterId } }
-    val slides = remember(chapterId) { slidesFor(chapterId) }
+    val items = remember(grade) { textbookDeck(grade) }
 
-    // No deck authored → nothing to show; go straight to the experiments.
-    if (slides.isEmpty()) {
-        LaunchedEffect(chapterId) { onStartExperiments() }
+    if (items.isEmpty()) {
+        Column(Modifier.fillMaxSize().background(t.bg)) {
+            TextbookNav(state, title = "Grade $grade", onBack = onBack, onHome = onHome)
+            Box(Modifier.fillMaxSize().background(t.bg), contentAlignment = Alignment.Center) {
+                LLText("No textbook content yet.", color = t.ink400, size = 15.sp)
+            }
+        }
         return
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(t.bg)) {
-        SlideshowNav(
-            state = state,
-            title = chapter?.title ?: "Chapter",
-            onBack = onBack,
-            onHome = onHome,
-            onSkip = onStartExperiments,
-        )
-        SlideshowBody(slideCount = slides.size, onStartExperiments = onStartExperiments) { index ->
-            SlideView(slides[index], index)
-        }
-    }
-}
-
-@Composable
-private fun ColumnScope.SlideshowBody(
-    slideCount: Int,
-    onStartExperiments: () -> Unit,
-    slide: @Composable (Int) -> Unit,
-) {
-    val t = LL.tokens
-    val pagerState = rememberPagerState(pageCount = { slideCount })
+    val pagerState = rememberPagerState(pageCount = { items.size })
     val scope = rememberCoroutineScope()
-    val page = pagerState.currentPage
-    val isLast = page == slideCount - 1
+    val page = pagerState.currentPage.coerceIn(0, items.size - 1)
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxWidth().weight(1f).background(t.bg),
-    ) { index ->
-        slide(index)
-    }
+    Column(Modifier.fillMaxSize().background(t.bg)) {
+        TextbookNav(state, title = items[page].chapterTitle, onBack = onBack, onHome = onHome)
 
-    Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(t.surface)
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            ProgressBar(value = (page + 1).toFloat() / slideCount, modifier = Modifier.width(140.dp))
-            Spacer(Modifier.width(12.dp))
-            LLText("${page + 1} / $slideCount", color = t.ink400, size = 13.sp)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth().weight(1f).background(t.bg),
+        ) { i ->
+            SlideView(items[i].slide, i, onRunExperiment = onRunExperiment)
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SecondaryButton(
-                label = "‹ Previous",
-                onClick = { scope.launch { pagerState.animateScrollToPage(page - 1) } },
-                enabled = page > 0,
-            )
-            Spacer(Modifier.width(10.dp))
-            if (isLast) {
-                PrimaryButton(label = "Start experiments ›", onClick = onStartExperiments)
-            } else {
+
+        Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(t.surface)
+                .padding(horizontal = 20.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                ProgressBar(value = (page + 1).toFloat() / items.size, modifier = Modifier.width(140.dp))
+                Spacer(Modifier.width(12.dp))
+                LLText("${page + 1} / ${items.size}", color = t.ink400, size = 13.sp)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SecondaryButton(
+                    label = "‹ Previous",
+                    onClick = { scope.launch { pagerState.animateScrollToPage(page - 1) } },
+                    enabled = page > 0,
+                )
+                Spacer(Modifier.width(10.dp))
                 PrimaryButton(
                     label = "Next ›",
                     onClick = { scope.launch { pagerState.animateScrollToPage(page + 1) } },
+                    enabled = page < items.size - 1,
                 )
             }
         }
     }
 }
 
-/** Top nav: Back to Curriculum + chapter title (left), Skip + Home + theme (right). */
+/** Top nav: Back + current chapter title (left), Home + theme (right). */
 @Composable
-private fun SlideshowNav(
+private fun TextbookNav(
     state: AppState,
     title: String,
     onBack: () -> Unit,
     onHome: () -> Unit,
-    onSkip: () -> Unit,
 ) {
     val t = LL.tokens
     Row(
@@ -165,12 +142,12 @@ private fun SlideshowNav(
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back to Curriculum",
+                    contentDescription = "Back",
                     tint = t.ink200,
                     modifier = Modifier.size(18.dp),
                 )
                 Spacer(Modifier.width(8.dp))
-                LLText("Back to Curriculum", color = t.ink200, size = 14.sp, weight = FontWeight.Medium)
+                LLText("Back", color = t.ink200, size = 14.sp, weight = FontWeight.Medium)
             }
             Spacer(Modifier.width(16.dp))
             LLText(
@@ -184,8 +161,6 @@ private fun SlideshowNav(
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            GhostButton(label = "Skip to experiments", onClick = onSkip)
-            Spacer(Modifier.width(10.dp))
             CircleIconButton(Icons.Filled.Home, "Home", onHome)
             Spacer(Modifier.width(10.dp))
             CircleIconButton(

@@ -50,4 +50,7 @@ sealed interface ChapterSlide {
         val title: String,
         val subtitle: String,
     ) : ChapterSlide
+
+    /** Inline experiment within the textbook flow; launches the experiment's lesson. */
+    data class Experiment(val experimentId: String) : ChapterSlide
 }

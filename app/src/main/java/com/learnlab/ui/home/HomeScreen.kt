@@ -61,7 +61,7 @@ fun HomeScreen(
     onOpenExperiment: (String) -> Unit,
     onLogo: () -> Unit,
     onViewAllHistory: () -> Unit,
-    onOpenCurriculum: (Int) -> Unit,
+    onOpenTextbook: (Int) -> Unit,
 ) {
     val t = LL.tokens
     var tab by remember { mutableIntStateOf(0) }
@@ -120,8 +120,7 @@ fun HomeScreen(
         SubjectTopicsModal(
             subject = subj,
             onDismiss = { modalSubject = null },
-            onTopic = { id -> modalSubject = null; onOpenExperiment(id) },
-            onBrowseChapters = { grade -> modalSubject = null; onOpenCurriculum(grade) },
+            onOpenTextbook = { grade -> modalSubject = null; onOpenTextbook(grade) },
         )
     }
 }

@@ -48,9 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.ChapterSlide
 import com.learnlab.content.SlideIcon
+import com.learnlab.content.findExperiment
 import com.learnlab.design.Inter
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
+import com.learnlab.design.PrimaryButton
 import com.learnlab.design.SubjectBiology
 import com.learnlab.design.SubjectChemistry
 import com.learnlab.design.SubjectMath
@@ -59,7 +61,7 @@ import com.learnlab.design.gradHeadline
 
 /** Renders one generated chapter slide. [index] drives the cycling accent colour. */
 @Composable
-fun SlideView(slide: ChapterSlide, index: Int) {
+fun SlideView(slide: ChapterSlide, index: Int, onRunExperiment: (String) -> Unit = {}) {
     val t = LL.tokens
     val accents = listOf(SubjectChemistry, SubjectPhysics, SubjectMath, SubjectBiology, t.accent500)
     val accent = accents[index % accents.size]
@@ -94,6 +96,7 @@ fun SlideView(slide: ChapterSlide, index: Int) {
                     is ChapterSlide.Split -> SplitSlide(slide, accent)
                     is ChapterSlide.Chips -> ChipsSlide(slide, accent)
                     is ChapterSlide.Closing -> ClosingSlide(slide, accent)
+                    is ChapterSlide.Experiment -> ExperimentSlide(slide, accent, onRunExperiment)
                 }
             }
         }
@@ -289,6 +292,35 @@ private fun ClosingSlide(s: ChapterSlide.Closing, accent: Color) {
         GradientTitle(s.title, size = 42, align = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         LLText(s.subtitle, color = t.ink200, size = 18.sp, lineHeight = 27.sp, align = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun ExperimentSlide(s: ChapterSlide.Experiment, accent: Color, onRun: (String) -> Unit) {
+    val t = LL.tokens
+    val exp = findExperiment(s.experimentId)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(modifier = Modifier.weight(1f)) {
+            Kicker("EXPERIMENT", accent)
+            Spacer(Modifier.height(18.dp))
+            LLText(
+                exp?.title ?: "Experiment",
+                color = t.ink50, size = 34.sp, weight = FontWeight.Bold, lineHeight = 40.sp,
+            )
+            if (exp?.blurb != null) {
+                Spacer(Modifier.height(14.dp))
+                LLText(exp.blurb, color = t.ink200, size = 18.sp, lineHeight = 27.sp)
+            }
+            Spacer(Modifier.height(28.dp))
+            PrimaryButton(label = "Run experiment ›", onClick = { onRun(s.experimentId) })
+        }
+        Spacer(Modifier.width(48.dp))
+        Box(
+            modifier = Modifier.size(150.dp).clip(CircleShape).background(accent.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Filled.Science, contentDescription = null, tint = accent, modifier = Modifier.size(72.dp))
+        }
     }
 }
 

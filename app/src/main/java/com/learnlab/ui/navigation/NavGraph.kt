@@ -23,8 +23,7 @@ import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.home.LandingScreen
 import com.learnlab.ui.lesson.LessonScreen
 import com.learnlab.ui.reader.ChapterReaderScreen
-import com.learnlab.content.slidesFor
-import com.learnlab.ui.slideshow.ChapterSlideshowScreen
+import com.learnlab.ui.slideshow.TextbookScreen
 
 @Composable
 fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
@@ -56,7 +55,7 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                     }
                 },
                 onViewAllHistory = { navController.navigate(Routes.HISTORY) },
-                onOpenCurriculum = { grade -> navController.navigate(Routes.curriculum(grade)) },
+                onOpenTextbook = { grade -> navController.navigate(Routes.textbook(grade)) },
             )
         }
 
@@ -95,13 +94,7 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                 CurriculumScreen(
                     state = state,
                     grade = grade,
-                    onChapterSelected = { id ->
-                        if (slidesFor(id).isNotEmpty()) {
-                            navController.navigate(Routes.chapterSlideshow(id)) { launchSingleTop = true }
-                        } else {
-                            navController.navigate(Routes.chapterReader(id)) { launchSingleTop = true }
-                        }
-                    },
+                    onChapterSelected = { id -> navController.navigate(Routes.chapterReader(id)) },
                     onExperimentSelected = { id -> navController.navigate(Routes.lesson(id)) },
                     onBack = { navController.popBackStack() },
                     onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
@@ -123,28 +116,14 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
             }
 
             composable(
-                route = Routes.CHAPTER_SLIDESHOW,
-                arguments = listOf(navArgument("chapterId") { type = NavType.StringType }),
+                route = Routes.TEXTBOOK,
+                arguments = listOf(navArgument("grade") { type = NavType.IntType }),
             ) { backStack ->
-                val chapterId = backStack.arguments?.getString("chapterId") ?: return@composable
-                ChapterSlideshowScreen(
+                val grade = backStack.arguments?.getInt("grade") ?: 8
+                TextbookScreen(
                     state = state,
-                    chapterId = chapterId,
-                    onStartExperiments = {
-                        // A single-experiment chapter has nothing to choose, so go straight
-                        // into the experiment; multi-experiment chapters show the Activities list.
-                        val experiments = Chapters.firstOrNull { it.id == chapterId }?.experiments.orEmpty()
-                        val dest = if (experiments.size == 1) {
-                            Routes.lesson(experiments.first().id)
-                        } else {
-                            Routes.chapterReader(chapterId)
-                        }
-                        navController.navigate(dest) {
-                            // Pop the pre-roll so Back returns to the curriculum.
-                            popUpTo(Routes.CHAPTER_SLIDESHOW) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    },
+                    grade = grade,
+                    onRunExperiment = { id -> navController.navigate(Routes.lesson(id)) },
                     onBack = { navController.popBackStack() },
                     onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
                 )
