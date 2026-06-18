@@ -1,0 +1,84 @@
+{
+  "chapterId": "ch07",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 3", "title": "Health: The Ultimate Treasure", "subtitle": "The notice board is full of headlines about diabetes, air pollution, and yoga. Being healthy, it turns out, is far more than not falling sick.", "points": [
+      "How does your body respond to an infection such as a common cold?",
+      "We rarely see smallpox or polio these days, but diabetes and heart problems are more common. Why?",
+      "Could climate change lead to new types of diseases?",
+      "How do emotions like stress or worry affect us and make us sick?",
+      "Why do some groups of people get affected more than others during disease outbreaks?"
+    ] },
+    { "type": "section", "number": "3.1", "title": "Health: Is it more than not falling sick?", "intro": "The news clippings hint that health is about more than having no disease. What does it truly mean to be healthy?" },
+    { "type": "activity", "kicker": "ACTIVITY 3.1 · LET US READ", "title": "The lonely new student", "purpose": "We read a real-life story to see that health is not only about the body. The aim is to spot how **habits and surroundings** shape how a person feels.", "steps": [
+      "Read — a Grade 8 boy moves to a new city, makes no friends, and feels lonely",
+      "Notice — he spends more time on his phone and social media, which makes it worse",
+      "Track — he gets headaches, loses weight, and cannot sleep, until a doctor and counsellor help"
+    ], "observe": "Think and reflect: the boy's health problems came from **loneliness, screen time, and stress** — not from any germ. Less screen time, new friends, and counselling made him well. Health is **physical, mental, and social** all at once." },
+    { "type": "concept", "kicker": "WHAT IS HEALTH?", "title": "More than the absence of disease", "body": "The World Health Organization (WHO) defines health as a **state of complete physical, mental, and social well-being — and not merely the absence of disease**. A healthy person works efficiently, copes well in difficult situations, and adjusts well with others in society.", "icon": "BALANCE" },
+    { "type": "quote", "kicker": "OUR SCIENTIFIC HERITAGE", "original": "दिनचर्या · ऋतुचर्या", "transliteration": "dinacharya · ritucharya — daily and seasonal routines", "translation": "Ayurveda teaches that true health is a balance of body, mind, and surroundings. Following dinacharya (daily routine) and ritucharya (seasonal routine), and eating fresh food suited to one's prakriti (body constitution), keeps us well — supported by yoga, meditation, and mindfulness.", "attribution": "— Ayurveda · India's traditional system of medicine" },
+    { "type": "section", "number": "3.2", "title": "How can we stay healthy?", "intro": "What should we do, and what should we avoid, to keep ourselves healthy? Our health depends on how we live and on our surroundings." },
+    { "type": "activity", "kicker": "ACTIVITY 3.2 · LET US LIST", "title": "Good habits and bad habits", "purpose": "We make two lists to realise that health depends on many **everyday choices** — and to see which good habits we already follow and which we should start.", "steps": [
+      "List — good habits elders encourage: personal hygiene, a balanced diet, regular exercise, daily relaxation",
+      "List — habits that harm health: too much screen time, daily junk food, late or too little sleep, skipping breakfast",
+      "Discuss — your findings with friends and teacher"
+    ], "observe": "Healthy habits support both a **healthy body and a healthy mind**. From the lists you realise health depends on two big things: our **lifestyle** (how we live) and our **environment** (our surroundings)." },
+    { "type": "section", "number": "3.2.1", "title": "Maintain a healthy lifestyle", "intro": "Six everyday choices add up to a healthy life: a balanced diet, staying active, limiting screen time, enough sleep, yoga or pranayama, and saying 'NO' to tobacco, alcohol, and drugs." },
+    { "type": "experiment", "experimentId": "health-habits" },
+    { "type": "section", "number": "3.2.2", "title": "Keep the environment clean", "intro": "Even with good habits, dirty surroundings and polluted air can make us ill. A clean environment helps us stay well." },
+    { "type": "activity", "kicker": "ACTIVITY 3.3 · LET US COMPARE", "title": "Two different playgrounds", "purpose": "We compare two playgrounds to understand why **clean surroundings** keep people healthier than dirty ones.", "steps": [
+      "Look — at a clean, well-maintained playground and at a polluted, dirty one full of flies and mosquitoes",
+      "Choose — which one you would like to play in, and why",
+      "Connect — to how people living in unclean areas may fall sick more often"
+    ], "observe": "We must keep **ourselves and our surroundings clean**. Clean air and water matter too — pollution from vehicles and factories causes coughing and asthma, and the **Air Quality Index (AQI)** tells us how clean the air is. Time with friends and family keeps our minds healthy too." },
+    { "type": "section", "number": "3.3", "title": "How do we know that we are unwell?", "intro": "When something inside us is not working as it should, our body sends signals. Some we feel; others can be seen." },
+    { "type": "split", "kicker": "3.3 SIGNALS OF ILLNESS", "title": "Symptom vs sign", "leftTitle": "Symptom", "leftBody": "What we **feel** — like pain, tiredness, or dizziness. Only the person can sense it.", "rightTitle": "Sign", "rightBody": "What can be **seen or measured** — like fever, a rash, high blood pressure, or swelling. These help doctors find what is making us unwell." },
+    { "type": "section", "number": "3.4", "title": "Diseases: what are the causes and types?", "intro": "A disease affects the normal working of the body or mind. Based on their causes and how they spread, diseases fall into two major types." },
+    { "type": "concept", "kicker": "WHAT CAUSES DISEASE?", "title": "Pathogens and other causes", "body": "Some diseases are caused by germs like **bacteria, viruses, fungi, worms, or protozoa** (single-celled organisms). These disease-causing organisms are called **pathogens**. Worms that live inside us and feed on our nutrients are **parasites**. Other diseases come from poor nutrition or an unhealthy lifestyle.", "icon": "MICROBE" },
+    { "type": "split", "kicker": "TWO MAJOR TYPES", "title": "Communicable vs non-communicable", "leftTitle": "Communicable", "leftBody": "Caused by **pathogens** and spread from one person to another — typhoid, dengue, flu, chickenpox, COVID-19.", "rightTitle": "Non-communicable (NCD)", "rightBody": "**Not** caused by pathogens and do not spread — cancer, diabetes, asthma. Linked to lifestyle, diet, and environment, NCDs are now **most deaths in India**." },
+    { "type": "section", "number": "3.4.1", "title": "How are communicable diseases caused and spread?", "intro": "All communicable diseases are caused by pathogens that travel between people: by **air** (coughs, sneezes), by **direct contact**, **indirectly** through shared items or contaminated food and water, and by **vectors** like mosquitoes and houseflies." },
+    { "type": "activity", "kicker": "ACTIVITY 3.4 · LET US FIND OUT", "title": "Build the disease table", "purpose": "We gather and check facts about common communicable diseases so we can see the **pattern** in how they spread — and what simple step prevents each one.", "steps": [
+      "Collect — common communicable diseases listed during a community campaign and library search",
+      "Verify — each entry against books, trusted websites, or your science teacher; add missing details",
+      "Study — the causal agent, site of infection, symptoms, and the preventive measure for each"
+    ], "observe": "A clear pattern appears: **air-borne** diseases need masks and covered coughs, **water-and-food** diseases need clean water and good hygiene, and **insect-borne** diseases need mosquito control. Knowing how a disease spreads tells us exactly how to prevent it." },
+    { "type": "table", "kicker": "TABLE 3.1 · COMMUNICABLE DISEASES", "title": "Causal agent and how they spread", "headers": ["Disease", "Caused by", "Spreads through"], "rows": [
+      ["Common cold, Influenza", "Virus", "Air"],
+      ["Tuberculosis (TB)", "Bacteria", "Air"],
+      ["Cholera, Typhoid", "Bacteria", "Water and food"],
+      ["Hepatitis A", "Virus", "Water and food"],
+      ["Ascariasis", "Worms", "Water and food"],
+      ["Malaria", "Protozoa", "Mosquito (vector)"],
+      ["Dengue", "Virus", "Mosquito (vector)"]
+    ] },
+    { "type": "section", "number": "3.4.2", "title": "How are non-communicable diseases caused?", "intro": "NCDs are not caused by germs but by what we eat and how we live, and they cause most deaths in India." },
+    { "type": "concept", "kicker": "3.4.2 NON-COMMUNICABLE DISEASES", "title": "Deficiency and chronic diseases", "body": "A **deficiency disease** comes from a lack of specific nutrients — scurvy, anaemia, and goitre. A **chronic disease** like cancer, diabetes, or asthma persists for more than three months. Diabetes is rising fast in India, linked to hormonal imbalances, poor diet, inactivity, and being overweight.", "icon": "HEART" },
+    { "type": "experiment", "experimentId": "diseases-classify-spread" },
+    { "type": "quote", "kicker": "BE A SCIENTIST", "original": "Kamal Ranadive", "transliteration": "1917–2001 · pioneering biomedical researcher", "translation": "Kamal Ranadive studied how hormones and certain viruses are linked to cancer, helping improve its treatment and prevention. Her work showed how tobacco, diet, and pollution can raise the risk of cancer — highlighting the importance of a healthy lifestyle.", "attribution": "— Kamal Ranadive · cancer researcher" },
+    { "type": "section", "number": "3.5", "title": "How to prevent and control diseases?", "intro": "'Prevention is better than cure.' We must protect ourselves from both communicable and non-communicable diseases." },
+    { "type": "activity", "kicker": "ACTIVITY 3.6 · LET US READ", "title": "Odisha's sanitation campaign", "purpose": "We read a real case study to infer that **simple community steps** can greatly reduce the spread of communicable disease.", "steps": [
+      "Read — how a community sanitation campaign in Bhadrak district, Odisha, helped more people build and use toilets",
+      "Notice — open defecation fell, improving child health with fewer cases of diarrhoea and infection",
+      "Infer — what this tells us, and find similar campaigns held in your own location"
+    ], "observe": "Good sanitation **breaks the chain** by which water-borne pathogens spread. Small, shared actions — clean toilets, clean water — protect a whole community at once." },
+    { "type": "concept", "kicker": "THE BODY'S OWN DEFENCE", "title": "Immunity, and the vaccines that boost it", "body": "Some people fall ill less often: the natural ability of our body to fight diseases is **immunity**, powered by the **immune system**. A **vaccine** trains it to recognise a pathogen — made from weakened, dead, or harmless parts of a germ — giving **acquired immunity**. Vaccines are **preventive, not curative**, and India is one of the world's largest vaccine producers.", "icon": "VACCINE" },
+    { "type": "quote", "kicker": "OUR SCIENTIFIC HERITAGE", "original": "टीकेदार", "transliteration": "teekedaars — those who performed variolation", "translation": "Long before modern vaccines, India had a traditional method called variolation to protect against smallpox. It used material from a smallpox sore to scratch the skin, creating a mild infection that built immunity. People who performed this practice were known as teekedaars.", "attribution": "— teekedaars · India's early immunisers" },
+    { "type": "activity", "kicker": "THINK LIKE A SCIENTIST · ACTIVITY", "title": "Jenner and the smallpox vaccine", "purpose": "We retrace Edward Jenner's reasoning to see how careful **observation became the world's first vaccine**.", "steps": [
+      "Observe — milkmaids who had the milder cowpox did not catch deadly smallpox",
+      "Test — Jenner injected cowpox material into a boy, who later showed no illness when exposed to smallpox",
+      "Apply — mass vaccination spread worldwide, and smallpox was eradicated in 1979"
+    ], "observe": "One observation, tested carefully, **wiped a deadly disease off the Earth**. Jenner's first vaccine, built from cowpox, became one of the greatest victories in the history of medicine." },
+    { "type": "quote", "kicker": "BE A SCIENTIST", "original": "Maharaj Kishan Bhan", "transliteration": "Indian doctor and scientist", "translation": "As Secretary of the Department of Biotechnology, Maharaj Kishan Bhan helped develop the Rotavirus vaccine, which protects children from diarrhoea. He believed in using research to create affordable healthcare, making a big difference to India's health and biotechnology sectors.", "attribution": "— Maharaj Kishan Bhan · Rotavirus vaccine" },
+    { "type": "section", "number": "3.5.1", "title": "Treatment of diseases", "intro": "When the immune system fails and we fall ill, treatment helps us recover — but the right medicine depends on what caused the disease." },
+    { "type": "split", "kicker": "3.5.1 ANTIBIOTICS AND THEIR LIMITS", "title": "Powerful, but not for everything", "leftTitle": "What they do", "leftBody": "**Antibiotics** kill bacteria by targeting parts of bacterial cells that differ from our own. Penicillin, the first antibiotic, was discovered by Alexander Fleming in 1928.", "rightTitle": "Their limit", "rightBody": "They do **not** work against viruses or protozoa — so a cold, cough, or flu should never be treated with antibiotics." },
+    { "type": "activity", "kicker": "ACTIVITY 3.7 · LET US INFER", "title": "Why antibiotics stop working", "purpose": "We study the infographic to infer how **antibiotic resistance** develops — and what precautions keep antibiotics effective.", "steps": [
+      "Study — how taking antibiotics when not needed, or not finishing the dose, lets a few resistant bacteria survive",
+      "Trace — how those resistant bacteria multiply and pass resistance on, spreading through people, animals, and food",
+      "Infer — the precautions: use antibiotics only when a doctor prescribes them, in the correct dose and full duration"
+    ], "observe": "**Antibiotic resistance** is when bacteria once killed by an antibiotic survive and multiply despite it, making infections far harder to treat. Using antibiotics wisely keeps them working for future generations. India's traditional systems — **Ayurveda, Siddha, and Unani** — also help manage many common health problems." },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "The language of health", "body": "The terms that carry this chapter:", "chips": [
+      "Pathogen", "Communicable", "Non-communicable", "Vector", "Parasite", "Chronic disease",
+      "Deficiency disease", "Immunity", "Vaccine", "Acquired immunity", "Antibiotic", "Antibiotic resistance"
+    ] },
+    { "type": "closing", "title": "Guard your treasure!", "subtitle": "Health is complete physical, mental, and social well-being — protect it with clean habits, a balanced diet, clean surroundings, vaccines, and care for the people around you." }
+  ]
+}

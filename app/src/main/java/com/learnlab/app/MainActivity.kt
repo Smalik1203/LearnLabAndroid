@@ -20,6 +20,7 @@ import com.learnlab.design.LearnLabTheme
 import com.learnlab.design.LocalTokens
 import com.learnlab.design.DarkTokens
 import com.learnlab.design.LightTokens
+import com.learnlab.content.TextbookContent
 import com.learnlab.store.AppState
 import com.learnlab.ui.navigation.LearnLabNavGraph
 import kotlinx.coroutines.MainScope
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
         insets.hide(WindowInsetsCompat.Type.systemBars())
         insets.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        // Load the textbook slide decks (JSON in assets/textbook/) once, before any UI.
+        TextbookContent.load(applicationContext)
 
         setContent { LearnLabApp() }
     }

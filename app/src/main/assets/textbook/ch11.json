@@ -1,0 +1,78 @@
+{
+  "chapterId": "ch11",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 7", "title": "Particulate Nature of Matter", "subtitle": "You've gathered pebbles and sand on a riverbank. Where do they come from — and is a grain of sand the smallest a rock can get?", "points": [
+      "Why can you pile up sand or stones, but not a liquid like water?",
+      "We cannot see air, so how does it add weight to an inflated balloon?",
+      "Is the air we breathe today the same air that existed thousands of years ago?"
+    ] },
+    { "type": "section", "number": "7.1", "title": "What is matter made of?", "intro": "Where do pebbles and sand come from — and is a grain of sand the smallest a substance can get? Let's break things down to find out." },
+    { "type": "concept", "kicker": "WHERE DOES SAND COME FROM?", "title": "From mountains to grains of sand", "body": "High in the mountains, rocks slowly break down through **erosion**. Rivers carry the pieces along, grinding them into smaller pebbles, stones, sand, and clay. But is a single grain of sand the smallest piece of rock — or can it be broken further still?", "icon": "GLOBE" },
+    { "type": "activity", "kicker": "ACTIVITY 7.1 · LET US EXPLORE", "title": "Keep breaking the chalk", "purpose": "We want to find the **smallest piece** a substance can become. So we ask a simple question and test it: does chalk stay chalk, no matter how finely we grind it?", "steps": [
+      "Break — snap a stick of chalk, then break the pieces again",
+      "Grind — crush the bits to a fine powder with a mortar and pestle",
+      "Look — examine the powder through a magnifying glass"
+    ], "observe": "Every speck is **still chalk** — grinding changes only the **size**, never the substance. That hints matter is built from **tiny basic units** we simply haven't reached yet." },
+    { "type": "concept", "kicker": "NOW IMAGINE…", "title": "What if you never stopped grinding?", "body": "Grinding chalk is only a **physical change** — the size shrinks, but it stays chalk. Now imagine you keep going and never stop. Eventually you'd reach tiny units that **cannot be broken any further** — the basic building blocks the chalk is made of.", "icon": "PARTICLE" },
+    { "type": "concept", "kicker": "THE BASIC UNIT", "title": "These are constituent particles", "body": "A **constituent particle** is the basic unit that makes up a larger piece of any substance — and one stick of chalk holds a huge number of them. It isn't only chalk: the grains of sand and clay are themselves built from countless constituent particles too.", "icon": "SCIENCE" },
+    { "type": "activity", "kicker": "ACTIVITY 7.2 · LET US PERFORM", "title": "Where does the sugar go?", "purpose": "Sugar seems to 'disappear' into water — but does it really vanish? We test whether something can still be **present even when we can't see it**.", "steps": [
+      "Add — stir two spoons of sugar into a glass of water until it vanishes",
+      "Taste — try a spoonful from the top layer",
+      "Repeat — try the same with sand instead of sugar"
+    ], "observe": "The water tastes **sweet**, so the sugar is still there — each grain broke into **millions of particles** too small to see, which slipped into the **gaps between the water particles**. Sand, held together more strongly, stays whole and settles." },
+    { "type": "concept", "kicker": "BUT WHERE DID IT GO?", "title": "Into the spaces between particles", "body": "The sugar didn't disappear. Its tiny particles **separated and slipped into the gaps** between the water particles. These gaps between constituent particles are called **interparticle spaces** — and they hold the key to how matter behaves.", "icon": "BUBBLE" },
+    { "type": "section", "number": "7.2", "title": "What decides the state of matter?", "intro": "Solid, liquid, or gas — what sets them apart? The answer is the pull between particles and the space between them." },
+    { "type": "concept", "kicker": "7.2 WHAT DECIDES A STATE?", "title": "Particles pull on one another", "body": "Constituent particles are held together by **interparticle attractions**. Their strength depends on the substance and on the **distance** between particles — even a slight increase in distance weakens them sharply. This strength is what decides whether matter is a solid, a liquid, or a gas.", "icon": "PARTICLE" },
+    { "type": "quote", "kicker": "OUR SCIENTIFIC HERITAGE", "original": "परमाणु", "transliteration": "paramāṇu — 'the smallest, indivisible particle'", "translation": "Thousands of years ago, the Indian philosopher Acharya Kanad reasoned that all matter is built from tiny, indivisible, eternal particles — long before microscopes could show us anything so small.", "attribution": "— Acharya Kanad · Vaiśeṣika Sūtras" },
+    { "type": "section", "number": "7.2.1", "title": "Solid state", "intro": "Why does a solid keep its shape no matter how you turn it?" },
+    { "type": "activity", "kicker": "7.2.1 SOLID STATE · ACTIVITY 7.3", "title": "Hammer a nail, a stone, a key", "purpose": "Why does a solid keep its shape? We handle and strike everyday solids to feel **how strongly their particles are held together**.", "steps": [
+      "Collect — an iron nail, rock salt, a stone, wood, a key, aluminium",
+      "Observe — the shape and size of each",
+      "Hammer — try to change their shape"
+    ], "observe": "Each object keeps its **own shape and size** and resists the hammer. In a solid, particles are **packed tight and held strongly** in fixed places — they can only vibrate, not move past each other — so shape and volume stay definite." },
+    { "type": "concept", "kicker": "INSIDE A SOLID", "title": "Tightly packed, locked in place", "body": "In a solid the particles are **tightly packed** with **strong** attractions, so they sit in fixed positions. They can only **vibrate** to and fro — they cannot slip past one another. That is why a key or a stone holds its shape no matter how you turn it.", "icon": "SCIENCE" },
+    { "type": "concept", "kicker": "HEAT A SOLID", "title": "Vibrate, weaken, melt", "body": "Heat a solid and its particles **vibrate more and more vigorously**. At a certain point the vibrations grow so strong that particles break free of their fixed places, the attractions weaken, and the solid turns to liquid. That temperature is the **melting point**.", "icon": "HEAT" },
+    { "type": "table", "kicker": "TABLE 7.1 · MELTING POINTS", "title": "Weak forces melt easily; strong forces resist", "headers": ["Solid", "Melting point"], "rows": [
+      ["Ice", "0 °C"],
+      ["Urea", "133 °C"],
+      ["Iron", "1538 °C"]
+    ] },
+    { "type": "interactive", "kicker": "SEE IT FOR YOURSELF", "title": "Heat it up and watch", "caption": "Drag the temperature: particles gain energy, break free of their fixed places, and spread out — solid to liquid to gas.", "kind": "KINETIC_MATTER" },
+    { "type": "section", "number": "7.2.2", "title": "Liquid state", "intro": "A liquid flows and takes any shape — but does it keep a fixed amount?" },
+    { "type": "activity", "kicker": "7.2.2 LIQUID STATE · ACTIVITY 7.4", "title": "Pour the same water, A to B to C", "purpose": "Does a liquid have a fixed shape? A fixed amount? We move the **same water** through differently shaped containers to find out.", "steps": [
+      "Mark — the 200 mL level in three differently shaped containers",
+      "Pour — move the water from A to B to C",
+      "Watch — its shape and its level each time"
+    ], "observe": "The water **takes on each container's shape**, yet the level reads **200 mL** every time. So liquids have **no fixed shape but a definite volume** — their particles move freely, but stay close together." },
+    { "type": "concept", "kicker": "WHAT THIS TELLS US", "title": "No fixed shape, but a fixed volume", "body": "Liquids **take the shape** of their container because their particles are free to move — yet the volume never changes. Their attractions are a little **weaker than in solids**, but still strong enough to keep particles close. Move a finger through water and it just closes back up.", "icon": "WAVE" },
+    { "type": "concept", "kicker": "HEAT A LIQUID", "title": "From liquid to vapour", "body": "Heat a liquid and its particles move so vigorously that they **escape** into the air as vapour. The temperature where this happens fast, with bubbles forming throughout, is the **boiling point**. Below it, particles still slip off the surface slowly — that slower process is **evaporation**.", "icon": "HEAT" },
+    { "type": "section", "number": "7.2.3", "title": "Gaseous state", "intro": "Give a gas more room and it just keeps spreading. Why?" },
+    { "type": "activity", "kicker": "7.2.3 GASEOUS STATE · ACTIVITY 7.5", "title": "Trap smoke in a jar", "purpose": "Does a gas hold a shape or a volume of its own? We trap smoke and then give it **more space** to see where it goes.", "steps": [
+      "Collect — catch incense smoke inside one gas jar",
+      "Stack — invert a second, empty jar on top of it",
+      "Watch — where the smoke travels"
+    ], "observe": "The smoke **spreads to fill both jars** completely. Gas particles feel **almost no attraction**, so they move freely and spread to fill **all the space** available — gases have no fixed shape or volume." },
+    { "type": "concept", "kicker": "INSIDE A GAS", "title": "Free to roam, filling all space", "body": "In a gas the attractions are **negligible**, so particles move freely in every direction and spread to fill whatever space they are in. Because both liquids and gases **flow** and hold no fixed shape, we group them together and call them **fluids**.", "icon": "WIND" },
+    { "type": "section", "number": "7.3", "title": "How interparticle spacing differs", "intro": "Why can you squeeze air but not water? It comes down to the gaps between particles." },
+    { "type": "activity", "kicker": "7.3 INTERPARTICLE SPACING · ACTIVITY 7.6", "title": "Squeeze a sealed syringe", "purpose": "Why can you squeeze air but not water? We compress each one to compare **how much empty space** sits between their particles.", "steps": [
+      "Seal — pull the plunger out, block the tip with your thumb",
+      "Push — press the plunger in, first with air inside",
+      "Repeat — now fill it with water and push again"
+    ], "observe": "Air **compresses** and the plunger slides in; water **barely moves**. Gas particles sit **far apart** with room to close up, while liquid particles are already **packed close** — so liquids are almost incompressible." },
+    { "type": "concept", "kicker": "WHY THE DIFFERENCE?", "title": "Gas particles have room to spare", "body": "Air squeezes because gas particles sit **far apart**, with plenty of space to close up. Water resists because its particles are already **packed close**. Even in solids a little space remains between particles — and, surprisingly, it holds **nothing at all**, not even air.", "icon": "PARTICLE" },
+    { "type": "section", "number": "7.4", "title": "How particles move", "intro": "Are particles sitting still, or always on the move? A drop of colour will tell us." },
+    { "type": "activity", "kicker": "7.4 PARTICLES IN MOTION · ACTIVITY 7.8", "title": "A grain of colour spreads on its own", "purpose": "Are particles sitting still, or always moving? We drop a colour into **perfectly still** water — no stirring at all — and simply watch.", "steps": [
+      "Drop — a grain of potassium permanganate into still water",
+      "Watch — the pink streaks creep out from the grain",
+      "Wait — without stirring, and keep watching"
+    ], "observe": "With no stirring, the colour spreads until the **whole glass is evenly pink**. The water particles are in **constant motion** — they pull the colour off the grain and keep hitting it, scattering it everywhere." },
+    { "type": "concept", "kicker": "ALWAYS MOVING", "title": "Particles never sit still", "body": "The water particles **pull the colour off** the grain and keep **hitting** it, scattering it everywhere. Add heat and they move even faster — the colour spreads **fastest in hot water**, slowest in ice-cold. Light an incense stick and moving **air particles** carry its scent across the whole room the same way.", "icon": "LOOP" },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "How soap lifts away oil", "body": "The particulate nature of matter even washes your clothes. A **soap particle** has two ends: one **grips the oil** stuck to the fabric, while the other **mixes with water** — so the oil is pulled off the cloth and rinsed away.", "icon": "BUBBLE" },
+    { "type": "concept", "kicker": "PUTTING IT TOGETHER", "title": "Heat decides the state of matter", "body": "It all comes down to **thermal (heat) energy**. Low energy keeps particles close, with strong attractions and only tiny vibrations — a **solid**. Add energy and they loosen into a **liquid**, then break free into a freely moving **gas**.", "icon": "HEAT" },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "The particles have names", "body": "These tiny particles are **atoms** and **molecules**. Iron is made of iron atoms, gold of gold atoms. Some atoms — like hydrogen and oxygen — don't live alone but join into **molecules**: two hydrogen atoms make a hydrogen molecule, and water is two hydrogen atoms bound to one oxygen.", "icon": "SCIENCE" },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "Words from this chapter", "body": "The vocabulary of the particle world:", "chips": [
+      "Constituent particle", "Interparticle spaces", "Interparticle attraction", "Melting point", "Boiling point", "Fluids", "Thermal energy"
+    ] },
+    { "type": "closing", "title": "Everything is particles in motion", "subtitle": "From a riverbank pebble to a fragrance crossing the room — the unseen dance of tiny particles, and the heat that drives it, explains all the matter around you." }
+  ]
+}

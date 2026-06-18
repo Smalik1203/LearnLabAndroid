@@ -1,0 +1,107 @@
+{
+  "chapterId": "ch09",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 5", "title": "Exploring Forces", "subtitle": "On a windy day Sonali and Ragini cycle out to explore their village — pushing hard against the wind, struggling over rough roads, then racing downhill without pedalling. What is pushing and pulling them?", "points": [
+      "Why does it feel harder to pedal a bicycle when going uphill than on flat ground?",
+      "Why is it easier to slip on a wet surface?",
+      "Why do we feel 'light' or like we are 'floating' just after our swing reaches its highest point and begins to come down?"
+    ] },
+    { "type": "section", "number": "5.1", "title": "What Is a Force?", "intro": "The wind pushes the cyclists back, and gravity seems to pull them downhill. Let us try to experience the push and the pull for ourselves." },
+    { "type": "activity", "kicker": "ACTIVITY 5.1 · LET US EXPLORE", "title": "Move the box any way you can", "purpose": "We want to discover what is common to every way of moving an object — so we take one box and try moving it in **as many ways as we can think of**.", "steps": [
+      "Take — a large cardboard box",
+      "Move — push it, pull it with a rope, or lift it up by carrying it",
+      "Think — was there any other way to move it?"
+    ], "observe": "In **every** way you tried, you had to apply a **push or a pull** to the box. Generally, the push or pull applied on an object is what we call a **force** in science." },
+    { "type": "section", "number": "5.2", "title": "What Can a Force Do to the Objects on Which It Is Applied?", "intro": "We experience push and pull all the time, often without realising it. Let us recall and analyse some of these everyday experiences." },
+    { "type": "activity", "kicker": "ACTIVITY 5.2 · LET US ANALYSE", "title": "List forces and their effects", "purpose": "We **think** of situations where a force is applied and **analyse** what each one does — so we can conclude what a force is actually able to change.", "steps": [
+      "List — situations where a push or pull is applied, in Table 5.1",
+      "Label — was each one a push or a pull?",
+      "Conclude — write the effect of the force in each case"
+    ], "observe": "Stopping a moving bicycle is a **pull** that decreases its speed; hitting a ball with a bat is a **push** that changes its direction; pressing an inflated balloon is a **push** that changes its shape. A force can do **any of these** — and none of them happens without a force." },
+    { "type": "table", "kicker": "TABLE 5.1 · ACTIONS AND THEIR EFFECTS", "title": "Every action is a push or a pull", "headers": ["Action", "Push / Pull", "Effect"], "rows": [
+      ["Holding a moving bicycle from behind to stop it", "Pull", "Stopping or decreasing the speed of the bicycle"],
+      ["Hitting a moving ball with a bat", "Push", "Changing the direction of a moving ball"],
+      ["Pressing an inflated balloon", "Push", "Change in shape of the balloon"]
+    ] },
+    { "type": "concept", "kicker": "WHAT A FORCE DOES", "title": "Force changes motion or shape", "body": "A force applied on an object may **make it move from rest**, **change its speed** if it is moving, **change its direction of motion**, or **bring about a change in its shape** — or cause some or all of these effects together.", "icon": "FORCE" },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "An object at rest still has forces on it", "body": "Suppose an object is at rest. Does that mean **no force** is acting on it? No — it means the forces acting on the object are **balancing one another**. You will learn more about balanced forces in higher grades.", "icon": "BALANCE" },
+    { "type": "section", "number": "5.3", "title": "Are Forces an Interaction Between Two or More Objects?", "intro": "When you push a table, your hand is one object and the table is another. Does a force ever come from a single object alone?" },
+    { "type": "concept", "kicker": "IT TAKES TWO OBJECTS", "title": "A force is an interaction", "body": "When you push a table, your hand feels a force too — and the moment you stop, it disappears. Every action in Table 5.1 involves **at least two objects** interacting. A **force** is a push or pull on an object resulting from its **interaction with another object**, and **each** object feels the force. The SI unit of force is the **newton** (small 'n'), symbol **N**.", "icon": "MEASURE" },
+    { "type": "section", "number": "5.4", "title": "What Are the Different Types of Forces?", "intro": "Some forces need touching; others reach across empty space. Forces sort into two families — contact and non-contact." },
+    { "type": "section", "number": "5.4.1", "title": "Contact forces", "intro": "To apply some forces, physical contact is necessary — direct, like a hand, or indirect, through a stick or rope." },
+    { "type": "concept", "kicker": "CONTACT FORCES", "title": "Forces that need a touch", "body": "In many situations, applying a force needs **physical contact** between our body and the object. This contact can be **direct** — using our hands or other body parts — or **indirect**, such as using a stick or a rope. Forces that act only when there is physical contact between objects are called **contact forces**.", "icon": "FORCE" },
+    { "type": "concept", "kicker": "CONTACT FORCE · MUSCULAR", "title": "Force from our muscles", "body": "When we walk, run, lift, push, jump, or stretch, the force comes from the action of muscles in our body. This **muscular force** occurs when muscles **contract and elongate** while doing any activity. Animals, birds, fish, and insects all use muscular force to move and survive, and humans have long used the muscular force of animals to plough fields and pull carts.", "icon": "FORCE" },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "Muscular force works inside you too", "body": "Muscular force plays an important role **inside our body** as well. It helps us chew food and push it through the alimentary canal during **digestion**. And the expansion and contraction of our **heart muscles** keeps blood circulating through the body — a process essential for survival.", "icon": "HEART" },
+    { "type": "concept", "kicker": "CONTACT FORCE · FRICTION", "title": "The force that opposes motion", "body": "A rolling ball slows and stops on its own; a bicycle coasts to a halt — and stops sooner on a rough road. Some force must be acting on them. The **force of friction**, or simply **friction**, comes into play when an object moves or tries to move over another surface, always acting **opposite** to the direction of motion. It is a contact force, since it arises from two surfaces in contact.", "icon": "FORCE" },
+    { "type": "activity", "kicker": "ACTIVITY 5.3 · LET US INVESTIGATE", "title": "Push it and watch it stop", "purpose": "We want to find out whether a force acts on a moving object to bring it to rest — so we push a flat-based object and **watch what happens** after we let go.", "steps": [
+      "Take — an object with a flat base, such as an empty lunch box or a notebook, on a table or floor",
+      "Push — give it a gentle push and observe: does it stop after some distance?",
+      "Repeat — push it the opposite way; does it stop again after travelling some distance?"
+    ], "observe": "Each time, the object slides a certain distance and then **stops** — no matter which way you push it. A force must be acting **opposite to its motion**, between the sliding object and the surface, bringing it to rest. That force is **friction**." },
+    { "type": "concept", "kicker": "WHERE FRICTION COMES FROM", "title": "Tiny irregularities lock together", "body": "Friction arises due to the **irregularities** in the two surfaces in contact. Even surfaces that look smooth have a large number of minute irregularities. When placed in contact, the irregularities of the two surfaces **lock into each other** and oppose any effort to move one surface over the other.", "icon": "FORCE" },
+    { "type": "activity", "kicker": "ACTIVITY 5.4 · LET US EXPLORE", "title": "The same object on different surfaces", "purpose": "Does the force of friction depend on the surface? We push the **same object** across different surfaces to compare how far it slides each time.", "steps": [
+      "Slide — push the same object on glass, cloth, wood, ceramic tile, and sand",
+      "Compare — does it stop after the same distance every time?",
+      "Notice — on which surfaces does it travel farther, and on which does it stop sooner?"
+    ], "observe": "The object stops after **different distances** on different surfaces. So the force of friction depends on the **nature of the surfaces** in contact — friction is **greater on rough surfaces**. That is why it is easier to slip on a smooth, wet floor." },
+    { "type": "interactive", "kicker": "FORCE VS FRICTION", "title": "Push harder than friction to move it", "caption": "Raise the applied force until it beats friction and the block slides. A rough surface resists more — so you must push harder.", "kind": "FORCE_BLOCK" },
+    { "type": "section", "number": "5.4.2", "title": "Non-contact forces", "intro": "Some forces have an effect even when the objects are not touching at all. These are called non-contact forces." },
+    { "type": "concept", "kicker": "NON-CONTACT FORCE · MAGNETIC", "title": "Magnets push and pull at a distance", "body": "A magnet attracts objects made of magnetic materials. When two magnets are brought close, **like poles** (North–North, South–South) **repel** while **unlike poles** (North–South) **attract** — a form of push and pull, that is, a force. The force exerted by a magnet on another magnet or a magnetic material is called **magnetic force**. Since a magnet acts from a distance without contact, it is a **non-contact force**.", "icon": "FORCE" },
+    { "type": "activity", "kicker": "ACTIVITY 5.5 · LET US TEST", "title": "Make a ring magnet float", "purpose": "We test whether a magnet can exert a force **without touching** — by trying to make one ring magnet hover above another.", "steps": [
+      "Stack — hold a wooden stick upright and slide one ring magnet onto it",
+      "Float — add a second ring magnet so the like poles face each other; does it stay floating above the first?",
+      "Reverse — push the top magnet down gently to feel the force, then flip both magnets' poles and watch what changes"
+    ], "observe": "With **like poles facing**, the second magnet **floats** above the first, and you feel it push back when you press down. Reverse the poles and the floating stops. A magnet can clearly exert a force on another magnet **without being in contact** with it." },
+    { "type": "concept", "kicker": "NON-CONTACT FORCE · ELECTROSTATIC", "title": "Rubbed objects pull at paper", "body": "When two objects of certain materials are **rubbed** together, electrical charges build up on their surfaces. These are called **static charges** because they do not move by themselves, and the object is said to be a **charged object**. A charged object exerts a force on uncharged objects — like small pieces of paper — even **without contact**.", "icon": "BOLT" },
+    { "type": "activity", "kicker": "ACTIVITY 5.6 · LET US EXPERIMENT", "title": "A rubbed scale that lifts paper", "purpose": "We charge an object by rubbing and test whether it can pull small pieces of paper **without touching** them.", "steps": [
+      "Rub — rub a plastic scale or straw vigorously with a piece of polythene",
+      "Care — do not touch the rubbed part with your hand or any metal object",
+      "Bring close — hold it near small pieces of paper on a table, without touching them"
+    ], "observe": "The paper pieces are **pulled towards** the scale and stick to it. The rubbing gave the scale **static charges**, and the charged object attracts the uncharged paper — a force acting even when the objects are **not in contact**." },
+    { "type": "activity", "kicker": "ACTIVITY 5.7 · LET US EXPERIMENT", "title": "Two charged balloons repel", "purpose": "We charge two objects the **same way** to discover whether like charges attract or repel — and what the rubbing cloth does.", "steps": [
+      "Hang — inflate two balloons and hang them so they do not touch",
+      "Rub — rub both balloons with a woollen cloth and release them; what happens?",
+      "Test — now bring the woollen cloth close to one rubbed balloon"
+    ], "observe": "The two balloons **move apart**, repelling each other — so **like charges repel**. But the balloon and the woollen cloth **attract** each other, so they carry **opposite kinds** of charge: **unlike charges attract**. The two kinds of static charge are called **positive** and **negative**." },
+    { "type": "split", "kicker": "ELECTROSTATIC FORCE", "title": "Two kinds of charge", "leftTitle": "Like charges repel", "leftBody": "Both balloons were rubbed the same way, so they carry **similar (like)** charges — and they push each other away.", "rightTitle": "Unlike charges attract", "rightBody": "The balloon and the woollen cloth gain **opposite** charges, so they pull together. The force a charged body exerts on another charged or uncharged body is the **electrostatic force** — a non-contact force." },
+    { "type": "concept", "kicker": "NON-CONTACT FORCE · GRAVITY", "title": "The Earth pulls everything down", "body": "Throw a ball up any way you like and it falls back. Since all objects fall towards the Earth, the Earth must **attract (pull)** them. This **gravitational force** — the **force of gravity**, or simply **gravity** — acts without contact, so it is a non-contact force. Unlike magnetic or electrostatic force, gravity is **always attractive**.", "icon": "GLOBE" },
+    { "type": "activity", "kicker": "ACTIVITY 5.8 · LET US OBSERVE", "title": "Whatever goes up comes down", "purpose": "We test whether the Earth pulls objects back **no matter how hard** we throw them upwards.", "steps": [
+      "Throw — toss a ball vertically upwards; does it come down?",
+      "Harder — throw it again, harder this time; does it still fall back to the ground?",
+      "Think — recall a fruit dropping from a tree or a ball falling through a basketball hoop"
+    ], "observe": "However hard you throw it, the ball **slows, stops momentarily at the top, then falls straight back down**. Moving up, its speed decreases and direction reverses; coming down, its speed increases. This **vertical motion** under gravity shows the Earth pulling every object towards itself." },
+    { "type": "section", "number": "5.5", "title": "Weight and Its Measurement", "intro": "The force with which the Earth pulls an object towards itself has a name — weight. How do we measure it, and how is it different from mass?" },
+    { "type": "concept", "kicker": "WHAT IS WEIGHT?", "title": "Weight is the Earth's pull on you", "body": "The force with which the Earth pulls an object towards itself is called the **weight** of the object. Weight measures how strongly an object is pulled by the Earth. Since weight is a **force**, its SI unit is the same as that of force — the **newton (N)**.", "icon": "MEASURE" },
+    { "type": "activity", "kicker": "ACTIVITY 5.9 · LET US EXPLORE", "title": "Hang objects from a spring", "purpose": "We test whether the Earth pulls **every object with equal force** by hanging different objects from a spring and watching the stretch.", "steps": [
+      "Hang — fix one end of a spring to a nail and hang an object from the other end; does the spring stretch?",
+      "Swap — hang a pencil box, a tiffin box, and a small stone, one by one",
+      "Compare — is the stretch the same for each object?"
+    ], "observe": "The spring **stretches**, and the stretch is **different** for different objects. So the Earth pulls different objects with **different forces** — their weights differ. And because a heavier pull means a bigger stretch, a spring can be used to **measure weight**." },
+    { "type": "concept", "kicker": "MEASURING WEIGHT", "title": "The spring balance", "body": "A **spring balance** is a simple device to measure weight (force). A spring is fixed at one end with a hook at the other; hang an object from the hook and the spring stretches, and the **amount of stretch gives the weight**. Its scale is marked in **newton**, usually with a second scale showing the matching **mass in grams** — marked assuming the balance is used on the Earth.", "icon": "MEASURE" },
+    { "type": "activity", "kicker": "ACTIVITY 5.10 → 5.12 · LET US MEASURE", "title": "Read the scale, then measure", "purpose": "We get to know a spring balance — its **range** and its **smallest division** — before trusting it to measure real objects.", "steps": [
+      "Range — read the largest weight the balance shows: this one reads 0 to 10 N",
+      "Smallest division — between 0 and 0.1 N there are 5 divisions, so one division = 1 N ÷ 5 = 0.2 N",
+      "Measure — hang objects (lighter than the maximum) one by one and record each weight in newton"
+    ], "observe": "This balance has a **range of 0 to 10 N** and can read down to the **smallest value of 0.2 N**. Different balances may differ, so it is **always necessary to check** the range and smallest division of any instrument before using it." },
+    { "type": "concept", "kicker": "WEIGHT VS MASS", "title": "Mass stays; weight can change", "body": "**Mass** is the amount of matter in an object, measured in **grams or kilograms**, and its value is the **same everywhere**. **Weight** is the gravitational force with which the Earth (or another planet) pulls the object. Since gravity varies slightly across the Earth and greatly on other planets, **weight can change but mass does not**.", "icon": "BALANCE" },
+    { "type": "table", "kicker": "TABLE · SAME MASS, DIFFERENT WEIGHT", "title": "1 kg weighs differently across worlds", "headers": ["Place", "Mass of object", "Weight of object"], "rows": [
+      ["Earth", "1 kg", "10 N"],
+      ["Moon", "1 kg", "1.6 N"],
+      ["Mars", "1 kg", "3.8 N"],
+      ["Venus", "1 kg", "9 N"],
+      ["Jupiter", "1 kg", "25.4 N"]
+    ] },
+    { "type": "section", "number": "5.6", "title": "Floating and Sinking", "intro": "Gravity pulls on every object, so why doesn't everything sink to the bottom of the water? And why does a mug feel lighter inside water?" },
+    { "type": "activity", "kicker": "ACTIVITY 5.13 · LET US INVESTIGATE", "title": "Push a bottle underwater", "purpose": "We test whether water pushes **back** on an object pressed into it — and what decides if the object floats or sinks.", "steps": [
+      "Take — an empty bottle with its lid closed tightly, and a bucket full of water",
+      "Push — press the bottle down into the water; do you feel an upward push?",
+      "Release — let go of the bottle; does it bounce back up to the surface?"
+    ], "observe": "You feel an **upward push**, and on release the bottle **bounces back** to the surface. All liquids apply this upward force, called **upthrust** or **buoyant force**. If gravity is stronger than the buoyant force the object **sinks**; if the two are **equal**, it **floats**." },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "Archimedes' Principle", "body": "Archimedes, a famous Greek scientist, discovered that when an object is fully or partly **immersed in a liquid**, it experiences an upward force **equal to the weight of the liquid it displaces** — known as **Archimedes' Principle**. If the displaced liquid weighs less than the object, it **sinks**; if their weights are equal, the object **floats**.", "icon": "QUESTION" },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "A rock that floats", "body": "Some rocks can float on water — one such rock is **pumice**, formed during volcanic eruptions. When lava full of gas and water vapour cools quickly, it traps tiny bubbles of gas inside. This creates a **light, porous rock** filled with air pockets that is **less dense than water** — so it floats.", "icon": "GLOBE" },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "Words from this chapter", "body": "The vocabulary of forces:", "chips": [
+      "Force", "Newton (N)", "Contact force", "Non-contact force", "Muscular force", "Friction", "Magnetic force", "Electrostatic force", "Gravity", "Weight", "Mass", "Buoyant force"
+    ] },
+    { "type": "closing", "title": "Forces are everywhere", "subtitle": "From the friction that slows a bicycle to the gravity that pulls it downhill, and the upthrust that floats a bottle — every push and pull is an interaction between objects, shaping the motion and shape of the world around you." }
+  ]
+}

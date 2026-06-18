@@ -1,5 +1,6 @@
 package com.learnlab.ui.slideshow
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,18 +24,28 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.RecordVoiceOver
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.learnlab.content.ChapterSlide
+import com.learnlab.content.findExperiment
 import com.learnlab.content.textbookDeck
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
@@ -42,12 +53,14 @@ import com.learnlab.design.PrimaryButton
 import com.learnlab.design.ProgressBar
 import com.learnlab.design.SecondaryButton
 import com.learnlab.store.AppState
+import java.util.Locale
 import kotlinx.coroutines.launch
 
 /**
  * The continuous "textbook" for a grade: one swipeable deck of every authored
  * chapter's slides (in order), with each chapter's experiments embedded as inline
- * slides. No chapter/topic selection — you just flip through.
+ * slides. No chapter/topic selection — you just flip through. A Read-aloud button
+ * speaks the current slide via the platform TextToSpeech engine.
  */
 @Composable
 fun TextbookScreen(
@@ -74,6 +87,18 @@ fun TextbookScreen(
     val scope = rememberCoroutineScope()
     val page = pagerState.currentPage.coerceIn(0, items.size - 1)
 
+    // Read-aloud: a single TextToSpeech instance, released with the screen.
+    val ctx = LocalContext.current
+    var speaking by remember { mutableStateOf(false) }
+    val tts = remember {
+        var engine: TextToSpeech? = null
+        engine = TextToSpeech(ctx) { status ->
+            if (status == TextToSpeech.SUCCESS) engine?.language = Locale.UK
+        }
+        engine
+    }
+    DisposableEffect(Unit) { onDispose { tts?.stop(); tts?.shutdown() } }
+
     Column(Modifier.fillMaxSize().background(t.bg)) {
         TextbookNav(state, title = items[page].chapterTitle, onBack = onBack, onHome = onHome)
 
@@ -99,15 +124,30 @@ fun TextbookScreen(
                 LLText("${page + 1} / ${items.size}", color = t.ink400, size = 13.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
+                ReadAloudButton(
+                    speaking = speaking,
+                    onClick = {
+                        if (speaking) {
+                            tts?.stop(); speaking = false
+                        } else {
+                            val text = slideSpeech(items[page].slide)
+                            if (text.isNotBlank()) {
+                                tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "slide")
+                                speaking = true
+                            }
+                        }
+                    },
+                )
+                Spacer(Modifier.width(12.dp))
                 SecondaryButton(
                     label = "‹ Previous",
-                    onClick = { scope.launch { pagerState.animateScrollToPage(page - 1) } },
+                    onClick = { speaking = false; tts?.stop(); scope.launch { pagerState.animateScrollToPage(page - 1) } },
                     enabled = page > 0,
                 )
                 Spacer(Modifier.width(10.dp))
                 PrimaryButton(
                     label = "Next ›",
-                    onClick = { scope.launch { pagerState.animateScrollToPage(page + 1) } },
+                    onClick = { speaking = false; tts?.stop(); scope.launch { pagerState.animateScrollToPage(page + 1) } },
                     enabled = page < items.size - 1,
                 )
             }
@@ -172,6 +212,34 @@ private fun TextbookNav(
 }
 
 @Composable
+private fun ReadAloudButton(speaking: Boolean, onClick: () -> Unit) {
+    val t = LL.tokens
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(if (speaking) t.accent500 else t.surface2)
+            .border(1.dp, t.accent500.copy(alpha = 0.5f), RoundedCornerShape(999.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            if (speaking) Icons.Filled.Stop else Icons.Filled.RecordVoiceOver,
+            contentDescription = "Read aloud",
+            tint = if (speaking) Color.White else t.accent500,
+            modifier = Modifier.size(16.dp),
+        )
+        Spacer(Modifier.width(7.dp))
+        LLText(
+            if (speaking) "Stop" else "Read aloud",
+            color = if (speaking) Color.White else t.accent500,
+            size = 13.sp,
+            weight = FontWeight.SemiBold,
+        )
+    }
+}
+
+@Composable
 private fun CircleIconButton(icon: ImageVector, desc: String, onClick: () -> Unit) {
     val t = LL.tokens
     Box(
@@ -186,3 +254,24 @@ private fun CircleIconButton(icon: ImageVector, desc: String, onClick: () -> Uni
         Icon(icon, contentDescription = desc, tint = t.ink400, modifier = Modifier.size(16.dp))
     }
 }
+
+/** Plain text of a slide, for the Read-aloud button. */
+private fun slideSpeech(s: ChapterSlide): String = when (s) {
+    is ChapterSlide.Title -> s.title + ". " + s.subtitle + " " + s.points.joinToString(" ")
+    is ChapterSlide.Concept -> s.title + ". " + s.body.clean()
+    is ChapterSlide.Steps -> s.title + ". " + s.steps.joinToString(". ") { it.replace(" — ", ": ") }
+    is ChapterSlide.Activity -> s.title + ". " + s.purpose.clean() + " " +
+        s.steps.joinToString(". ") { it.replace(" — ", ": ") } + ". " + s.observe.clean()
+    is ChapterSlide.Quote -> s.translation.clean() + " " + s.attribution
+    is ChapterSlide.Split -> s.title + ". " + s.leftTitle + ": " + s.leftBody.clean() + ". " + s.rightTitle + ": " + s.rightBody.clean()
+    is ChapterSlide.Chips -> s.title + ". " + s.body + " " + s.chips.joinToString(", ")
+    is ChapterSlide.Table -> s.title + ". " + s.rows.joinToString(". ") { it.joinToString(", ") }
+    is ChapterSlide.Figure -> s.title + ". " + s.caption.clean()
+    is ChapterSlide.Interactive -> s.title + ". " + s.caption.clean()
+    is ChapterSlide.SectionHeader -> "Section ${s.number}. ${s.title}. " + s.intro.clean()
+    is ChapterSlide.Scene -> s.body.clean()
+    is ChapterSlide.Closing -> s.title + ". " + s.subtitle
+    is ChapterSlide.Experiment -> findExperiment(s.experimentId)?.let { it.title + ". " + it.blurb } ?: ""
+}
+
+private fun String.clean(): String = replace("**", "")

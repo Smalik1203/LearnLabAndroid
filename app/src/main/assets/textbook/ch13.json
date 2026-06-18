@@ -1,0 +1,69 @@
+{
+  "chapterId": "ch13",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 9", "title": "The Amazing World of Solutes, Solvents, and Solutions", "subtitle": "From a sip of ORS to a boat on the river — the science of mixing things together, and of what floats and what sinks.", "points": [
+      "What happens when you add too much sugar to your tea and it stops dissolving — how can you fix it?",
+      "Why do sugar and salt dissolve in water but not in oil, and why is water called a good solvent?",
+      "Why are water bottles usually tall and cylindrical instead of spherical?"
+    ] },
+    { "type": "concept", "kicker": "UNIFORM vs NON-UNIFORM", "title": "Why every sip of ORS tastes the same", "body": "Every sip of an **Oral Rehydration Solution (ORS)** tastes the same — never salty in one and sweet in another — because the salt and sugar spread **evenly throughout** the water. That is a **uniform mixture**. But **chalk powder, sand, or sawdust** in water stay **unevenly spread** — a **non-uniform mixture**.", "icon": "BUBBLE" },
+    { "type": "section", "number": "9.1", "title": "What are solute, solvent, and solution?", "intro": "A uniform mixture like salt in water has a special name — and so do its parts. Let's name them." },
+    { "type": "concept", "kicker": "9.1 NAMING THE PARTS", "title": "Solute + Solvent → Solution", "body": "A uniform mixture, like salt or sugar in water, is a **solution**. When a solid mixes into a liquid, the solid that dissolves is the **solute** and the liquid it dissolves in is the **solvent**. The solute spreads **evenly all through** the solvent.", "icon": "KITCHEN" },
+    { "type": "table", "kicker": "WHO IS WHO", "title": "Spotting solute and solvent", "headers": ["Term", "Role", "Example"], "rows": [
+      ["Solute", "Gets dissolved", "Salt, sugar"],
+      ["Solvent", "Does the dissolving", "Water"],
+      ["Solution", "The uniform mix", "Salt water"]
+    ] },
+    { "type": "concept", "kicker": "A TRICKY CASE", "title": "Smaller amount is the solute", "body": "When two **liquids** mix, it isn't always clear which dissolves which. The rule: the substance in the **smaller amount** is the **solute**, and the one in the **larger amount** is the **solvent**.", "icon": "NOTE" },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "The chashni of gulab jamun", "body": "The **chashni** (sugar syrup) of gulab jamun is a **large amount of sugar** (solid) dissolved in a **small amount of water** (liquid). Yet the water is still counted as the **solvent** and the sugar as the **solute** — the solid-in-liquid rule wins.", "icon": "KITCHEN" },
+    { "type": "section", "number": "9.2", "title": "How much solute can a fixed amount of solvent dissolve?", "intro": "Keep adding salt to a glass of water — does it dissolve forever, or is there a limit?" },
+    { "type": "activity", "kicker": "ACTIVITY 9.1 · LET US INVESTIGATE", "title": "How much salt will water take?", "purpose": "We want to find out whether water can dissolve salt **without limit**. So we keep adding salt, spoon by spoon, and watch for the moment it stops disappearing.", "steps": [
+      "Fill — half-fill a clean glass tumbler with water",
+      "Dissolve — add one spoon of salt and stir until it vanishes completely",
+      "Keep going — add salt spoon by spoon, recording each in Table 9.1, until it stops dissolving and settles"
+    ], "observe": "At first the salt **dissolves fully**. After a few more spoons, the added salt **no longer dissolves** and settles at the bottom — the water has **reached its limit** and can take no more salt at that temperature." },
+    { "type": "split", "kicker": "9.2 REACHING THE LIMIT", "title": "Saturated or unsaturated?", "leftTitle": "Unsaturated", "leftBody": "More solute can **still dissolve** in it at that temperature.", "rightTitle": "Saturated", "rightBody": "The water has **reached its limit** — extra salt just settles, undissolved, at the bottom." },
+    { "type": "concept", "kicker": "STRENGTH OF A SOLUTION", "title": "Concentration and solubility", "body": "**Concentration** is how much solute sits in a fixed amount of solution — **dilute** (less, like one spoon) or **concentrated** (more, like two or more); these are **relative** terms. The **maximum** solute that dissolves in a fixed quantity of solvent at a given temperature is its **solubility** — beyond it, the rest stays undissolved.", "icon": "MEASURE" },
+    { "type": "section", "number": "9.2.1", "title": "How does temperature affect solubility?", "intro": "A saturated solution won't take more solute — unless we warm it. Let's test that." },
+    { "type": "activity", "kicker": "ACTIVITY 9.2 · LET US EXPERIMENT", "title": "Warm the water, dissolve more", "purpose": "We want to see whether **heat changes how much** a solid can dissolve. So we saturate water with baking soda, then heat it and watch the leftover solid.", "steps": [
+      "Measure — take about 50 mL of water at 20 °C and add baking soda, stirring, until some stays undissolved",
+      "Heat — warm the contents to 50 °C while stirring, then add more baking soda until some remains undissolved again",
+      "Heat further — raise it to 70 °C while stirring and watch the leftover solid"
+    ], "observe": "Each time you **heat the water, the undissolved baking soda dissolves** — and you can add even more. For **most solids, solubility increases with temperature**, so a saturated solution behaves as an **unsaturated** one when warmed." },
+    { "type": "table", "kicker": "TABLE 9.1 · BAKING SODA IN WATER", "title": "Hotter water dissolves more solid", "headers": ["Water temperature", "Baking soda dissolved"], "rows": [
+      ["20 °C", "Least"],
+      ["50 °C", "More"],
+      ["70 °C", "Most"]
+    ] },
+    { "type": "quote", "kicker": "BE A SCIENTIST", "original": "Asima Chatterjee", "transliteration": "anti-epileptic & anti-malarial drugs from plants", "translation": "Asima Chatterjee used solvents and solutions extensively to extract and isolate important compounds from medicinal plants. She was the second Indian woman to earn a Doctorate of Science, the first woman to win the Shanti Swarup Bhatnagar Award in chemical science, and was honoured with the Padma Bhushan.", "attribution": "— Our scientific heritage" },
+    { "type": "section", "number": "9.3", "title": "Solubility of gases", "intro": "Solids dissolve in water — but what about gases? And does the temperature rule still hold?" },
+    { "type": "concept", "kicker": "9.3 GASES DISSOLVE TOO", "title": "The oxygen that keeps fish alive", "body": "Many gases, including **oxygen**, dissolve evenly in water — only a **small amount**, but enough that this dissolved oxygen **sustains plants, fishes, and aquatic organisms**. Unlike solids, gas solubility **decreases as temperature rises**: **cold water holds more oxygen**, and warming water drives it out — the opposite of how solids behave.", "icon": "BUBBLE" },
+    { "type": "section", "number": "9.4", "title": "Why do objects float or sink in water?", "intro": "Husk floats while rice sinks; oil floats while a stone drops. What decides it?" },
+    { "type": "concept", "kicker": "9.4 FLOAT OR SINK", "title": "Lighter floats, heavier sinks", "body": "Some objects **float** and others **sink** — husk floats while rice sinks; oil floats on water. Generally, floaters are **lighter** than the liquid and sinkers are **heavier**. A wooden stick and an iron rod of the **same size** feel different — that property is **density**. Note: density is **not the only factor** deciding what floats in a given liquid.", "icon": "WAVE" },
+    { "type": "section", "number": "9.5", "title": "What is density?", "intro": "A crowded bus, a dense forest — density is about how much is packed into a space. Let's define it." },
+    { "type": "concept", "kicker": "9.5 DEFINING DENSITY", "title": "Mass packed into a unit volume", "body": "Imagine a **crowded bus** versus one with few people — that is high versus low density. **Density** is the **mass in a unit volume** of a substance: **Density = Mass ÷ Volume**, independent of shape or size. Its **SI unit is kg/m³**, but for liquids and solids we use **g/cm³**. An aluminium block of **27 g** and **10 cm³** is **2.7 g/cm³** — **2.7 times denser than water** (its relative density).", "icon": "BALANCE" },
+    { "type": "section", "number": "9.5.1", "title": "Determination of density", "intro": "Density = Mass ÷ Volume — so first we measure mass, then volume. Let's do both." },
+    { "type": "activity", "kicker": "ACTIVITY 9.3 · LET US MEASURE", "title": "Weigh a stone on a balance", "purpose": "To find density we first need the object's **mass**. So we use a **digital weighing balance**, taring it so the watch glass doesn't count.", "steps": [
+      "Zero — switch on the balance and press tare or reset so it reads zero",
+      "Tare — place a dry watch glass on the pan and tare it back to zero",
+      "Weigh — set the stone on the watch glass and note the mass, say 16.400 g"
+    ], "observe": "The balance reads the **mass of the stone alone**, because taring cancelled the watch glass. **Mass** is the quantity of matter in an object — and most balances actually sense weight but show it in **mass units** (g or kg)." },
+    { "type": "activity", "kicker": "ACTIVITY 9.7 · LET US MEASURE", "title": "Find a stone's volume by displacement", "purpose": "A stone has an **irregular shape**, so we can't use length × width × height. Instead we measure how much **water it pushes aside** in a measuring cylinder.", "steps": [
+      "Fill — pour water into a measuring cylinder to a known mark, say 50 mL, and record it",
+      "Lower — tie the stone with a thread and gently lower it in until fully submerged",
+      "Subtract — read the new level, say 55 mL; the volume of water displaced (55 − 50 = 5 mL) is the stone's volume, 5 cm³"
+    ], "observe": "The water **rises by exactly the volume of the stone** — the displaced water (in mL) equals the stone's volume (in **cm³** for solids). Read the level at the **bottom of the meniscus**, with your eyes at its level." },
+    { "type": "concept", "kicker": "PUTTING IT TOGETHER", "title": "From mass and volume to density", "body": "With both numbers in hand, we just divide. For our stone: **Density = Mass ÷ Volume = 16.400 g ÷ 5 cm³ = 3.28 g/cm³**. Since that is greater than water's **1 g/cm³**, this stone would **sink**.", "icon": "MEASURE" },
+    { "type": "interactive", "kicker": "FLOAT OR SINK?", "title": "Lighter than water floats", "caption": "Change the object's density. Below water's 1.0 g/cm³ it floats (and rides lower as it gets denser); above 1.0 it sinks.", "kind": "DENSITY_FLOAT" },
+    { "type": "section", "number": "9.5.2", "title": "Effect of temperature on density", "intro": "Heat something and it spreads out — what does that do to its density?" },
+    { "type": "concept", "kicker": "9.5.2 HEAT SPREADS PARTICLES", "title": "Why hot air rises", "body": "On heating, particles **move apart and spread**, so **volume grows while mass stays the same** — and since density = mass ÷ volume, the **density decreases**. Hot air is **less dense** than the cool air around it, so it rises — exactly how a **hot air balloon** lifts off.", "icon": "WIND" },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "Bamboo rafts and Earth's dense core", "body": "Before big ships, people tied **bamboo poles** into rafts — bamboo is light, hollow, and floats easily. Deep inside our planet, **pressure and temperature rise**, packing materials tighter — so the Earth's layers get **denser from the crust down to the core**.", "icon": "GLOBE" },
+    { "type": "section", "number": "9.5.3", "title": "Effect of pressure on density", "intro": "Squeeze a gas and it shrinks — but does pressure change liquids and solids the same way?" },
+    { "type": "concept", "kicker": "9.5.3 SQUEEZING MATTER", "title": "Pressure mostly affects gases", "body": "For **gases**, more pressure pushes particles closer, so volume **drops** and density **rises**. **Liquids** are nearly incompressible, so pressure has only a **small effect**, and **solids** are affected even less — their density change under pressure is **usually negligible**.", "icon": "PARTICLE" },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "Why ice floats on water", "body": "Water is densest at **4 °C**. As it cools to **0 °C** and freezes, its particles arrange to take up **more space** — an **expansion**. The same water now fills a larger volume, so its density **drops** and ice **floats**. That floating ice layer keeps the water below warm enough for fish to survive.", "icon": "WAVE" },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "Words from this chapter", "body": "The vocabulary of mixing and floating:", "chips": [
+      "Solute", "Solvent", "Solution", "Saturated", "Unsaturated", "Concentration", "Solubility", "Density", "Relative density"
+    ] },
+    { "type": "closing", "title": "From solutions to density!", "subtitle": "From the salt cakes of Ningel village in Manipur to a bamboo raft on the river — careful observation reveals the science of mixing, dissolving, and floating." }
+  ]
+}

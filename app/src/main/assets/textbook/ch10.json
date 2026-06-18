@@ -1,0 +1,91 @@
+{
+  "chapterId": "ch10",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 6", "title": "Pressure, Winds, Storms, and Cyclones", "subtitle": "Leaves swirl, doors slam, windows rattle, roofs fly off — the force of moving air shapes everything from a hurting bag strap to a 270 km/h cyclone.", "points": [
+      "Why are winds stronger on some days than on others?",
+      "Why are water tanks usually placed at a height?",
+      "Can air pressure really crush us?",
+      "What causes storms and cyclones — and if Earth stopped rotating, would cyclones still form?"
+    ] },
+    { "type": "section", "number": "6.1", "title": "Pressure", "intro": "Megha and Pawan carry equally heavy bags, yet only Pawan's hurts. The straps hold the answer — and lead us to define what pressure really is." },
+    { "type": "concept", "kicker": "WHY DOES THE BAG HURT?", "title": "Narrow straps dig in, broad straps don't", "body": "Megha and Pawan carry **identical, equally heavy** bags to a picnic, yet Pawan keeps shifting his — it hurts his shoulders. The difference is the straps: his are **narrow**, hers are **broad**. The same weight spread over a **larger area** of the shoulder presses less. Since the area over which a force acts matters, we define a new quantity — **pressure**.", "icon": "FORCE" },
+    { "type": "concept", "kicker": "DEFINING IT", "title": "Force per unit area", "body": "Pressure is the **force acting on a unit area** of a surface — so **pressure = force ÷ area**. Here we count only the force acting **perpendicular** to the surface. Spread a weight over a bigger area and the pressure drops, which is exactly why a broad bucket handle and a cloth pad under a head-load both feel easier — they reduce pressure by **increasing the area**.", "icon": "FORCE" },
+    { "type": "concept", "kicker": "MEASURING PRESSURE", "title": "Newton per metre squared, the pascal", "body": "The SI unit of force is the **newton (N)** and of area the **metre² (m²)**, so pressure is measured in **N/m²**, also called the **pascal (Pa)**. Apply a force of **100 N** on a cardboard of area **2 m²** and the pressure is 100 ÷ 2 = **50 N/m²**.", "icon": "MEASURE" },
+    { "type": "chips", "kicker": "SMALLER AREA, MORE PRESSURE", "title": "Everyday pressure at work", "body": "When the area is **smaller**, the same force makes a **higher** pressure — which makes certain tasks easier. That is why we choose a sharp edge or a pointed end:", "chips": [
+      "Pointed end of a nail drives in easily", "Sharp edge of a knife cuts the apple", "Broad bucket handle eases the lift", "Cloth pad under a head-load"
+    ] },
+    { "type": "section", "number": "6.1.1", "title": "Do liquids exert pressure?", "intro": "We know a solid weight presses on our shoulders. But does water in a vessel press too — and if so, does it push only down, or in every direction?" },
+    { "type": "activity", "kicker": "ACTIVITY 6.1 · LET US TRY AND FIND OUT", "title": "Two pipes, one bulge", "purpose": "Does a **liquid** exert pressure — and does the bulge depend on the weight of water or on the **height** of its column? We compare two pipes of different widths to find out.", "steps": [
+      "Take two transparent pipes of the same length (about 25 cm) but different diameters",
+      "Tie a rubber balloon over one end of each, clamp them on a stand",
+      "Fill both pipes with water to the same level, about halfway",
+      "Observe whether both balloons bulge — and by how much"
+    ], "observe": "Both balloons bulge to the **same extent**, even though the wider pipe holds **more water**. So it is not the weight but the **height of the water column** that exerts the pressure — equal heights give equal bulges, no matter the width." },
+    { "type": "concept", "kicker": "RAISE THE COLUMN", "title": "Taller column, bigger bulge", "body": "Pour **more water** into a pipe and the balloon bulges **more**. As the height of the water column rises, the **pressure at the bottom rises with it**. So the pressure a liquid exerts depends on the **height of its column** — which is exactly why **overhead tanks** are placed high: the tall column boosts pressure for a strong stream at the taps below.", "icon": "BUBBLE" },
+    { "type": "activity", "kicker": "ACTIVITY 6.2 · LET US FIND OUT", "title": "A bottle that leaks sideways", "purpose": "Does a liquid press only on the **bottom**, or on the **walls** of its container too? We give water side-exits at equal height and watch where it goes.", "steps": [
+      "Take a plastic bottle and make four small holes near the bottom, all at the same height",
+      "Seal the holes with tape, then fill the bottle with water",
+      "Remove the tape from all holes at the same time",
+      "Watch how the water comes out"
+    ], "observe": "Water **spurts out of all four holes** sideways. So liquids exert pressure not only at the **bottom** but on the **walls too** — in fact, a liquid presses in **all directions**. This is why water fountains out of leaking joints in pipes." },
+    { "type": "split", "kicker": "PRESSURE BY HEIGHT", "title": "Where height puts pressure to work", "leftTitle": "Overhead tank", "leftBody": "Tanks sit high so the tall water column raises the pressure, giving a strong stream at the taps below — a tap on the first floor flows stronger than one on the second.", "rightTitle": "Dam base", "rightBody": "Water presses horizontally on the dam's walls, and this pressure is **largest near the bottom**. So a dam's base is built much broader than its top to withstand it." },
+    { "type": "section", "number": "6.2", "title": "Pressure Exerted by Air", "intro": "The air all around us is the atmosphere — and it is not weightless. Does this invisible blanket of air press on us the way water presses in a vessel?" },
+    { "type": "concept", "kicker": "THE BLANKET OF AIR", "title": "The atmosphere presses on everything", "body": "The envelope of air surrounding Earth is the **atmosphere** — nitrogen, oxygen, argon, carbon dioxide and other gases, extending many kilometres up. This air is **all around us**, and like any matter it can exert a force. Does it press on objects? An activity with a paper plate will show us.", "icon": "WIND" },
+    { "type": "activity", "kicker": "ACTIVITY 6.3 · LET US EXPLORE", "title": "Lift the covered plate", "purpose": "Does **air** push down on a surface — and does that push depend on the **area** covered? We cover an inverted plate two ways and feel which is harder to lift.", "steps": [
+      "Invert a paper plate, fix a stick to it, and place it on a flat surface",
+      "Cover it with a chart-paper sheet folded twice (small area); lift with the stick",
+      "Now cover it with the same sheet unfolded (large area); lift again",
+      "Compare the effort needed each time"
+    ], "observe": "The plate is **harder to lift** under the **unfolded** (larger) sheet, even though the sheet's weight hasn't changed. Air pushes on the covering sheet, and the push **grows with area** — proving air exerts a pressure on all objects, the **atmospheric pressure**." },
+    { "type": "concept", "kicker": "HOW STRONG IS IT?", "title": "Why air doesn't crush us", "body": "Air over a **15 cm × 15 cm** area pushes with about **2250 N** — like the weight of a **225 kg** object. A rubber **sucker** sticks because, once you squeeze the air out, the **outside** air pressure beats the reduced pressure inside it. We aren't crushed because the **pressure inside our body** — from fluids and gases in our tissues — balances the pressure outside.", "icon": "FORCE" },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "Millibars and hectopascals", "body": "The SI unit of pressure is **N/m²**, the **pascal (Pa)**. But meteorologists use a practical unit, the **millibar (mb)**, equal to **100 Pa**. Air pressure is also given in **hectopascals (hPa)** — and one hPa also equals **100 Pa**, so 1 mb = 1 hPa.", "icon": "MEASURE" },
+    { "type": "section", "number": "6.3", "title": "Formation of Wind", "intro": "Some days the wind blows hard, other days it is calm. Air escaping a balloon or a punctured tube always rushes one way — and that hints at what sets the whole atmosphere in motion." },
+    { "type": "concept", "kicker": "WHICH WAY DOES AIR MOVE?", "title": "High pressure to low pressure", "body": "When an inflated balloon is left open, or a bicycle tube is punctured, the air **escapes** — always moving from a region of **high pressure** to a region of **low pressure**. This simple direction of flow is the key to understanding how winds form.", "icon": "WIND" },
+    { "type": "activity", "kicker": "ACTIVITY 6.5 · LET US OBSERVE", "title": "One balloon feeds the other", "purpose": "Does air flow from high pressure to low — and does it stop once pressures are equal? We connect a full balloon to an empty one through a straw and watch.", "steps": [
+      "Insert one end of a straw into an uninflated balloon, sealing it tight",
+      "Inflate a second balloon, hold its mouth shut, and seal it onto the straw's other end",
+      "Release and predict what will happen to both balloons",
+      "Watch how their sizes change, and when the flow stops"
+    ], "observe": "Air moves from the **inflated** balloon (high pressure) into the **uninflated** one (low pressure) — the first shrinks, the second grows. The flow stops only when **both pressures are equal**. Moving air like this is **wind**: differences in air pressure set the air in motion." },
+    { "type": "split", "kicker": "SEA & LAND BREEZE", "title": "Heating drives the breeze", "leftTitle": "Sea breeze (day)", "leftBody": "Land heats **faster** than water; the warm air over land rises, leaving **low pressure**, so cooler air blows **in from the sea** — a sea breeze.", "rightTitle": "Land breeze (night)", "rightBody": "At night the **sea stays warmer**; low pressure forms over the water, so the wind blows **from the land to the sea** — a land breeze." },
+    { "type": "section", "number": "6.4", "title": "High-Speed Winds Result in Lowering of Air Pressure", "intro": "People say high winds can blow roofs clean off. Two hanging balloons and a single breath between them reveal the surprising reason why." },
+    { "type": "activity", "kicker": "ACTIVITY 6.6 · LET US OBSERVE", "title": "Blow between two balloons", "purpose": "Does **fast-moving air** raise or lower the pressure? We blow into the gap between two hanging balloons and watch which way they move.", "steps": [
+      "Inflate two balloons of the same size and tie a string to each",
+      "Hang them from a stick with a gap of 6–10 cm between them",
+      "Blow air into the narrow space between the balloons",
+      "Note what happens — then blow harder and observe again"
+    ], "observe": "The balloons swing **towards each other**, and harder blowing pulls them together faster. Fast-moving air between them creates a **low-pressure** area, and the higher surrounding pressure pushes them in — so **high-speed winds are accompanied by reduced air pressure**." },
+    { "type": "concept", "kicker": "WHY ROOFS FLY OFF", "title": "Low pressure above, higher pressure below", "body": "When high-speed winds rush **over a roof**, the pressure above it drops below the pressure of the still air **inside** the house. If the difference is large and the roof is weak, it can be **blown away**. That is why it is safer to keep **doors and windows open** during such storms — letting wind through cuts the pressure difference and helps keep the roof on.", "icon": "WIND" },
+    { "type": "section", "number": "6.5", "title": "Storms, Thunderstorms, and Lightning", "intro": "Heavy rain, frightening thunder, sudden flashes of light — when high-speed winds meet rising moist air, a storm can crackle into a thunderstorm. How does it build, and what makes the lightning leap?" },
+    { "type": "steps", "kicker": "6.5 HOW A THUNDERSTORM BUILDS", "title": "From rising warm air to a flash and a boom", "steps": [
+      "Heating — warm, moist air rises, cooler air rushes in to replace it, and the circulation continues",
+      "Clouds — the rising air cools, vapour condenses into droplets that merge and fall as rain, hail, or snow; strong winds with rain make a storm",
+      "Charging — strong up-and-down winds rub water droplets against ice particles, so static charge builds in the cloud",
+      "Lightning — air's insulation breaks down, charges flow in a sudden flash, the air is heated and expands, and the boom we hear is thunder"
+    ] },
+    { "type": "concept", "kicker": "WHERE THE CHARGE GOES", "title": "Charge splits, then leaps", "body": "Positively charged **lighter ice particles** rise to the **top** of the cloud while negatively charged **heavier water droplets** sink to the **bottom**, separating the charge. The negative base also makes the **ground and trees** below turn positive. Air normally **insulates** these opposite charges — but once the build-up is huge, the air breaks down and **lightning** flashes within a cloud, between clouds, or between cloud and ground.", "icon": "BOLT" },
+    { "type": "table", "kicker": "STAYING SAFE IN LIGHTNING", "title": "What to do when lightning strikes", "headers": ["Danger", "Stay safe by"], "rows": [
+      ["Tall objects attract strikes", "Stay away from tall objects and trees"],
+      ["Open high ground is exposed", "Find a low-lying area and crouch down"],
+      ["Lying flat spreads contact", "Crouch — do not lie down flat"],
+      ["A metal umbrella rod conducts", "Avoid metal-rod umbrellas; get out of water"]
+    ] },
+    { "type": "chips", "kicker": "INDIAN CONTEXT", "title": "Local thunderstorms have local names", "body": "Isolated, localised **pre-monsoon** thunderstorms appear across India under regional names — some helping kharif crops grow and fruit ripen:", "chips": [
+      "Kalboishakhi — West Bengal, Bihar, Jharkhand", "Bordoisila — Assam", "Mango showers — Kerala, Karnataka, Tamil Nadu", "Coffee-blossom showers — Karnataka"
+    ] },
+    { "type": "concept", "kicker": "EVER HEARD OF…", "title": "The lightning conductor", "body": "A **lightning conductor** is a metallic rod fixed along a building's wall during construction. Its **pointed top** is kept **higher than the highest point** of the building, and its other end is **buried deep** in the ground. The rod gives the electric charge an **easy path** straight into the earth, protecting the building from lightning.", "icon": "BOLT" },
+    { "type": "section", "number": "6.6", "title": "Cyclone", "intro": "Over a warm ocean, rising moist air, released heat, and Earth's spin together build the most violent storm of all — a giant pinwheel of wind and rain with a strangely calm centre." },
+    { "type": "concept", "kicker": "6.6 A GIANT SPINNING STORM", "title": "How a cyclone is born", "body": "Over **warm ocean water**, warm moist air rises and its vapour condenses into raindrops, **releasing heat** that warms the air further so it rises even more — driving an ever **lower pressure** as more air rushes in. **Earth's rotation** makes this in-rushing air **spin**. The whole spinning system of clouds, winds, and rain is a **cyclone**.", "icon": "STORM" },
+    { "type": "concept", "kicker": "THE EYE", "title": "Calm centre, violent ring", "body": "The region of **lowest pressure** sits at the centre — the **eye of the cyclone**. At the eye the wind is **calm**, but the ring around it is lashed by **strong winds and heavy rain**. A cyclone gathers higher wind speeds than ordinary thunderstorms, and once it reaches land its source of moist air is cut off, so it **gradually loses strength**. The Amphan cyclone in 2020 reached peak winds of **270 km/h**.", "icon": "STORM" },
+    { "type": "table", "kicker": "CYCLONE: DANGERS & SAFETY", "title": "Damage and how to stay safe", "headers": ["Hazard", "What to do"], "rows": [
+      ["Storm surge 3–12 m floods the coast", "Move early to a designated cyclone shelter"],
+      ["Heavy rain, floods, landslides", "Track IMD weather reports and warnings"],
+      ["Salt water spoils crops and drinking water", "Keep an emergency kit with essentials ready"],
+      ["Blocked roads, long power cuts", "Stay updated — satellites track the cyclone's path"]
+    ] },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "Words from this chapter", "body": "The vocabulary of pressure and weather:", "chips": [
+      "Pressure", "Pascal", "Atmospheric pressure", "Wind", "Storm", "Lightning", "Thunderstorm", "Cyclone", "Eye of the cyclone"
+    ] },
+    { "type": "closing", "title": "Pressure runs the weather", "subtitle": "From a sharp knife to a swirling cyclone, differences in pressure shape the air, the winds, and the storms above us — and knowing how they form is how we stay safe beneath them." }
+  ]
+}

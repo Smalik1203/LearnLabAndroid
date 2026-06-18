@@ -1,0 +1,92 @@
+{
+  "chapterId": "ch16",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 12", "title": "How Nature Works in Harmony", "subtitle": "A train rolls over an elephant corridor while a herd passes safely below — every living thing is tied to the soil, water, sunlight, and creatures around it.", "points": [
+      "How might the loss of forest cover and changes in rainfall lead elephants to enter human farms and villages?",
+      "Imagine you are a tree in a dense forest — what relationships would you have with water, sunlight, and other animals?",
+      "Can the Earth thrive without humans? Can humans survive without the Earth?"
+    ] },
+    { "type": "concept", "kicker": "WHY ELEPHANTS WANDER IN", "title": "A chain of events ties nature together", "body": "In Odisha, Jharkhand, Assam, and other states, elephants enter farms when waterholes **dry up** and food grows scarce. Cutting trees for roads and buildings shrinks forests, so animals move into human areas. Wildlife ecologists mark **corridors** that let animals travel safely between forests — showing how closely nature's elements are connected.", "icon": "GLOBE" },
+    { "type": "section", "number": "12.1", "title": "How do we experience and interpret our surroundings?", "intro": "Different habitats hold different living and non-living things. Let us explore two nearby habitats and sort what we find." },
+    { "type": "concept", "kicker": "12.1 OUR SURROUNDINGS", "title": "A habitat is where an organism lives", "body": "A **habitat** is simply the place where an organism lives — it could even be just the **bark of a tree**. The plants and animals in it interact with each other and adapt to survive in the surrounding conditions. To understand a habitat, we explore it and identify both the living and the non-living parts.", "icon": "LEAF" },
+    { "type": "activity", "kicker": "ACTIVITY 12.1 · LET US EXPLORE", "title": "Explore a pond and a forest", "purpose": "Do different habitats hold different things? We compare two nearby habitats to see what **living** and **non-living** components each one has.", "steps": [
+      "Identify — two habitats nearby, such as a pond, a forest, a farm, or a banyan, mango, or pilkhan tree",
+      "List — the living beings you observe in each habitat",
+      "Record — the non-living things too, in your own table"
+    ], "observe": "Both habitats hold **living beings and non-living things**, but the kinds differ. The living beings are the **biotic** components; the non-living things are the **abiotic** components — and every organism needs specific conditions to survive." },
+    { "type": "table", "kicker": "TABLE 12.1 · TWO HABITATS", "title": "Same idea, different components", "headers": ["Habitat", "Biotic (living)", "Abiotic (non-living)"], "rows": [
+      ["Pond", "Fish, frogs, dragonflies, algae, lotus", "Water, oxygen"],
+      ["Forest", "Grass, trees, birds", "Soil, sunlight"]
+    ] },
+    { "type": "concept", "kicker": "WHY THE FISH STAYS", "title": "A habitat supplies biotic and abiotic needs", "body": "A pond gives fish **food, oxygen, shelter, and space**. Fish meet their **biotic** needs — food from small plants and animals — and their **abiotic** needs, such as oxygen, from water. Different organisms use the same habitat differently: a snake out at night and a rodent active by day share one habitat yet face different conditions. This is how organisms coexist in **harmony**.", "icon": "LOOP" },
+    { "type": "section", "number": "12.2", "title": "Who all live together in nature?", "intro": "You rarely see just one fish in a pond. From a single kind to a whole community — let us count and name the groups." },
+    { "type": "activity", "kicker": "ACTIVITY 12.2 · LET US RECORD", "title": "Count the organisms in one square metre", "purpose": "How many of one kind live together? We count organisms in a fixed patch to understand the idea of a **population**.", "steps": [
+      "Mark — a 1 m × 1 m area in your school garden",
+      "Identify — any four organisms, plants or animals, in this area",
+      "Count — the number of each, and compile the data from all groups"
+    ], "observe": "You might find **20** of one plant but only **5** of another in the same area. A group of the **same kind** of organism living together at a given place and time is a **population**." },
+    { "type": "steps", "kicker": "12.2 LIVING TOGETHER", "title": "From one organism to a whole community", "steps": [
+      "Population — all the organisms of one kind living together in a habitat at a given time",
+      "Community — different populations of plants, animals, and microorganisms sharing the same habitat",
+      "Interdependence — these organisms interact and depend on one another for survival"
+    ] },
+    { "type": "section", "number": "12.3", "title": "Does every organism in a community matter?", "intro": "What happens if one kind of organism changes in number? A study of ponds with and without fish gives a surprising answer." },
+    { "type": "activity", "kicker": "ACTIVITY 12.3 · LET US READ", "title": "Ponds with fish, ponds without", "purpose": "Does the number of fish in a pond affect plants on land? We read a real study comparing **Pond A (with fish)** and **Pond B (without fish)** to trace the ripples.", "steps": [
+      "Compare — the number of dragonflies, bees, and butterflies in both ponds",
+      "Relate — the number of dragonflies to the number of bees and butterflies",
+      "Think — about how the population of fish could affect seed production in nearby plants"
+    ], "observe": "Pond A (with fish) had **fewer dragonflies** — fish eat dragonfly **larvae**. Fewer dragonflies meant more **bees, flies, and butterflies**, which pollinate flowers, so plants near ponds with fish made **more seeds**. One change ripples outward." },
+    { "type": "concept", "kicker": "WHAT THE STUDY SHOWS", "title": "One organism's effect ripples through the web", "body": "Fish eating dragonfly larvae is a **direct** effect; fewer dragonflies leading to more pollinators and more seeds in **St. John's wort** is an **indirect** effect. The study shows how **biotic** components — fish, dragonflies, pollinators, plants — and **abiotic** components — temperature, water, nutrients — affect one another. Could overfishing by humans upset this same balance?", "icon": "BALANCE" },
+    { "type": "section", "number": "12.4", "title": "What are the different types of interactions among organisms and their surroundings?", "intro": "Living things depend on non-living things, and on each other. Let us name the kinds of interactions inside a habitat." },
+    { "type": "activity", "kicker": "ACTIVITY 12.4 · LET US RELATE AND IDENTIFY", "title": "Spot three kinds of interaction", "purpose": "How do parts of a habitat affect each other? We use three criteria to **identify and describe** the interactions in a pond scene.", "steps": [
+      "Criterion 1 — interactions between biotic and abiotic components (an earthworm lives in moist soil)",
+      "Criterion 2 — interactions between two abiotic components (sunlight makes water evaporate fast)",
+      "Criterion 3 — interactions among biotic components (a frog eats insects; a water snake eats fish)"
+    ], "observe": "Interactions run **both ways**: between living and non-living parts, between two non-living parts, and among living things. Both kinds matter for survival in any habitat." },
+    { "type": "section", "number": "12.5", "title": "Ecosystems — when components interact", "intro": "Pull the interactions together and an ecosystem emerges. Some are watery, some on land, some made by us." },
+    { "type": "concept", "kicker": "12.4 ECOSYSTEMS FORM", "title": "Biotic and abiotic parts make an ecosystem", "body": "When biotic components — plants, animals, microorganisms — and abiotic components — air, water, soil, sunlight, temperature — interact in a habitat, they form an **ecosystem**. **Aquatic** ecosystems include ponds, rivers, and lakes; **terrestrial** ones include forests, grasslands, and farms — even a single large tree. A farm is a **human-made ecosystem**.", "icon": "GLOBE" },
+    { "type": "activity", "kicker": "ACTIVITY 12.5 · LET US CLASSIFY", "title": "What does each organism eat?", "purpose": "How can we sort organisms by how they feed? We study a forest scene and classify each organism by its **eating habit**.", "steps": [
+      "Spot — organisms like deer, hare, vulture, Bengal fox, shikra, squirrel, mouse, mushroom, and tree",
+      "Find out — what each one eats, using the library or internet",
+      "Record — whether each feeds only on plants, only on animals, or on both"
+    ], "observe": "Plants make their **own food** by photosynthesis, so they are **producers** or **autotrophs** (auto = self, troph = food). Organisms that depend on others for food are **consumers** or **heterotrophs** (hetero = other)." },
+    { "type": "table", "kicker": "WHO EATS WHOM", "title": "Roles organisms play", "headers": ["Role", "What they do", "Example"], "rows": [
+      ["Producer", "Makes its own food by photosynthesis", "Green plants"],
+      ["Herbivore", "Eats only plants", "Deer, hare"],
+      ["Carnivore", "Eats only animals", "Leopard"],
+      ["Omnivore", "Eats both plants and animals", "Crow, fox, mouse"],
+      ["Decomposer", "Breaks down dead matter", "Mushroom, bacteria"]
+    ] },
+    { "type": "section", "number": "12.5", "title": "Who eats whom — food chains", "intro": "Link the feeding relationships and you get a sequence. Where does the energy in every food chain begin?" },
+    { "type": "activity", "kicker": "ACTIVITY 12.6 · LET US LINK", "title": "Build a grassland food chain", "purpose": "How are feeding relationships linked? We arrange grassland organisms into a chain to show **who eats whom**.", "steps": [
+      "Consider — grass, grasshopper, frog, hare, snake, and eagle in a grassland",
+      "Draw — arrows from each organism to the one that eats it",
+      "Read — one chain that results: grass → grasshopper → frog → snake → eagle"
+    ], "observe": "A **food chain** is a simple sequence showing 'who eats whom' in an ecosystem. It starts with **producers** that capture the Sun's energy; every consumer above them depends on it." },
+    { "type": "concept", "kicker": "12.5 FOOD CHAINS", "title": "Energy passes along, starting with the Sun", "body": "Each organism in a food chain holds a specific position called a **trophic level** (troph = food). **Producers** like green plants are the first level; **herbivores** the second; **small carnivores** the third; and **large carnivores** the next. Energy flows up the chain, starting with the **Sun** — and the numbers shrink at each level, so a chain like millet → mouse → eagle stacks into a **pyramid**.", "icon": "SUN" },
+    { "type": "figure", "kicker": "ENERGY FLOWS UPWARD", "title": "Trophic levels form a pyramid", "caption": "Each organism holds a position called a trophic level. Numbers shrink as you climb — many producers at the base, few large carnivores at the top.", "kind": "ENERGY_PYRAMID", "labels": ["Top carnivores", "Small carnivores", "Herbivores", "Producers (plants)"] },
+    { "type": "activity", "kicker": "ACTIVITY 12.8 · LET US TRACE AND LINK", "title": "Link the chains into a web", "purpose": "Are food chains separate? We add the missing 'who eats whom' arrows to see how chains connect.", "steps": [
+      "Look — at grasses, hare, mouse, frog, grasshopper, fox, owl, bird, hawk, and snake",
+      "Add — arrows for every feeding relationship you can find",
+      "Notice — that each organism may be eaten by two or more others"
+    ], "observe": "Because each organism can be eaten by **several** others, the food chains interlink to form a network called a **food web**." },
+    { "type": "section", "number": "12.6", "title": "What happens to waste in nature?", "intro": "Organisms grow, function, and die, producing dead matter and waste. Who clears it away — and where does it go?" },
+    { "type": "concept", "kicker": "12.6 WASTE IN NATURE", "title": "Decomposers recycle everything", "body": "Microorganisms like **fungi and bacteria** break down dead plants and animals into simpler substances, returning important **nutrients to the soil**. Mushrooms on dead wood and beetles on elephant dung do this work too. The process is **decomposition** and the organisms are **decomposers** or **saprotrophs** (sapro = rotten). In nature, nothing is wasted — everything is reused.", "icon": "LOOP" },
+    { "type": "section", "number": "12.7", "title": "How does one change lead to another?", "intro": "A single small change can set off many more. Two real Indian examples show how far the ripples reach." },
+    { "type": "concept", "kicker": "12.7 ONE CHANGE, MANY MORE", "title": "Pollution in a pond, one step at a time", "body": "Pollution makes pond **plants die**, so there is **less oxygen**, so **fish die**. With fewer fish eating them, **insects increase** and spread to nearby farms. Farmers then use **pesticides** to protect crops, which may harm the environment again — one change after another.", "icon": "BALANCE" },
+    { "type": "activity", "kicker": "ACTIVITY 12.9 · LET US READ", "title": "The Indian bullfrog's warning", "purpose": "What happens when humans intervene in nature? We read how exporting frog legs disturbed whole farms.", "steps": [
+      "Read — in the 1980s India exported frog legs of the Indian bullfrog (Hoplobatrachus tigerinus)",
+      "Trace — large-scale harvesting cut frog numbers, so pests rose, so farmers used more pesticides",
+      "Note — the Government of India banned the export to prevent further ecological damage"
+    ], "observe": "Since frogs eat insects, fewer frogs meant **more pests** and **more synthetic pesticides**, harming soil, water, and human health. An ecosystem stays in **balance** only when interactions keep populations and resources stable — a balance that is **dynamic, not fixed**." },
+    { "type": "section", "number": "12.8", "title": "How do interactions maintain balance in ecosystems?", "intro": "Besides eating one another, organisms compete and form partnerships. Both keep the ecosystem in check." },
+    { "type": "split", "kicker": "12.8 KEEPING BALANCE", "title": "Two ways organisms relate", "leftTitle": "Competition", "leftBody": "Organisms compete for common resources — food, water, physical space, or sunlight. This competition controls population size and keeps the ecosystem balanced; without it, one species could multiply too much and cause imbalance.", "rightTitle": "Partnerships", "rightBody": "Mutualism — both benefit (honeybees and flowers). Commensalism — one benefits, the other is unaffected (orchids on trees). Parasitism — one benefits, the other is harmed (ticks on dogs)." },
+    { "type": "section", "number": "12.9", "title": "What are the benefits of an ecosystem?", "intro": "Ecosystems support our well-being — but we threaten them. The Sundarbans show both sides at once." },
+    { "type": "concept", "kicker": "12.9 BENEFITS & THREATS", "title": "The Sundarbans — gift and warning", "body": "Forests give us **fresh air, fertile soil, food, fibres, timber, and medicines**; aquatic ecosystems give water and food. The **Sundarbans**, the world's largest mangrove forest, slow storm **winds and waves** and absorb carbon dioxide — a UNESCO World Heritage Site since 1987. Yet mangroves are cut for fuelwood, wildlife is hunted, and pollution damages the water, disrupting how the ecosystem works.", "icon": "GLOBE" },
+    { "type": "concept", "kicker": "12.9.2 HEALTHY FARMS", "title": "Sustainable farming keeps the balance", "body": "The **Green Revolution** of the mid-20th century used synthetic fertilisers and pesticides to end India's food crisis — but overusing them degrades **soil**, harms friendly microbes and natural predators, and lets pests resist. Growing one crop repeatedly, called **monoculture**, reduces biodiversity. Understanding ecosystems helps us adopt **organic and natural** farming that works with nature, not against it.", "icon": "LEAF" },
+    { "type": "chips", "kicker": "THREATS & PROTECTION", "title": "How we harm ecosystems — and how we protect them", "body": "Across India, deforestation, overuse, invasive species, and pollution damage forests, rivers, wetlands, and coasts. Protected areas — like Jim Corbett, Manas, and the Nilgiri Biosphere Reserve — set land aside to conserve habitats and the rare species in them.", "chips": [
+      "Deforestation", "Pollution", "Invasive species", "Overuse of resources", "National parks & sanctuaries"
+    ] },
+    { "type": "closing", "title": "Nature works as one connected whole", "subtitle": "From a pond's dragonflies to the Sundarbans' mangroves — every action ripples through the web of life. Protect the balance, and nature wastes nothing." }
+  ]
+}

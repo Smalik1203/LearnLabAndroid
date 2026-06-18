@@ -1,0 +1,86 @@
+{
+  "chapterId": "ch08",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 4", "title": "Electricity: Magnetic and Heating Effects", "subtitle": "At the science fair, an iron nail wrapped in wire lifts paper clips like a magnet — yet there's no magnet anywhere, only a closed circuit. How?", "points": [
+      "Without a lamp, is there another way to tell that current is flowing in a circuit?",
+      "Is it possible to make temporary magnets? How can these be made?",
+      "We make heat by burning fuel — but how is heat generated inside electrical appliances?",
+      "How do we know if a cell or battery is dead, and can all of them be recharged?"
+    ] },
+    { "type": "section", "number": "4.1", "title": "Does an electric current have a magnetic effect?", "intro": "Sumana's lifting-electromagnet model had no magnet, only a circuit. To explain it, we start with a compass and a single live wire." },
+    { "type": "activity", "kicker": "ACTIVITY 4.1 · LET US INVESTIGATE", "title": "A compass beneath a live wire", "purpose": "We want to find out whether a current-carrying wire can affect a **magnetic compass** — a hidden way to detect current even without a lamp.", "steps": [
+      "Build — fix two nails on cardboard and stretch a wire between them, just above the surface",
+      "Wire up — connect the wire to a cell through a homemade switch",
+      "Place — set a magnetic compass right beneath the wire",
+      "Switch — flick ON then OFF a few times, watching the needle each time"
+    ], "observe": "Switch **ON** and the needle **deflects** from its rest direction; switch **OFF** and it swings back. The current is doing something to the compass — even though the wire is not a magnet." },
+    { "type": "experiment", "experimentId": "oersted-experiment" },
+    { "type": "concept", "kicker": "THE BIG IDEA", "title": "A current makes a magnetic field", "body": "A compass needle is a tiny magnet, so its deflection means the wire has a **magnetic effect**. When electric current flows through a conductor it produces a **magnetic field** around it — the **magnetic effect of electric current**. The region where this effect can be felt is the **magnetic field**, and it disappears the instant the current stops.", "icon": "BOLT" },
+    { "type": "quote", "kicker": "BE A SCIENTIST", "original": "Hans Christian Ørsted · 1820", "transliteration": "You just repeated his discovery", "translation": "Demonstrating to his class in Denmark, Ørsted noticed that whenever a circuit was closed or opened, a nearby compass needle deflected. He investigated until he was certain a current produces a magnetic field, then published — the first proof that electricity and magnetism are linked.", "attribution": "— Hans Christian Ørsted (1777–1851)" },
+    { "type": "section", "number": "4.1.1", "title": "Electromagnets", "intro": "The magnetic effect powers electric bells, motors, fans, and loudspeakers. But it also answers Sumana's puzzle — so what happens when we wind that wire into a coil around an iron nail?" },
+    { "type": "activity", "kicker": "ACTIVITY 4.2 · LET US EXPLORE", "title": "A nail that grabs paper clips", "purpose": "We test whether a coil of current-carrying wire can turn an ordinary iron nail into a **temporary magnet**.", "steps": [
+      "Wind — wrap about 50 cm of insulated wire tightly around an iron nail as a coil",
+      "Connect — join the wire ends to a cell for just a few seconds, or the cell weakens",
+      "Lift — bring the nail to some iron paper clips",
+      "Cut off — disconnect the wire and watch the clips"
+    ], "observe": "While current flows, the clips **cling** to the nail; the moment you disconnect, they **fall off**. The nail is a magnet only as long as the current flows." },
+    { "type": "activity", "kicker": "ACTIVITY 4.3 · LET US EXPERIMENT", "title": "Build a coil and test its core", "purpose": "We investigate the effect carefully: does a bare coil deflect a compass, and what does adding an **iron core** change?", "steps": [
+      "Coil — wind about 50 turns of insulated wire on a paper cylinder",
+      "Watch — place compasses at both ends, connect the cell, look for deflection",
+      "Disconnect — check that the needles return to rest",
+      "Add a core — slide an iron nail into the cylinder and repeat, then offer it some clips"
+    ], "observe": "The bare coil already deflects the needles. With an **iron nail** inside, the deflection is **much greater** and the nail now grabs clips too. Stop the current and the coil loses its magnetism." },
+    { "type": "experiment", "experimentId": "electromagnet" },
+    { "type": "concept", "kicker": "WHAT WE BUILT", "title": "This is an electromagnet", "body": "A **current-carrying coil that behaves as a magnet** is called an **electromagnet**. Inserting an **iron core** makes it far stronger, which is why most practical electromagnets are built around iron. Unlike a permanent magnet, it is magnetic **only while current flows** — a magnet you can switch on and off.", "icon": "BOLT" },
+    { "type": "activity", "kicker": "ACTIVITY 4.4 · LET US INVESTIGATE", "title": "Does it have two poles?", "purpose": "A bar magnet has a North and a South pole. We check whether our electromagnet does too — and how to name them.", "steps": [
+      "Label — mark the two ends of the coil A and B",
+      "Probe A — bring a compass to end A, connect the cell, note which pole is attracted",
+      "Reason — unlike poles attract, so if the compass's North is pulled to A, then A is South",
+      "Probe B — repeat at end B and compare"
+    ], "observe": "End A attracts one pole, end B the **opposite** pole. Just like a bar magnet, an electromagnet has **two poles — North and South**." },
+    { "type": "concept", "kicker": "THINK LIKE A SCIENTIST", "title": "What makes it stronger?", "body": "Repeating the activity with changes shows what controls an electromagnet's strength. A single cell gives a **weak** field, so little deflection and few clips. **More cells** mean more current and a stronger magnet; **more turns** in the coil also strengthen it. And reversing the current's direction **swaps the poles**.", "icon": "BALANCE" },
+    { "type": "table", "kicker": "TABLE · TUNING AN ELECTROMAGNET", "title": "Three dials you can turn", "headers": ["Change you make", "Effect on the magnet"], "rows": [
+      ["More cells (larger current)", "Stronger field, more deflection, more clips"],
+      ["More turns in the coil", "Stronger magnet"],
+      ["Insert an iron core", "Much stronger; deflection much greater"],
+      ["Reverse the current", "North and South poles swap"]
+    ] },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "Earth is a giant electromagnet", "body": "A freely hung magnet settles **north–south** because Earth itself acts like a magnet. Deep in the core, the **movement of liquid iron** sets up electric currents that generate Earth's magnetic field. Migratory birds, fish, and animals navigate by it, and it **shields** life from harmful particles arriving from space.", "icon": "GLOBE" },
+    { "type": "section", "number": "4.1.2", "title": "Lifting electromagnets", "intro": "From a fairground model to the factory floor — the same on/off magnet that grabbed paper clips can move tonnes of steel." },
+    { "type": "concept", "kicker": "MAGNETS ON CRANES", "title": "Switch it on to grab, off to drop", "body": "Strong electromagnets hung from cranes are **lifting electromagnets**. Switch the current **ON** and the magnet seizes iron and steel; switch it **OFF** and the field vanishes, releasing the load — widely used in **factories and scrap yards** to move and sort heavy metal. And the link runs both ways: just as a current makes a field, a **moving magnet can produce a current**, the basis of motors and power generators you'll meet in higher grades.", "icon": "FORCE" },
+    { "type": "experiment", "experimentId": "em-induction" },
+    { "type": "section", "number": "4.2", "title": "Does a current-carrying wire get hot?", "intro": "While making the electromagnet, the wire ends grew warm. That warmth is a second effect of current — and the principle behind every heating appliance." },
+    { "type": "activity", "kicker": "ACTIVITY 4.5 · LET US OBSERVE", "title": "Warming a nichrome wire", "purpose": "We test directly whether passing current through a wire **heats** it, using a special high-resistance wire called **nichrome**.", "steps": [
+      "Mount — fix two nails about 5 cm apart on cardboard and tie a 10 cm, 0.3 mm nichrome wire between them",
+      "Feel first — with the switch OFF, touch the wire",
+      "Switch on — flow current for about 30 s, then switch OFF",
+      "Feel again — touch the wire only momentarily (never hold it)"
+    ], "observe": "After the current, the wire feels **warm**. Pushing current through a conductor produces heat — the **heating effect of electric current**. (Safety first: never touch the wire for long.)" },
+    { "type": "concept", "kicker": "WHY IT HEATS", "title": "Resistance turns current into heat", "body": "Every conductor offers some **resistance** to current, and different materials resist differently. **Nichrome** resists far more than copper of the same size and length. That resistance converts some of the **electrical energy into heat energy**, so the wire warms up. The more it resists, the more it heats.", "icon": "HEAT" },
+    { "type": "concept", "kicker": "THINK LIKE A SCIENTIST", "title": "How much heat? It depends", "body": "Repeating the activity with a **2-cell battery** produces noticeably more heat than one cell. The heat generated depends on the **magnitude of the current**, and also on the wire's **material**, its **thickness** and **length**, and the **duration** for which current flows. (Always do this under a teacher's supervision.)", "icon": "MEASURE" },
+    { "type": "chips", "kicker": "EVERYDAY APPLIANCES", "title": "Where the heating effect works for us", "body": "Each device hides a **heating element** — a rod or coil of wire that heats up, sometimes glowing red hot. It's the same principle that makes an incandescent lamp's filament glow:", "chips": [
+      "Room heater", "Electric stove", "Electric kettle", "Electric iron", "Immersion rod", "Hair dryer", "Incandescent lamp"
+    ] },
+    { "type": "split", "kicker": "USEFUL — AND RISKY", "title": "When heat helps and when it harms", "leftTitle": "Put to work", "leftBody": "In steel industries a high-temperature **furnace** uses current's heat to melt and recycle scrap steel into usable steel — a major industrial use of the heating effect.", "rightTitle": "Kept in check", "rightBody": "Overheating wastes energy in transmission and can melt plugs and sockets or even start fires. Use wires, plugs, and sockets **rated** for the current, plus safety devices in the circuit." },
+    { "type": "section", "number": "4.3", "title": "How does a battery generate electricity?", "intro": "Cells and batteries lit our lamp, made our magnet, and heated our wire. So what is inside them that produces electricity? We start with the earliest cell ever made." },
+    { "type": "section", "number": "4.3.1", "title": "Voltaic cell", "intro": "The first true electric cell — two different metals and a liquid, quietly turning chemistry into current." },
+    { "type": "concept", "kicker": "INSIDE THE FIRST CELL", "title": "Two metals and an electrolyte", "body": "A **Voltaic cell** (also called a Galvanic cell) holds two rods of **different metals**, the **electrodes**, dipped in a liquid **electrolyte** — usually a weak acid or salt solution. A **chemical reaction** between rods and electrolyte produces electricity, driving current from the positive to the negative terminal. When the chemicals are used up, the cell goes **'dead'**.", "icon": "PARTICLE" },
+    { "type": "quote", "kicker": "EVER HEARD OF…", "original": "Volta vs. Galvani · late 1700s", "transliteration": "A frog's leg and the first battery", "translation": "Galvani saw a dead frog's leg kick when touched with copper and iron, and thought the electricity came from the frog. Volta disagreed — he replaced the leg with saltwater-soaked paper and still got a current, proving it was the metals and liquid that made electricity. The result: the first battery.", "attribution": "— Alessandro Volta & Luigi Galvani" },
+    { "type": "activity", "kicker": "ACTIVITY 4.6 · LET US CONSTRUCT", "title": "A battery made of lemons", "purpose": "We build our own Voltaic cell from kitchen materials, proving that **different metals in a juicy electrolyte** really can generate current.", "steps": [
+      "Insert — push a copper wire and an iron nail into each of five or six lemons, kept apart",
+      "Chain — join the copper of one lemon to the nail of the next, all in a row",
+      "Connect — wire an LED between the first copper and the last nail",
+      "Fix polarity — if the LED stays dark, reverse its connections"
+    ], "observe": "The **LED glows**, proving the cell works. The **copper and iron are the electrodes**, and the **lemon juice is the electrolyte** that conducts. A salt solution would work just as well." },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "Why some metals go positive", "body": "Many metal pairs make Voltaic cells — **zinc/copper, aluminium/copper, magnesium/copper, lead/copper**, and more. Some metals, like **copper**, tend to act as the **positive** electrode; others, like **zinc**, as the **negative**. This comes down to their chemical properties, which you'll study further in higher grades.", "icon": "SCIENCE" },
+    { "type": "section", "number": "4.3.2", "title": "Dry cells", "intro": "Voltaic cells were a breakthrough, but sloshing liquid isn't handy for a torch. The fix: replace the liquid with a paste." },
+    { "type": "concept", "kicker": "THE CELL IN YOUR TORCH", "title": "Liquid swapped for a paste", "body": "A **dry cell** is 'dry' because its electrolyte is a thick **moist paste**, not a liquid. A **zinc container** forms the negative terminal, and a central **carbon rod** capped with metal is the positive terminal, surrounded by the paste. It is **single-use** — once spent, it must be disposed of, which is why rechargeable batteries are taking over.", "icon": "BOLT" },
+    { "type": "section", "number": "4.3.3", "title": "Rechargeable batteries", "intro": "What if a spent battery didn't have to be thrown away — but simply refilled with energy and used again?" },
+    { "type": "concept", "kicker": "USE, REFILL, REPEAT", "title": "Batteries you can charge again", "body": "**Rechargeable batteries** can be recharged and reused many times, cutting waste and saving money. They range from tiny cells in **watches and phones** to large ones in **laptops, inverters, and electric vehicles**. They don't last forever, though — after many charge cycles they slowly **wear out**, which is why an old phone needs charging more often.", "icon": "LOOP" },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "Lithium-ion, and what comes next", "body": "Today's most common rechargeable is the **lithium-ion** battery, found in almost every battery device. It relies on scarce metals like **lithium and cobalt**, so nations race to secure, recycle, and replace them. Even a 'dead' battery still holds valuable acids and metals — so it belongs in an **e-waste** facility, not the bin. Scientists are now developing **solid-state** batteries — safer, faster-charging, longer-lasting — for a cleaner energy future.", "icon": "SPARK" },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "Words from this chapter", "body": "The vocabulary of magnetic and heating effects:", "chips": [
+      "Magnetic effect", "Magnetic field", "Electromagnet", "Iron core", "Resistance", "Heating effect", "Heating element", "Electrolyte", "Voltaic cell", "Dry cell", "Rechargeable battery"
+    ] },
+    { "type": "closing", "title": "One circuit, three powers", "subtitle": "Current makes magnetism, current makes heat, and chemistry makes current — from Ørsted's twitching compass to a crane's lifting magnet, a glowing kettle coil, and a lemon that lights an LED." }
+  ]
+}

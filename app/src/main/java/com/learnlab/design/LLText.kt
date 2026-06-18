@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,12 +28,13 @@ fun LLText(
     align: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
+    fontFamily: FontFamily = Inter,
 ) {
     Text(
         text = text,
         modifier = modifier,
         color = color,
-        fontFamily = Inter,
+        fontFamily = fontFamily,
         fontSize = size,
         fontWeight = weight,
         lineHeight = if (lineHeight == TextUnit.Unspecified) size * 1.4f else lineHeight,

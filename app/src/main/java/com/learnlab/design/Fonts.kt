@@ -18,3 +18,6 @@ val Inter = FontFamily(
     Font(R.font.inter_bold,      FontWeight.Bold),       // 700
     Font(R.font.inter_extrabold, FontWeight.ExtraBold),  // 800
 )
+
+/** Serif typeface for the textbook "paper" reader (system serif — no bundled asset). */
+val Serif = FontFamily.Serif

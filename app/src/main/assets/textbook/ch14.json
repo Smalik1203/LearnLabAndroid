@@ -1,0 +1,101 @@
+{
+  "chapterId": "ch14",
+  "slides": [
+    { "type": "title", "kicker": "GRADE 8 · CHAPTER 10", "title": "Light: Mirrors and Lenses", "subtitle": "At a science centre, Meena looked into a row of curved mirrors — her face went huge, her brother turned upside down, and then she shrank to a tiny version of herself. Let us find out why.", "points": [
+      "Can we make mirrors which give enlarged or diminished images?",
+      "Why do vehicle side-view mirrors warn \"Objects in mirror are closer than they appear\"?",
+      "Why is there a curved line on some reading glasses?"
+    ] },
+    { "type": "section", "number": "10.1", "title": "What are spherical mirrors?", "intro": "Meena had used a plane mirror before, where the image was erect and the same size as her. The science centre's mirrors were curved inward or outward. What kind of mirrors are these?" },
+    { "type": "activity", "kicker": "ACTIVITY 10.1 · LET US EXPLORE", "title": "Look at yourself in a shiny spoon", "purpose": "A curved surface is the simplest spherical mirror you own. We use a spoon to see **how a curved mirror differs** from the plane mirror you already know.", "steps": [
+      "Hold — bring the inner curved side of a shiny spoon close to your face",
+      "Notice — is the image different from one in a plane mirror?",
+      "Move — slowly take the spoon away and watch the image change",
+      "Flip — turn the spoon to its outer side and repeat"
+    ], "observe": "The **inner** (inward-curving) side shows your face **inverted**; the **outer** (outward-bulging) side shows it **erect but smaller**. A spoon acts like a mirror — and curved mirrors like this can be specially made." },
+    { "type": "concept", "kicker": "WHAT WE FOUND", "title": "Mirrors shaped like part of a sphere", "body": "Curved mirrors, like the spoon, can be specially made. **Spherical mirrors** are a common type of curved mirror, shaped like part of a **hollow glass sphere**. Mirrors whose reflecting surfaces are spherical are called **spherical mirrors**.", "icon": "LIGHT" },
+    { "type": "split", "kicker": "TWO KINDS OF SPHERICAL MIRROR", "title": "Concave vs convex", "leftTitle": "Concave mirror", "leftBody": "Its reflecting surface curves **inwards** (like the inner spoon). In its schematic representation, the non-reflecting surface is shown shaded.", "rightTitle": "Convex mirror", "rightBody": "Its reflecting surface curves **outwards** (like the outer spoon). Again, the non-reflecting surface is drawn shaded in the representation." },
+    { "type": "concept", "kicker": "A STEP FURTHER", "title": "How a spherical mirror is really made", "body": "A spherical mirror can be thought of as **part of an imaginary hollow sphere** — but it is not made by slicing one. It is made by grinding a flat glass piece into a curved surface. Coat the **outer** curved surface and you get a **concave** mirror; coat the **inner** surface and you get a **convex** mirror.", "icon": "SCIENCE" },
+    { "type": "activity", "kicker": "ACTIVITY 10.2 · LET US DISTINGUISH", "title": "Tell concave from convex", "purpose": "Two unlabelled mirrors sit on the table. We want a quick way to **identify which is which** without touching the reflecting side.", "steps": [
+      "Place — set both mirrors with their reflecting surfaces facing upwards",
+      "View — bring your eye down to their level and look from the side",
+      "Identify — see whether each surface curves inwards or outwards"
+    ], "observe": "Seen edge-on, the **concave** mirror's surface dips **inwards** and the **convex** mirror's surface bulges **outwards** — that shape alone tells them apart." },
+    { "type": "section", "number": "10.2", "title": "What are the characteristics of images formed by spherical mirrors?", "intro": "Meena's face grew large in one mirror and her brother flipped upside down in another. Does the image depend on how far the object is from the mirror?" },
+    { "type": "activity", "kicker": "ACTIVITY 10.3 · LET US EXPLORE", "title": "Move a toy near and far from each mirror", "purpose": "A spherical mirror's image changes with distance. We move one object and watch **how size and orientation change** in a concave and a convex mirror.", "steps": [
+      "Set up — stand a concave and a convex mirror upright, side by side",
+      "Near — place a small toy 3–4 cm in front; note its size and whether it is erect",
+      "Far — slowly move the toy away and watch both images change",
+      "Repeat — try each mirror on its own and record your observations"
+    ], "observe": "In the **concave** mirror the close toy is **erect and enlarged**; move it away and the image **inverts** and keeps shrinking. The **convex** mirror keeps the toy **erect and diminished** throughout. **Lateral inversion** is seen in all three types of mirror." },
+    { "type": "concept", "kicker": "10.2 · IN A CONCAVE MIRROR", "title": "From enlarged and erect to inverted", "body": "Placed **close** to a concave mirror, the image is **erect and enlarged**. Move the object **farther** and the image becomes **inverted**; it is enlarged at first and then keeps getting smaller. This is why a **dentist's** concave mirror gives an enlarged view of teeth held close to it.", "icon": "SEARCH" },
+    { "type": "concept", "kicker": "10.2 · IN A CONVEX MIRROR", "title": "Always erect, always smaller", "body": "A convex mirror always forms an **erect** and **diminished** image, shrinking a little as the object moves away. Because it curves **outwards**, it shows a **much wider area** behind — which is why vehicle side-view mirrors are convex, and why such mirrors guard road bends and big stores.", "icon": "EYE" },
+    { "type": "table", "kicker": "IMAGE PROPERTIES AT A GLANCE", "title": "How each mirror forms images", "headers": ["Mirror", "Orientation", "Size"], "rows": [
+      ["Plane", "Always erect", "Same as object"],
+      ["Concave", "Erect near, inverted far", "Enlarged, then smaller"],
+      ["Convex", "Always erect", "Always diminished"]
+    ] },
+    { "type": "section", "number": "10.3", "title": "What are the laws of reflection?", "intro": "We have seen images in plane, concave, and convex mirrors. But are there laws which govern how light bounces off a mirror in the first place?" },
+    { "type": "activity", "kicker": "ACTIVITY 10.4 · LET US EXPERIMENT", "title": "Shine a beam on a plane mirror", "purpose": "Before we can state a law, we must measure. We send a thin beam onto a mirror at different angles to compare the **angle in with the angle out**.", "steps": [
+      "Slit — cover a comb with black paper, leaving one middle opening, to make a thin beam",
+      "Shine — using a torch, let the beam fall on an upright plane mirror on white paper",
+      "Trace — draw the incoming ray, the mirror, and the reflected ray on the paper",
+      "Measure — draw the normal at the point of incidence and measure both angles"
+    ], "observe": "Done carefully, the **angle of incidence (i) equals the angle of reflection (r)** every time. When the beam falls **along the normal**, both angles read **zero**." },
+    { "type": "steps", "kicker": "NAMING THE RAYS", "title": "Incident ray, normal, reflected ray", "steps": [
+      "Incident ray — the ray of light that falls on the mirror",
+      "Normal — a line drawn at 90° to the mirror at the point of incidence, O",
+      "Reflected ray — the ray that comes back from the mirror",
+      "Angle of incidence (i) — between the normal and the incident ray; angle of reflection (r) — between the normal and the reflected ray"
+    ] },
+    { "type": "figure", "kicker": "10.3 · THE LAWS OF REFLECTION", "title": "Angle in equals angle out", "caption": "Measured from the normal, the angle of incidence (i) equals the angle of reflection (r). When the ray falls along the normal, both angles are zero.", "kind": "LIGHT_REFLECTION", "labels": [] },
+    { "type": "activity", "kicker": "ACTIVITY 10.5 · LET US EXPERIMENT", "title": "Bend the paper under the reflected beam", "purpose": "There is a **second** law of reflection, about which plane the rays lie in. We bend the paper carrying the reflected beam to test that idea.", "steps": [
+      "Extend — place a stiff chart-paper sheet so part of it juts beyond the table edge",
+      "Shine — send a beam onto the mirror and see the reflected beam on the extended flat part",
+      "Bend — fold the extended part down along the table edge and look for the beam",
+      "Flatten — straighten the paper again and observe"
+    ], "observe": "The reflected beam **disappears** when the sheet is bent and **returns** when flattened. So the incident ray, the normal, and the reflected ray **all lie in the same plane** — the second law of reflection." },
+    { "type": "concept", "kicker": "THE TWO LAWS", "title": "What every mirror obeys", "body": "**First law:** the angle of incidence (i) is equal to the angle of reflection (r). **Second law:** the incident ray, the normal at the point of incidence, and the reflected ray all lie in the **same plane**. These laws of reflection hold for **all** mirrors — plane, concave, and convex alike.", "icon": "BALANCE" },
+    { "type": "activity", "kicker": "ACTIVITY 10.6 · LET US EXPLORE", "title": "Many parallel beams on curved mirrors", "purpose": "Each ray still obeys the laws of reflection — yet a curved mirror does something a flat one cannot. We send **many parallel beams** at each mirror to see it.", "steps": [
+      "Slits — leave many openings of the comb uncovered to make multiple parallel beams",
+      "Plane — let the beams fall on a plane mirror and watch the reflected beams",
+      "Concave — repeat with a concave mirror",
+      "Convex — repeat with a convex mirror"
+    ], "observe": "A **plane** mirror keeps the reflected beams **parallel**. A **concave** mirror brings them together — they **converge**. A **convex** mirror spreads them apart — they **diverge**. The curved surface does this even though each ray follows the laws of reflection." },
+    { "type": "concept", "kicker": "10.3 · REFLECTION FROM CURVED MIRRORS", "title": "Converge or diverge", "body": "Each ray obeys the laws of reflection, but the **shape** of the mirror takes over for a parallel beam. A **concave** mirror makes parallel rays **converge** to a point; a **convex** mirror makes them **diverge**. The curve, not the law, decides which.", "icon": "SUN" },
+    { "type": "activity", "kicker": "ACTIVITY 10.7 · LET US EXPLORE", "title": "Burn paper with a concave mirror", "purpose": "If a concave mirror converges sunlight, the rays gather at one spot. We test whether that **concentrated light** carries enough heat to burn paper. **Safety first:** do this under adult supervision; never look at the Sun or into the mirror, and aim the spot only at paper.", "steps": [
+      "Hold — face a concave mirror's reflecting surface to the Sun, over a sheet of newspaper",
+      "Adjust — change the distance until you get a sharp, bright spot on the paper",
+      "Steady — hold both still for a few minutes",
+      "Watch — see whether the paper begins to char and smoke"
+    ], "observe": "Sunlight reflected by the mirror **concentrates** on that bright spot, producing enough **heat to ignite** the paper. The same idea drives **solar concentrators** and **solar furnaces** — hot enough even to melt steel." },
+    { "type": "section", "number": "10.4", "title": "What is a lens?", "intro": "Curved mirrors reflect light. But what happens when light passes through a transparent material whose surface is curved, instead of bouncing off it?" },
+    { "type": "activity", "kicker": "ACTIVITY 10.8 · LET US EXPLORE", "title": "Read text through a water drop", "purpose": "A simple curved surface can change what you see through it. We make a tiny dome of water and check **how it changes text** seen beneath it.", "steps": [
+      "Coat — rub a thin film of oil or wax onto a flat glass or plastic strip",
+      "Drop — place a small drop of water on the coated spot so it stays nicely rounded",
+      "Examine — note that the drop's surface is curved outward",
+      "Look — slide printed text under the drop and look straight down through it"
+    ], "observe": "The text under the **outward-curved** drop looks **enlarged** — the drop acts like a simple lens, just as a **magnifying glass** does. A **lens** is a piece of transparent material with curved surfaces; like mirrors, lenses can be convex or concave." },
+    { "type": "split", "kicker": "10.4 · TWO KINDS OF LENS", "title": "Convex vs concave lens", "leftTitle": "Convex lens", "leftBody": "**Thicker at the middle** than at the edges. A water drop or magnifying glass works this way, making print look bigger.", "rightTitle": "Concave lens", "rightBody": "**Thicker at the edges** than at the middle. Unlike mirrors, lenses let light pass **through** them, so we see things **through** a lens rather than in it." },
+    { "type": "activity", "kicker": "ACTIVITY 10.9 · LET US EXPERIMENT", "title": "View an object through each lens", "purpose": "Like a concave mirror, a convex lens changes its image with distance. We move an object behind each lens to **compare what we see**.", "steps": [
+      "Set up — stand a convex lens upright in a holder, object behind it at lens level",
+      "Near — look through from the other side; note the image when the object is close",
+      "Far — slowly move the object away and watch how the image changes",
+      "Repeat — do the same with a concave lens and compare"
+    ], "observe": "Behind a **convex** lens the close object looks **erect and enlarged**; moved away it becomes **inverted**, enlarged at first then **diminished**. Behind a **concave** lens the object is **always erect and diminished**, shrinking as it moves away." },
+    { "type": "experiment", "experimentId": "convex-lens" },
+    { "type": "activity", "kicker": "ACTIVITY 10.10 · LET US INVESTIGATE", "title": "Parallel beams through glass and lenses", "purpose": "Just like curved mirrors, lenses can bend a parallel beam. We pass **multiple parallel beams** through a flat glass plate and through each lens to compare.", "steps": [
+      "Stand — fix a thin glass plate or lens upright between two books, paper spread on each",
+      "Glass — let multiple parallel beams fall on the thin glass plate and watch them emerge",
+      "Convex — repeat with a convex lens",
+      "Concave — repeat with a concave lens, then record your observations"
+    ], "observe": "The beam passes **straight through** the flat glass. A **convex** lens makes the beams **converge**, so it is a **converging lens**; a **concave** lens makes them **diverge**, so it is a **diverging lens**." },
+    { "type": "concept", "kicker": "10.4 · WHERE LENSES ARE USED", "title": "Lenses everywhere", "body": "A **convex (converging) lens** is also able to burn paper, since it converges sunlight just like a concave mirror. Lenses are everywhere — **eyeglasses, cameras, telescopes, and microscopes** all use them, and even your **eye** holds a convex lens that **changes its shape** so you can read or look far away.", "icon": "EYE" },
+    { "type": "concept", "kicker": "SNAPSHOTS", "title": "The chapter in a nutshell", "body": "A **concave mirror** can enlarge, diminish, or keep size the same, and its image may be erect or inverted; a **convex mirror** is always erect and diminished. The laws of reflection hold for all mirrors. A concave mirror and a **convex lens converge** light; a convex mirror and a **concave lens diverge** it.", "icon": "NOTE" },
+    { "type": "chips", "kicker": "KEYWORDS", "title": "Words to carry forward", "body": "The vocabulary of mirrors and lenses from this chapter:", "chips": [
+      "Spherical mirror", "Concave mirror", "Convex mirror", "Enlarged", "Diminished", "Incident ray", "Normal", "Reflected ray",
+      "Angle of incidence", "Angle of reflection", "Laws of reflection", "Converge", "Diverge", "Lens", "Convex lens", "Concave lens", "Converging lens", "Diverging lens"
+    ] },
+    { "type": "closing", "title": "Keep the curiosity alive", "subtitle": "From a puzzling spoon to dentists' mirrors, solar furnaces, and the lens in your own eye — the same laws of reflection and the same curved surfaces shape all of it. Keep observing." }
+  ]
+}

@@ -15,6 +15,7 @@ private val Context.dataStore by preferencesDataStore("learnlab")
 private val KEY_THEME = stringPreferencesKey("theme")
 private val KEY_RECENTS = stringPreferencesKey("recents")
 private val KEY_DISPLAY_NAME = stringPreferencesKey("display_name")
+private val KEY_READER_DARK = stringPreferencesKey("reader_dark")
 
 /** One opened-experiment record for the History feature. */
 data class RecentEntry(val id: String, val openedAt: Long)
@@ -31,11 +32,15 @@ class AppState(private val appContext: Context, private val scope: CoroutineScop
     /** Display name captured by the (mock) login/sign-up form, if any. */
     val displayName: MutableState<String?> = mutableStateOf(null)
 
+    /** Textbook reader theme: dark by default, toggled to the "paper" light theme. */
+    val readerDark: MutableState<Boolean> = mutableStateOf(true)
+
     init {
         scope.launch(Dispatchers.IO) {
             val prefs = appContext.dataStore.data.first()
             val saved = prefs[KEY_THEME]
             if (saved == "light" || saved == "dark") theme.value = saved
+            prefs[KEY_READER_DARK]?.let { readerDark.value = it != "false" }
             recents.value = decodeRecents(prefs[KEY_RECENTS])
             displayName.value = prefs[KEY_DISPLAY_NAME]?.takeIf { it.isNotBlank() }
         }
@@ -45,6 +50,13 @@ class AppState(private val appContext: Context, private val scope: CoroutineScop
         theme.value = if (theme.value == "dark") "light" else "dark"
         scope.launch(Dispatchers.IO) {
             appContext.dataStore.edit { it[KEY_THEME] = theme.value }
+        }
+    }
+
+    fun toggleReaderTheme() {
+        readerDark.value = !readerDark.value
+        scope.launch(Dispatchers.IO) {
+            appContext.dataStore.edit { it[KEY_READER_DARK] = readerDark.value.toString() }
         }
     }
 

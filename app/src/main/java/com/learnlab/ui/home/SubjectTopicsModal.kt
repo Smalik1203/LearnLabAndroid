@@ -46,6 +46,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.learnlab.content.Subject
 import com.learnlab.content.gradesFor
+import com.learnlab.content.topicsFor
 import com.learnlab.design.Card
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
@@ -57,12 +58,14 @@ import com.learnlab.design.LLText
 fun SubjectTopicsModal(
     subject: Subject,
     onDismiss: () -> Unit,
+    onTopic: (String) -> Unit,
     onOpenTextbook: (Int) -> Unit,
 ) {
     val t = LL.tokens
     val available = remember(subject) { gradesFor(subject).toSet() }
-    // Nothing pre-selected — the user must pick a grade first.
+    // Nothing pre-selected — the user must pick a grade first (topics stay disabled until then).
     var grade by remember(subject) { mutableIntStateOf(-1) }
+    val topics = remember(subject, grade) { if (grade >= 0) topicsFor(subject, grade) else emptyList() }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -100,7 +103,7 @@ fun SubjectTopicsModal(
                 }
             }
             Spacer(Modifier.height(4.dp))
-            LLText("Pick a grade to open its textbook", color = t.ink400, size = 15.sp)
+            LLText("Pick a grade, then jump to a topic or open its textbook", color = t.ink400, size = 15.sp)
 
             Spacer(Modifier.height(24.dp))
             LLText("Grade", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
@@ -109,6 +112,16 @@ fun SubjectTopicsModal(
                 selected = grade,
                 available = available,
                 onSelect = { grade = it },
+            )
+
+            Spacer(Modifier.height(20.dp))
+            LLText("Topics", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
+            Spacer(Modifier.height(8.dp))
+            Dropdown(
+                label = "Select a topic",
+                enabled = topics.isNotEmpty(),
+                items = topics.map { it.title },
+                onSelect = { idx -> onTopic(topics[idx].id) },
             )
 
             Spacer(Modifier.height(16.dp))
@@ -205,6 +218,55 @@ private fun GradeDropdown(
                             }
                         }
                     },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun <T> Dropdown(
+    label: String,
+    enabled: Boolean,
+    items: List<T>,
+    onSelect: (Int) -> Unit,
+) {
+    val t = LL.tokens
+    var open by remember { mutableStateOf(false) }
+    var anchorWidth by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
+    Box {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .onSizeChanged { anchorWidth = it.width }
+                .clip(RoundedCornerShape(12.dp))
+                .background(t.surface2)
+                .border(1.dp, t.line, RoundedCornerShape(12.dp))
+                .clickable(enabled = enabled) { open = true }
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            LLText(label, color = if (enabled) t.ink50 else t.ink500, size = 15.sp, weight = FontWeight.Medium)
+            Icon(Icons.Filled.ExpandMore, contentDescription = null, tint = t.ink400, modifier = Modifier.size(20.dp))
+        }
+        DropdownMenu(
+            expanded = open,
+            onDismissRequest = { open = false },
+            modifier = Modifier
+                .width(with(density) { anchorWidth.toDp() })
+                .heightIn(max = 200.dp),
+            offset = DpOffset(0.dp, 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            containerColor = t.surface2,
+            tonalElevation = 0.dp,
+            border = BorderStroke(1.dp, t.line),
+        ) {
+            items.forEachIndexed { idx, item ->
+                DropdownMenuItem(
+                    text = { LLText(item.toString(), color = t.ink50, size = 15.sp) },
+                    onClick = { open = false; onSelect(idx) },
                 )
             }
         }

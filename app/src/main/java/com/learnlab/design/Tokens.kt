@@ -108,6 +108,34 @@ val DarkTokens = LearnLabTokens(
     rose700    = Color(0xFFFF6B6B),
 )
 
+// Warm "paper" palette for the textbook reader — cream page, warm-brown ink,
+// forest-green accent. Scoped to the reader via LocalTokens; rest of app unaffected.
+val PaperTokens = LearnLabTokens(
+    isDark     = false,
+    bg         = Color(0xFFF6F0E6),   // warm cream page
+    bgDeep     = Color(0xFFEFE7D8),
+    surface    = Color(0xFFFFFDF7),   // card surface (off-white, warm)
+    surface2   = Color(0xFFF1EADC),   // subtle fill / hover
+    surface3   = Color(0xFFE6DBC8),
+    line       = Color(0x1F5B4A38),   // warm-brown hairline
+    lineStrong = Color(0x3D5B4A38),
+    ink50      = Color(0xFF2C2620),   // near-black warm (headings)
+    ink200     = Color(0xFF4F4639),   // body brown
+    ink400     = Color(0xFF8A7C68),   // muted
+    ink500     = Color(0xFFA89A84),
+    ink600     = Color(0xFFC6B9A2),
+    accent300  = Color(0xFF4FAE7C),
+    accent400  = Color(0xFF2F9663),
+    accent500  = Color(0xFF1F7A4D),   // forest green (panels, accents)
+    accent600  = Color(0xFF155C39),
+    accent50   = Color(0xFFDDEEE2),   // light green tint
+    accent700  = Color(0xFF155C39),
+    amber50    = Color(0xFFF6E9CC),
+    amber700   = Color(0xFF92651A),
+    rose50     = Color(0xFFF3E0D7),
+    rose700    = Color(0xFFA6492F),   // warm red-brown (attribution)
+)
+
 val LocalTokens = compositionLocalOf { LightTokens }
 
 object LL {

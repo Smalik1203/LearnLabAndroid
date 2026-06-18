@@ -120,6 +120,7 @@ fun HomeScreen(
         SubjectTopicsModal(
             subject = subj,
             onDismiss = { modalSubject = null },
+            onTopic = { id -> modalSubject = null; onOpenExperiment(id) },
             onOpenTextbook = { grade -> modalSubject = null; onOpenTextbook(grade) },
         )
     }
