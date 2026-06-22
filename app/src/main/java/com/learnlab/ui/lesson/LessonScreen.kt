@@ -181,7 +181,7 @@ private fun ExperimentNav(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        // Left — Back to Lab
+        // Left — Back (returns to the launching screen)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -191,12 +191,12 @@ private fun ExperimentNav(
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back to Lab",
+                contentDescription = "Back",
                 tint = t.ink200,
                 modifier = Modifier.size(18.dp),
             )
             Spacer(Modifier.width(8.dp))
-            LLText("Back to Lab", color = t.ink200, size = 14.sp, weight = FontWeight.Medium)
+            LLText("Back", color = t.ink200, size = 14.sp, weight = FontWeight.Medium)
         }
 
         // Right — home + theme toggle

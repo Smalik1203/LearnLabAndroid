@@ -159,21 +159,15 @@ fun SlideView(slide: ChapterSlide, index: Int, onRunExperiment: (String) -> Unit
 
 @Composable
 private fun Kicker(text: String, accent: Color) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(accent.copy(alpha = 0.16f))
-            .padding(horizontal = 12.dp, vertical = 5.dp),
-    ) {
-        LLText(text, color = accent, size = 12.sp, weight = FontWeight.Bold, letterSpacing = 1.5.sp)
-    }
+    LLText(text, color = accent, size = 12.sp, weight = FontWeight.Bold, letterSpacing = 1.5.sp)
 }
 
 @Composable
 private fun GradientTitle(text: String, size: Int, align: TextAlign? = null) {
+    val t = LL.tokens
     Text(
         text = text,
-        style = TextStyle(brush = gradHeadline()),
+        color = t.ink50,
         fontFamily = Inter,
         fontSize = size.sp,
         lineHeight = (size * 1.1f).sp,
