@@ -187,15 +187,11 @@ private fun GradientTitle(text: String, size: Int, align: TextAlign? = null) {
 private fun SectionHeaderSlide(s: ChapterSlide.SectionHeader, accent: Color) {
     val t = LL.tokens
     Column {
-        Box(
-            modifier = Modifier.clip(RoundedCornerShape(999.dp)).background(accent).padding(horizontal = 14.dp, vertical = 6.dp),
-        ) { LLText("SECTION ${s.number}", color = Color.White, size = 12.sp, weight = FontWeight.Bold, letterSpacing = 1.sp) }
-        Spacer(Modifier.height(22.dp))
+        LLText("SECTION ${s.number}", color = accent, size = 13.sp, weight = FontWeight.Bold, letterSpacing = 1.5.sp)
+        Spacer(Modifier.height(14.dp))
         LLText(s.title, color = t.ink50, size = 40.sp, weight = FontWeight.Bold, lineHeight = 46.sp)
         if (s.intro.isNotBlank()) {
-            Spacer(Modifier.height(20.dp))
-            Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
             Text(text = slideBold(s.intro, accent), color = t.ink200, fontSize = 19.sp, lineHeight = 30.sp)
         }
     }

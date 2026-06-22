@@ -25,11 +25,7 @@
       "Identify — any four organisms, plants or animals, in this area",
       "Count — the number of each, and compile the data from all groups"
     ], "observe": "You might find **20** of one plant but only **5** of another in the same area. A group of the **same kind** of organism living together at a given place and time is a **population**." },
-    { "type": "steps", "kicker": "12.2 LIVING TOGETHER", "title": "From one organism to a whole community", "steps": [
-      "Population — all the organisms of one kind living together in a habitat at a given time",
-      "Community — different populations of plants, animals, and microorganisms sharing the same habitat",
-      "Interdependence — these organisms interact and depend on one another for survival"
-    ] },
+    { "type": "concept", "kicker": "12.2 LIVING TOGETHER", "title": "From one population to a whole community", "body": "The garden patch held **20** of one plant but only **5** of another — each group of one kind, living together at one place and time, is a **population**. But could a habitat hold just one kind? They would all need the same food, water, and space, and **compete** until resources ran short. So habitats hold many populations side by side — plants, animals, and microorganisms sharing one place form a **community**. Within it, organisms **interact and depend on one another** to survive: this interdependence is what 'living together' really means.", "icon": "LOOP" },
     { "type": "section", "number": "12.3", "title": "Does every organism in a community matter?", "intro": "What happens if one kind of organism changes in number? A study of ponds with and without fish gives a surprising answer." },
     { "type": "activity", "kicker": "ACTIVITY 12.3 · LET US READ", "title": "Ponds with fish, ponds without", "purpose": "Does the number of fish in a pond affect plants on land? We read a real study comparing **Pond A (with fish)** and **Pond B (without fish)** to trace the ripples.", "steps": [
       "Compare — the number of dragonflies, bees, and butterflies in both ponds",
@@ -84,8 +80,12 @@
     { "type": "section", "number": "12.9", "title": "What are the benefits of an ecosystem?", "intro": "Ecosystems support our well-being — but we threaten them. The Sundarbans show both sides at once." },
     { "type": "concept", "kicker": "12.9 BENEFITS & THREATS", "title": "The Sundarbans — gift and warning", "body": "Forests give us **fresh air, fertile soil, food, fibres, timber, and medicines**; aquatic ecosystems give water and food. The **Sundarbans**, the world's largest mangrove forest, slow storm **winds and waves** and absorb carbon dioxide — a UNESCO World Heritage Site since 1987. Yet mangroves are cut for fuelwood, wildlife is hunted, and pollution damages the water, disrupting how the ecosystem works.", "icon": "GLOBE" },
     { "type": "concept", "kicker": "12.9.2 HEALTHY FARMS", "title": "Sustainable farming keeps the balance", "body": "The **Green Revolution** of the mid-20th century used synthetic fertilisers and pesticides to end India's food crisis — but overusing them degrades **soil**, harms friendly microbes and natural predators, and lets pests resist. Growing one crop repeatedly, called **monoculture**, reduces biodiversity. Understanding ecosystems helps us adopt **organic and natural** farming that works with nature, not against it.", "icon": "LEAF" },
-    { "type": "chips", "kicker": "THREATS & PROTECTION", "title": "How we harm ecosystems — and how we protect them", "body": "Across India, deforestation, overuse, invasive species, and pollution damage forests, rivers, wetlands, and coasts. Protected areas — like Jim Corbett, Manas, and the Nilgiri Biosphere Reserve — set land aside to conserve habitats and the rare species in them.", "chips": [
-      "Deforestation", "Pollution", "Invasive species", "Overuse of resources", "National parks & sanctuaries"
+    { "type": "table", "kicker": "THREATS & PROTECTION", "title": "How we harm ecosystems — and how we guard them", "headers": ["Threat / safeguard", "What it means", "In India"], "rows": [
+      ["Deforestation", "Clearing forests for roads, farms, and buildings shrinks habitats", "Loss of elephant corridors in Odisha, Assam"],
+      ["Pollution", "Waste in air, soil, and water poisons living things", "Plastic and sewage in rivers and wetlands"],
+      ["Invasive species", "A species brought from elsewhere that crowds out native ones", "Lantana spreading through forest floors"],
+      ["Overuse of resources", "Taking more than nature can replace, like overfishing", "Decline of the Indian bullfrog from over-harvesting"],
+      ["Protected areas", "Land set aside to conserve habitats and rare species", "Jim Corbett, Manas, Nilgiri Biosphere Reserve"]
     ] },
     { "type": "closing", "title": "Nature works as one connected whole", "subtitle": "From a pond's dragonflies to the Sundarbans' mangroves — every action ripples through the web of life. Protect the balance, and nature wastes nothing." }
   ]

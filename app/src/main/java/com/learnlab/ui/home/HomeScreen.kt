@@ -61,11 +61,10 @@ fun HomeScreen(
     onOpenExperiment: (String) -> Unit,
     onLogo: () -> Unit,
     onViewAllHistory: () -> Unit,
-    onOpenTextbook: (Int) -> Unit,
+    onSelectSubjectGrade: (String) -> Unit,
 ) {
     val t = LL.tokens
     var tab by remember { mutableIntStateOf(0) }
-    var modalSubject by remember { mutableStateOf<Subject?>(null) }
 
     ChromeScaffold(
         state = state,
@@ -105,10 +104,10 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
-                    SubjectCard(Subject.PHYSICS, Modifier.weight(1f)) { modalSubject = Subject.PHYSICS }
-                    SubjectCard(Subject.CHEMISTRY, Modifier.weight(1f)) { modalSubject = Subject.CHEMISTRY }
-                    SubjectCard(Subject.MATHEMATICS, Modifier.weight(1f)) { modalSubject = Subject.MATHEMATICS }
-                    SubjectCard(Subject.BIOLOGY, Modifier.weight(1f)) { modalSubject = Subject.BIOLOGY }
+                    SubjectCard(Subject.PHYSICS, Modifier.weight(1f)) { onSelectSubjectGrade(Subject.PHYSICS.name) }
+                    SubjectCard(Subject.CHEMISTRY, Modifier.weight(1f)) { onSelectSubjectGrade(Subject.CHEMISTRY.name) }
+                    SubjectCard(Subject.MATHEMATICS, Modifier.weight(1f)) { onSelectSubjectGrade(Subject.MATHEMATICS.name) }
+                    SubjectCard(Subject.BIOLOGY, Modifier.weight(1f)) { onSelectSubjectGrade(Subject.BIOLOGY.name) }
                 }
             } else {
                 TutorialsList(Modifier.fillMaxWidth(0.7f))
@@ -116,14 +115,6 @@ fun HomeScreen(
         }
     }
 
-    modalSubject?.let { subj ->
-        SubjectTopicsModal(
-            subject = subj,
-            onDismiss = { modalSubject = null },
-            onTopic = { id -> modalSubject = null; onOpenExperiment(id) },
-            onOpenTextbook = { grade -> modalSubject = null; onOpenTextbook(grade) },
-        )
-    }
 }
 
 @Composable

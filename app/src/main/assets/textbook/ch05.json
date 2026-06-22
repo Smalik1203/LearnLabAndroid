@@ -8,11 +8,7 @@
     ] },
     { "type": "scene", "kicker": "DEAR YOUNG SCIENTISTS", "title": "Welcome back, investigators", "body": "On the first page of every chapter you'll find a set of questions. These aren't meant for any exam — they are unique invitations to spark your curiosity and explore the world of science. Is there a question that makes you curious about the world? Write it down and carry it with you.", "icon": "QUESTION" },
     { "type": "section", "number": "1.1", "title": "The journey so far", "intro": "Our journey with Curiosity continues into Grade 8. Let's see how far wonder has already carried us." },
-    { "type": "steps", "kicker": "FROM WONDER TO INVESTIGATION", "title": "Where we've been, where we're going", "steps": [
-      "Grade 6 — science begins with wonder, with simple \"Why?\" and \"How?\" questions",
-      "Grade 7 — science is always evolving: each answer opens new questions",
-      "Grade 8 — wonder and evolution come together as you enter the Investigative World of Science"
-    ] },
+    { "type": "concept", "kicker": "FROM WONDER TO INVESTIGATION", "title": "Where we've been, where we're going", "body": "Science began for you in **Grade 6** with wonder — the simple \"Why?\" and \"How?\" questions about everything around you. In **Grade 7** you saw that science keeps **evolving**: every answer you find opens up new questions. Now, in **Grade 8**, that wonder and that constant evolving come together as you step into the **Investigative World of Science** — where you don't just ask questions, you set out to find the answers yourself.", "icon": "LOOP" },
     { "type": "concept", "kicker": "WHAT IS INVESTIGATION?", "title": "Find new facts — don't just learn them", "body": "We don't want you to just learn new facts; we want you to learn **how to find** new facts. Investigation means more than looking at something and asking simple questions. Now you can ask more **focused questions**, design **experiments** to answer them, and use your **observations** to improve your understanding.", "icon": "SEARCH" },
     { "type": "steps", "kicker": "THE INVESTIGATOR'S LOOP", "title": "How a young scientist works", "steps": [
       "Question — use a focused question as your starting point",

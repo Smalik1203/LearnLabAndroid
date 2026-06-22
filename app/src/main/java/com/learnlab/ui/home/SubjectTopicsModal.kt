@@ -46,7 +46,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.learnlab.content.Subject
 import com.learnlab.content.gradesFor
-import com.learnlab.content.topicsFor
 import com.learnlab.design.Card
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
@@ -58,14 +57,12 @@ import com.learnlab.design.LLText
 fun SubjectTopicsModal(
     subject: Subject,
     onDismiss: () -> Unit,
-    onTopic: (String) -> Unit,
     onOpenTextbook: (Int) -> Unit,
 ) {
     val t = LL.tokens
     val available = remember(subject) { gradesFor(subject).toSet() }
-    // Nothing pre-selected — the user must pick a grade first (topics stay disabled until then).
+    // Nothing pre-selected — the user must pick a grade first.
     var grade by remember(subject) { mutableIntStateOf(-1) }
-    val topics = remember(subject, grade) { if (grade >= 0) topicsFor(subject, grade) else emptyList() }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -103,7 +100,7 @@ fun SubjectTopicsModal(
                 }
             }
             Spacer(Modifier.height(4.dp))
-            LLText("Pick a grade, then jump to a topic or open its textbook", color = t.ink400, size = 15.sp)
+            LLText("Pick a grade, then choose a chapter", color = t.ink400, size = 15.sp)
 
             Spacer(Modifier.height(24.dp))
             LLText("Grade", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
@@ -115,16 +112,6 @@ fun SubjectTopicsModal(
             )
 
             Spacer(Modifier.height(20.dp))
-            LLText("Topics", color = t.ink400, size = 13.sp, weight = FontWeight.SemiBold)
-            Spacer(Modifier.height(8.dp))
-            Dropdown(
-                label = "Select a topic",
-                enabled = topics.isNotEmpty(),
-                items = topics.map { it.title },
-                onSelect = { idx -> onTopic(topics[idx].id) },
-            )
-
-            Spacer(Modifier.height(16.dp))
             Box(Modifier.fillMaxWidth().height(1.dp).background(t.line))
             Spacer(Modifier.height(12.dp))
             Box(
@@ -136,7 +123,7 @@ fun SubjectTopicsModal(
                 contentAlignment = Alignment.Center,
             ) {
                 LLText(
-                    if (grade >= 0) "Open Grade $grade textbook →" else "Pick a grade to open the textbook",
+                    if (grade >= 0) "Browse Grade $grade chapters →" else "Pick a grade to see its chapters",
                     color = if (grade >= 0) t.accent500 else t.ink500,
                     size = 14.sp, weight = FontWeight.SemiBold,
                 )

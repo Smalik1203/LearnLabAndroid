@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learnlab.content.ChapterSlide
+import com.learnlab.content.TextbookItem
 import com.learnlab.content.findExperiment
 import com.learnlab.content.textbookDeck
 import com.learnlab.design.LL
@@ -57,10 +59,9 @@ import java.util.Locale
 import kotlinx.coroutines.launch
 
 /**
- * The continuous "textbook" for a grade: one swipeable deck of every authored
- * chapter's slides (in order), with each chapter's experiments embedded as inline
- * slides. No chapter/topic selection — you just flip through. A Read-aloud button
- * speaks the current slide via the platform TextToSpeech engine.
+ * The continuous "textbook" for a grade: one swipeable deck of every authored chapter's
+ * slides. (Now reached only via the orphaned grade-level route; the live flow opens one
+ * chapter at a time through the chapter hub.)
  */
 @Composable
 fun TextbookScreen(
@@ -84,10 +85,37 @@ fun TextbookScreen(
     }
 
     val pagerState = rememberPagerState(pageCount = { items.size })
-    val scope = rememberCoroutineScope()
     val page = pagerState.currentPage.coerceIn(0, items.size - 1)
 
-    // Read-aloud: a single TextToSpeech instance, released with the screen.
+    Column(Modifier.fillMaxSize().background(t.bg)) {
+        TextbookNav(state, title = items[page].chapterTitle, onBack = onBack, onHome = onHome)
+        TextbookDeck(
+            items = items,
+            pagerState = pagerState,
+            onRunExperiment = onRunExperiment,
+            modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+    }
+}
+
+/**
+ * The swipeable slide-deck body: pager + bottom bar (progress, Read-aloud, Prev/Next) with its
+ * own TextToSpeech. Hosted by [TextbookScreen] (whole grade) and by the chapter hub's Read tab
+ * (one chapter). [pagerState] is hoisted so the host can read the current page (e.g. for a
+ * per-chapter title). Caller must ensure [items] is non-empty.
+ */
+@Composable
+fun TextbookDeck(
+    items: List<TextbookItem>,
+    pagerState: PagerState,
+    onRunExperiment: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val t = LL.tokens
+    val scope = rememberCoroutineScope()
+    val page = pagerState.currentPage.coerceIn(0, (items.size - 1).coerceAtLeast(0))
+
+    // Read-aloud: a single TextToSpeech instance, released with the deck.
     val ctx = LocalContext.current
     var speaking by remember { mutableStateOf(false) }
     val tts = remember {
@@ -99,9 +127,7 @@ fun TextbookScreen(
     }
     DisposableEffect(Unit) { onDispose { tts?.stop(); tts?.shutdown() } }
 
-    Column(Modifier.fillMaxSize().background(t.bg)) {
-        TextbookNav(state, title = items[page].chapterTitle, onBack = onBack, onHome = onHome)
-
+    Column(modifier) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxWidth().weight(1f).background(t.bg),
@@ -157,7 +183,7 @@ fun TextbookScreen(
 
 /** Top nav: Back + current chapter title (left), Home + theme (right). */
 @Composable
-private fun TextbookNav(
+fun TextbookNav(
     state: AppState,
     title: String,
     onBack: () -> Unit,

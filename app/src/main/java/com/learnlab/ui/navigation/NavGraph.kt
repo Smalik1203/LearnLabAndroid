@@ -23,6 +23,8 @@ import com.learnlab.ui.home.HomeScreen
 import com.learnlab.ui.home.LandingScreen
 import com.learnlab.ui.lesson.LessonScreen
 import com.learnlab.ui.reader.ChapterReaderScreen
+import com.learnlab.ui.slideshow.ChapterHubScreen
+import com.learnlab.ui.slideshow.ChapterSelectScreen
 import com.learnlab.ui.slideshow.TextbookScreen
 
 @Composable
@@ -55,7 +57,7 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                     }
                 },
                 onViewAllHistory = { navController.navigate(Routes.HISTORY) },
-                onOpenTextbook = { grade -> navController.navigate(Routes.textbook(grade)) },
+                onSelectSubjectGrade = { s -> navController.navigate(Routes.gradeSelect(s)) },
             )
         }
 
@@ -81,7 +83,7 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                 GradeSelectScreen(
                     state = state,
                     subject = subject,
-                    onGradeSelected = { grade -> navController.navigate(Routes.curriculum(grade)) },
+                    onGradeSelected = { grade -> navController.navigate(Routes.chapterSelect(grade)) },
                     onBack = { navController.popBackStack() },
                 )
             }
@@ -123,6 +125,34 @@ fun LearnLabNavGraph(navController: NavHostController, state: AppState) {
                 TextbookScreen(
                     state = state,
                     grade = grade,
+                    onRunExperiment = { id -> navController.navigate(Routes.lesson(id)) },
+                    onBack = { navController.popBackStack() },
+                    onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
+                )
+            }
+
+            composable(
+                route = Routes.CHAPTER_SELECT,
+                arguments = listOf(navArgument("grade") { type = NavType.IntType }),
+            ) { backStack ->
+                val grade = backStack.arguments?.getInt("grade") ?: 8
+                ChapterSelectScreen(
+                    state = state,
+                    grade = grade,
+                    onOpenChapter = { id -> navController.navigate(Routes.chapterHub(id)) },
+                    onBack = { navController.popBackStack() },
+                    onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },
+                )
+            }
+
+            composable(
+                route = Routes.CHAPTER_HUB,
+                arguments = listOf(navArgument("chapterId") { type = NavType.StringType }),
+            ) { backStack ->
+                val chapterId = backStack.arguments?.getString("chapterId") ?: return@composable
+                ChapterHubScreen(
+                    state = state,
+                    chapterId = chapterId,
                     onRunExperiment = { id -> navController.navigate(Routes.lesson(id)) },
                     onBack = { navController.popBackStack() },
                     onHome = { navController.popBackStack(Routes.HOME, inclusive = false) },

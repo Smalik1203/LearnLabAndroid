@@ -42,13 +42,7 @@
       "Trace — draw the incoming ray, the mirror, and the reflected ray on the paper",
       "Measure — draw the normal at the point of incidence and measure both angles"
     ], "observe": "Done carefully, the **angle of incidence (i) equals the angle of reflection (r)** every time. When the beam falls **along the normal**, both angles read **zero**." },
-    { "type": "steps", "kicker": "NAMING THE RAYS", "title": "Incident ray, normal, reflected ray", "steps": [
-      "Incident ray — the ray of light that falls on the mirror",
-      "Normal — a line drawn at 90° to the mirror at the point of incidence, O",
-      "Reflected ray — the ray that comes back from the mirror",
-      "Angle of incidence (i) — between the normal and the incident ray; angle of reflection (r) — between the normal and the reflected ray"
-    ] },
-    { "type": "figure", "kicker": "10.3 · THE LAWS OF REFLECTION", "title": "Angle in equals angle out", "caption": "Measured from the normal, the angle of incidence (i) equals the angle of reflection (r). When the ray falls along the normal, both angles are zero.", "kind": "LIGHT_REFLECTION", "labels": [] },
+    { "type": "figure", "kicker": "10.3 · THE LAWS OF REFLECTION", "title": "Naming the rays, and the law they obey", "caption": "The ray that strikes the mirror at point O is the incident ray; the one that bounces back is the reflected ray; the normal is the line drawn at 90° to the mirror at O. Measured from the normal, the angle of incidence (i) always equals the angle of reflection (r) — and a ray falling along the normal reflects straight back, both angles zero.", "kind": "LIGHT_REFLECTION", "labels": [] },
     { "type": "activity", "kicker": "ACTIVITY 10.5 · LET US EXPERIMENT", "title": "Bend the paper under the reflected beam", "purpose": "There is a **second** law of reflection, about which plane the rays lie in. We bend the paper carrying the reflected beam to test that idea.", "steps": [
       "Extend — place a stiff chart-paper sheet so part of it juts beyond the table edge",
       "Shine — send a beam onto the mirror and see the reflected beam on the extended flat part",
