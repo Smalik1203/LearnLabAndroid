@@ -50,9 +50,14 @@ val experimentRegistry: Map<String, ExperimentComposable> = mapOf(
     // Chapter 1 (ch05) — particle + Moon simulations
     "states-of-matter"  to { _, c -> com.learnlab.experiments.StatesOfMatter(c) },
     "moon-phases"       to { _, c -> com.learnlab.experiments.MoonPhases(c) },
+    "moon-phases-3d"    to { _, c -> com.learnlab.experiments.MoonPhases3D(c) },
 
-    // Chapter 6 — Cell biology / the invisible living world
+    // Chapter 6 — Cell biology / the invisible living world (Grade 8 Ch 2 · 7 spec sims + soil bonus)
+    "magnification-explorer" to { _, c -> com.learnlab.experiments.MagnificationExplorer(c) },
     "cell-explorer"     to { _, c -> com.learnlab.experiments.CellExplorer(c) },
+    "levels-of-organisation" to { _, c -> com.learnlab.experiments.LevelsOfOrganisation(c) },
+    "composting-storyboard"  to { _, c -> com.learnlab.experiments.CompostingStoryboard(c) },
+    "yeast-fermentation"     to { _, c -> com.learnlab.experiments.YeastFermentation(c) },
     "soil-suspension"   to { _, c -> com.learnlab.experiments.SoilSuspension(c) },
     "microbe-guide"     to { _, c -> com.learnlab.experiments.MicrobeGuide(c) },
     "curd-formation"    to { _, c -> com.learnlab.experiments.CurdFormation(c) },

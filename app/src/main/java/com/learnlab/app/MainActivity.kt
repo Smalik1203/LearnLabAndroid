@@ -20,6 +20,7 @@ import com.learnlab.design.LearnLabTheme
 import com.learnlab.design.LocalTokens
 import com.learnlab.design.DarkTokens
 import com.learnlab.design.LightTokens
+import com.learnlab.design.PaperTokens
 import com.learnlab.content.TextbookContent
 import com.learnlab.store.AppState
 import com.learnlab.ui.navigation.LearnLabNavGraph
@@ -50,7 +51,8 @@ private fun LearnLabApp() {
     val state = remember { AppState(ctx.applicationContext, scope) }
     val themeName by state.theme
     val isDark = themeName == "dark"
-    val tokens = if (isDark) DarkTokens else LightTokens
+    // Light mode uses the warm "paper" palette app-wide (home, experiments, reader all match).
+    val tokens = if (isDark) DarkTokens else PaperTokens
 
     val activity = ctx as? android.app.Activity
     LaunchedEffect(isDark) {

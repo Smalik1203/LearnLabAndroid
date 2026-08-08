@@ -144,11 +144,7 @@ fun TextbookDeck(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ProgressBar(value = (page + 1).toFloat() / items.size, modifier = Modifier.width(140.dp))
-                Spacer(Modifier.width(12.dp))
-                LLText("${page + 1} / ${items.size}", color = t.ink400, size = 13.sp)
-            }
+            SlideCounterPill(page = page, total = items.size, section = sectionNameAt(items, page))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ReadAloudButton(
                     speaking = speaking,
@@ -172,7 +168,7 @@ fun TextbookDeck(
                 )
                 Spacer(Modifier.width(10.dp))
                 PrimaryButton(
-                    label = "Next ›",
+                    label = if (page == items.size - 1) "Finish ✓" else "Next ›",
                     onClick = { speaking = false; tts?.stop(); scope.launch { pagerState.animateScrollToPage(page + 1) } },
                     enabled = page < items.size - 1,
                 )
@@ -188,6 +184,10 @@ fun TextbookNav(
     title: String,
     onBack: () -> Unit,
     onHome: () -> Unit,
+    readerDark: Boolean? = null,
+    onToggleReaderDark: (() -> Unit)? = null,
+    sectionLabel: String? = null,
+    chapterNumber: Int? = null,
 ) {
     val t = LL.tokens
     Row(
@@ -216,23 +216,32 @@ fun TextbookNav(
                 LLText("Back", color = t.ink200, size = 14.sp, weight = FontWeight.Medium)
             }
             Spacer(Modifier.width(16.dp))
-            LLText(
-                title,
-                color = t.ink50,
-                size = 15.sp,
-                weight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false),
-            )
+            if (sectionLabel != null) {
+                LLText(
+                    sectionLabel, color = t.ink50, size = 15.sp, weight = FontWeight.SemiBold,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                if (chapterNumber != null) {
+                    Spacer(Modifier.width(12.dp))
+                    ChapterBadgePill(chapterNumber)
+                }
+            } else {
+                LLText(
+                    title, color = t.ink50, size = 15.sp, weight = FontWeight.SemiBold,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             CircleIconButton(Icons.Filled.Home, "Home", onHome)
             Spacer(Modifier.width(10.dp))
+            val dark = readerDark ?: state.isDark
             CircleIconButton(
-                if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                if (dark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
                 "Toggle theme",
-            ) { state.toggleTheme() }
+            ) { if (onToggleReaderDark != null) onToggleReaderDark() else state.toggleTheme() }
         }
     }
 }
@@ -279,6 +288,48 @@ private fun CircleIconButton(icon: ImageVector, desc: String, onClick: () -> Uni
     ) {
         Icon(icon, contentDescription = desc, tint = t.ink400, modifier = Modifier.size(16.dp))
     }
+}
+
+@Composable
+private fun ChapterBadgePill(number: Int) {
+    val t = LL.tokens
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(t.orangeLight)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(6.dp).clip(CircleShape).background(t.orange))
+        Spacer(Modifier.width(6.dp))
+        LLText("CHAPTER $number", color = t.orange, size = 10.sp, weight = FontWeight.Bold, letterSpacing = 1.2.sp)
+    }
+}
+
+@Composable
+private fun SlideCounterPill(page: Int, total: Int, section: String) {
+    val t = LL.tokens
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(t.surface)
+            .border(1.dp, t.line, RoundedCornerShape(999.dp))
+            .padding(horizontal = 14.dp, vertical = 7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LLText("Slide ${page + 1} / $total", color = t.ink400, size = 12.sp, weight = FontWeight.Medium)
+        LLText("   ·   ", color = t.ink600, size = 12.sp)
+        LLText(section, color = t.accent500, size = 12.sp, weight = FontWeight.SemiBold)
+    }
+}
+
+internal fun sectionNameAt(items: List<TextbookItem>, page: Int): String {
+    if (items.isEmpty()) return ""
+    for (i in page.coerceIn(0, items.lastIndex) downTo 0) {
+        val s = items[i].slide
+        if (s is ChapterSlide.SectionHeader) return s.title
+    }
+    return "Overview"
 }
 
 /** Plain text of a slide, for the Read-aloud button. */

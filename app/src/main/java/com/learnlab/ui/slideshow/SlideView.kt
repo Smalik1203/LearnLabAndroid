@@ -60,6 +60,9 @@ import com.learnlab.design.SubjectMath
 import com.learnlab.design.SubjectPhysics
 import com.learnlab.design.gradHeadline
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.shadow
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Biotech
 import androidx.compose.material.icons.filled.Bolt
@@ -111,31 +114,25 @@ import kotlin.math.sin
 @Composable
 fun SlideView(slide: ChapterSlide, index: Int, onRunExperiment: (String) -> Unit = {}) {
     val t = LL.tokens
-    val accents = listOf(SubjectChemistry, SubjectPhysics, SubjectMath, SubjectBiology, t.accent500)
-    val accent = accents[index % accents.size]
+    val accent = t.accent500  // single forest-green accent on warm paper
 
-    val bg = Brush.linearGradient(
-        0.0f to accent.copy(alpha = if (t.isDark) 0.16f else 0.09f).compositeOver(t.bg),
-        0.55f to t.bg,
-        1.0f to t.bg,
-        start = Offset.Zero,
-        end = Offset.Infinite,
-    )
-
-    Box(modifier = Modifier.fillMaxSize().background(bg)) {
-        // Large translucent slide number — a unifying decorative flourish.
-        LLText(
-            "%02d".format(index + 1),
-            color = accent.copy(alpha = 0.12f),
-            size = 150.sp,
-            weight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.TopEnd).padding(end = 36.dp, top = 8.dp),
-        )
+    Box(modifier = Modifier.fillMaxSize().background(t.bg)) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 64.dp, vertical = 44.dp),
-            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize().padding(horizontal = 40.dp, vertical = 26.dp),
+            contentAlignment = Alignment.TopCenter,
         ) {
-            Column(modifier = Modifier.widthIn(max = 1000.dp).fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 880.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .shadow(10.dp, RoundedCornerShape(24.dp), clip = false)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(t.surface)
+                    .border(1.dp, t.line, RoundedCornerShape(24.dp))
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 44.dp, vertical = 38.dp),
+            ) {
                 when (slide) {
                     is ChapterSlide.Title -> TitleSlide(slide, accent)
                     is ChapterSlide.Concept -> ConceptSlide(slide, accent)

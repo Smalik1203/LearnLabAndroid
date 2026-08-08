@@ -23,7 +23,7 @@ data class RecentEntry(val id: String, val openedAt: Long)
 private const val MAX_RECENTS = 100
 
 class AppState(private val appContext: Context, private val scope: CoroutineScope) {
-    val theme: MutableState<String> = mutableStateOf("dark")
+    val theme: MutableState<String> = mutableStateOf("light")
     val isDark: Boolean get() = theme.value == "dark"
 
     /** Opened experiments, newest first. Persisted locally via DataStore. */

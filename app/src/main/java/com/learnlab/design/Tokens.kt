@@ -48,6 +48,9 @@ data class LearnLabTokens(
     val rose700: Color,
     val amber50: Color,
     val amber700: Color,
+    // Warm orange — the reader's chapter badge pill (defaults suit the paper theme).
+    val orange: Color = Color(0xFFB45309),
+    val orangeLight: Color = Color(0xFFF8E3CC),
     // Constants — same contrast on both light and dark surfaces
     val rose300: Color = Color(0xFFFDA4AF),
     val rose600: Color = Color(0xFFE11D48),

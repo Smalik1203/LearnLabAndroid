@@ -21,8 +21,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -36,8 +38,11 @@ import androidx.compose.ui.unit.sp
 import com.learnlab.content.Chapters
 import com.learnlab.content.TextbookItem
 import com.learnlab.content.slidesFor
+import com.learnlab.design.DarkTokens
 import com.learnlab.design.LL
 import com.learnlab.design.LLText
+import com.learnlab.design.LocalTokens
+import com.learnlab.design.PaperTokens
 import com.learnlab.design.PrimaryButton
 import com.learnlab.store.AppState
 
@@ -54,7 +59,6 @@ fun ChapterHubScreen(
     onBack: () -> Unit,
     onHome: () -> Unit,
 ) {
-    val t = LL.tokens
     val chapter = remember(chapterId) { Chapters.firstOrNull { it.id == chapterId } }
     val title = chapter?.title ?: "Chapter"
     val experiments = chapter?.experiments ?: emptyList()
@@ -65,8 +69,15 @@ fun ChapterHubScreen(
 
     var tab by rememberSaveable { mutableIntStateOf(0) }
 
-    Column(Modifier.fillMaxSize().background(t.bg)) {
-        TextbookNav(state, title = title, onBack = onBack, onHome = onHome)
+    CompositionLocalProvider(LocalTokens provides if (state.isDark) DarkTokens else PaperTokens) {
+        val t = LL.tokens
+        Column(Modifier.fillMaxSize().background(t.bg)) {
+        TextbookNav(
+            state, title = title, onBack = onBack, onHome = onHome,
+            sectionLabel = if (tab == 0 && readingItems.isNotEmpty())
+                sectionNameAt(readingItems, readingPager.currentPage) else null,
+            chapterNumber = chapter?.number,
+        )
 
         Box(Modifier.fillMaxWidth().padding(horizontal = 28.dp, vertical = 10.dp), contentAlignment = Alignment.Center) {
             ReadExperimentTabs(selected = tab, onSelect = { tab = it })
@@ -115,6 +126,7 @@ fun ChapterHubScreen(
                     }
                 }
             }
+        }
         }
     }
 }

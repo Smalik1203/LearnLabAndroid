@@ -53,7 +53,7 @@ fun ChapterListScreen(
     onBack: () -> Unit,
     onHome: () -> Unit,
 ) {
-    CompositionLocalProvider(LocalTokens provides if (state.readerDark.value) DarkTokens else PaperTokens) {
+    CompositionLocalProvider(LocalTokens provides if (state.isDark) DarkTokens else PaperTokens) {
         val t = LL.tokens
         val chapters = remember(grade) { textbookChapters(grade) }
         Column(Modifier.fillMaxSize().background(t.bg)) {
@@ -72,12 +72,12 @@ fun ChapterListScreen(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier.size(38.dp).clip(CircleShape).background(t.surface2).border(1.dp, t.line, CircleShape).clickable { state.toggleReaderTheme() },
+                        modifier = Modifier.size(38.dp).clip(CircleShape).background(t.surface2).border(1.dp, t.line, CircleShape).clickable { state.toggleTheme() },
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            if (state.readerDark.value) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                            "Toggle reading theme", tint = t.ink200, modifier = Modifier.size(18.dp),
+                            if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                            "Toggle theme", tint = t.ink200, modifier = Modifier.size(18.dp),
                         )
                     }
                     Spacer(Modifier.width(8.dp))
